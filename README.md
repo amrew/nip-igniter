@@ -21,3 +21,10 @@ NipIgniter is right for you if:
  - You want to build an admin side faster
  - You are a CodeIgniter fan
  - You feel hard to move on to the other framework :D
+
+
+### Based on
+ * CodeIgniter 2.2
+ * Bootstrap 3.2
+ * Bootflat 2.0.4
+ * jQuery 1.11.1
