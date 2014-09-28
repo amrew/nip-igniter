@@ -10,3 +10,14 @@ NipIgniter suitable for developers who want decrease production cost to make an 
 NipIgniter not just a tool, but also alter some core CodeIgniter. CodeIgniter becomes more powerful. NipIgniter adopt some of the features that found in the new frameworks. Like ORM, Timestamps, SoftDelete, etc.
 
 For the developers who are already comfortable using CodeIgniter, you don't need to move to the other frameworks. You can create a powerful website with NipIgniter.
+
+
+###Who is NipIgniter For?
+
+NipIgniter is right for you if:
+
+ - You find a tool to generate CRUD based on tables
+ - You want to use an ORM Model with CodeIgniter
+ - You want to build an admin side faster
+ - You are a CodeIgniter fan
+ - You feel hard to move on to the other framework :D
