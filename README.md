@@ -23,8 +23,15 @@ NipIgniter is right for you if:
  - You feel hard to move on to the other framework :D
 
 
-### Based on
+###Based on
  * CodeIgniter 2.2
  * Bootstrap 3.2
  * Bootflat 2.0.4
  * jQuery 1.11.1
+
+
+###Resource
+ * [Nip Stdio.]
+
+
+[Nip Stdio.]:http://nipstudio.com
