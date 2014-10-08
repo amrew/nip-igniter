@@ -28,6 +28,7 @@ NipIgniter is right for you if:
  * Bootstrap 3.2
  * Bootflat 2.0.4
  * jQuery 1.11.1
+ * etc.
 
 
 ###Resource
