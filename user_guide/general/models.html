@@ -1,0 +1,582 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Models : NipIgniter User Guide</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='NipStdio' />
+<meta name='description' content='NipIgniter User Guide' />
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../images/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>NipIgniter User Guide Version 2.0</h1></td>
+<td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://nipstudio.com/">NipIgniter Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Models
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="ellislab.com/NipIgniter/user-guide/" />Search User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Models</h1>
+
+<p>Models are <strong>optionally</strong> available for those who want to use a more traditional MVC approach.</p>
+
+
+
+<ul>
+<li><a href="#what">Nip_Model</a></li>
+<li><a href="#anatomy">Anatomy of a Model</a></li>
+<li><a href="#loading">Loading a Model</a></li>
+<li><a href="#functions">Selecting Data</a> </li>
+<li><a href="#functions_insert">Inserting Data</a> </li>
+<li><a href="#functions_update">Updating Data</a> </li>
+<li><a href="#functions_delete">Deleting Data</a> </li>
+<li><a href="#functions_restore">Restoring Data</a> </li>
+<li><a href="#functions_relationship">Relationship Data</a> </li>
+</ul>
+
+
+
+<h2><a name="what"></a>Nip_Model?</h2>
+
+<p>
+	Models are PHP classes that are designed to work with information in your database.  For example, let's say you use NipIgniter to manage a user data. 
+	Here is an example of what such a model class might look like:
+</p>
+
+<pre>
+class User extends Nip_Model {
+	protected $tableName= "user";
+	protected $primary   	= "id";
+
+	protected $softDeletes = TRUE;
+	
+	public $id;
+	public $username;
+	public $password;
+	public $email;
+	public $role_id;
+
+	public $created;
+	public $updated;
+	public $deleted;
+	
+	public function __construct($options = array()){
+		parent::__construct($options);
+	}
+	
+	public function getRole(){
+		return $this->belongsTo('Role','role_id');
+	}
+}
+</pre>
+
+<p></p>
+
+<h2><a name="anatomy"></a>Anatomy of a Model</h2>
+
+<p>Model classes are stored in your <dfn>application/models/</dfn> folder.  
+	They can be nested within sub-folders if you want this type of organization.</p>
+
+<p>The basic prototype for a model class is this:</p>
+
+<pre>
+class <var>ModelName</var> extends Nip_Model{
+	public function __construct($options = array()){
+		parent::__construct($options);
+	}
+} 
+</pre>
+
+<p>Where <var>ModelName</var> is the name of your class.  Class names <strong>must</strong> have camelcase letter.
+Make sure your class extends the base Nip_Model class.</p>
+
+<p>The file name will be the same as your class name.  
+	For example, if your class is this:</p>
+
+<pre>
+class <var>UserModel</var> extends Nip_Model{
+	public function __construct($options = array()){
+		parent::__construct($options);
+	}
+} 
+</pre>
+
+<p>Your file will be this:</p>
+
+<code>application/models/<var>UserModel.php</var></code>
+
+
+<h2><a name="loading"></a>Loading a Model</h2>
+
+<p>Your models will typically be loaded and called from within your <a href="controllers.html">controller</a> functions.
+To load a model you will use the following function:</p>
+
+<code>$this->load->model('<var>ModelName</var>');</code>
+
+<p>Once loaded, you will access your model functions using an object with the same name as your class:</p>
+
+<code>
+$this->load->model('<var>ModelName</var>');<br />
+<br />
+$this-><var>ModelName</var>->function();
+</code>
+
+<p>If you would like your model assigned to a different object name you can specify it via the second parameter of the loading
+function:</p>
+
+
+<code>
+$this->load->model('<var>ModelName</var>', '<kbd>fubar</kbd>');<br />
+<br />
+$this-><kbd>fubar</kbd>->function();
+</code>
+
+<a name="functions"></a>
+<h1>Selecting Data</h1>
+
+<h2>$this->Model->all($options = array());</h2>
+
+<p>
+	Permits you to load all row in the current Model with some <var>$options</var>. Example :
+</p>
+
+<pre>
+$result = $this-><var>User</var>->all();
+
+// produce SELECT * FROM user
+
+var_dump($result);
+</pre>
+
+<p>If the parameters is empty, then the $result will produce all row from the <dfn>user</dfn> table</p>
+
+<h3>where</h3>
+<pre>
+$where = array("role_id"=>"1", "active"=>"1");
+
+$result = $this-><var>User</var>->all(array("where" => $where));
+
+// produce SELECT * FROM user WHERE role_id = '1' AND active = '1'
+
+var_dump($result);
+</pre>
+<pre>
+$where = "role_id ='1' AND active = '1' OR username LIKE '%jhon%'";
+
+$result = $this-><var>User</var>->all(array("where" => $where));
+
+// produce SELECT * FROM user WHERE role_id = '1' AND active = '1' OR username LIKE '%jhon%'
+
+var_dump($result);
+</pre>
+
+<h3>fields</h3>
+<pre>
+$fields = array("id", "username", "email", "role_id");
+
+$result = $this-><var>User</var>->all(array("fields" => $fields));
+
+// produce SELECT id, username, email, role_id FROM user
+
+var_dump($result);
+</pre>
+<pre>
+$fields = "id, username, email, role_id";
+
+$result = $this-><var>User</var>->all(array("fields" => $fields));
+
+// produce SELECT id, username, email, role_id FROM user
+
+var_dump($result);
+</pre>
+
+<h3>order_by</h3>
+<pre>
+$orderBy = "id asc";
+
+$result = $this-><var>User</var>->all(array("order_by" => $orderBy));
+
+// produce SELECT * FROM user ORDER BY id asc
+
+var_dump($result);
+</pre>
+
+<h3>limit and offset</h3>
+<pre>
+$limit = 10;
+
+$result = $this-><var>User</var>->all(array("limit" => $limit));
+
+// produce SELECT * FROM user LIMIT 10
+
+var_dump($result);
+</pre>
+<pre>
+$offset = 20;
+$limit = 10;
+
+$result = $this-><var>User</var>->all(array("limit" => $limit, "offset" => $offset));
+
+// produce SELECT * FROM user LIMIT 20, 10 (in MySQL. Other databases have slightly different syntax)
+
+var_dump($result);
+</pre>
+
+<h2>$this->Model->first($where, $fields);</h2>
+
+<p>
+	Permits you to load <var>one row</var> in the current Model. Example :
+</p>
+
+<h3>By primary key</h3>
+<pre>
+$user = $this-><var>User</var>->first(1);
+
+// produce SELECT * FROM user where primary = 1 LIMIT 1
+
+var_dump($user);
+</pre>
+
+<h3>By some condition</h3>
+<pre>
+$where = array("username" => "jhon", "password" => "doe");
+
+$user = $this-><var>User</var>->first($where);
+
+// produce SELECT * FROM user where username = 'jhon' AND password = 'doe' LIMIT 1
+
+var_dump($user);
+</pre>
+
+<p>If there is no data with the condition, then it will returned <var>NULL</var></p>
+
+<pre>
+$where = array("username" => "jhon", "password" => "doe");
+
+$fields = "id, username, email, role_id";
+
+$user = $this-><var>User</var>->first($where, $fields);
+
+// produce SELECT id, username, email, role_id FROM user where username = 'jhon' AND password = 'doe' LIMIT 1
+
+var_dump($user);
+</pre>
+
+<h2>$this->Model->count($where);</h2>
+
+<p>
+	Permits you to determine the number of rows in a particular table. 
+</p>
+
+<pre>
+$totalRow = $this-><var>User</var>->count();
+
+$totalRow = $this-><var>User</var>->count("status = '1'");
+</pre>
+
+<a name="functions_insert"></a>
+<h1>Inserting Data</h1>
+
+<h2>$this->Model->save()</h2>
+
+<p>Nip_Model provide another way to insert data to the particular table. 
+	Create an object and set the properties value. Example :</p>
+
+<pre>
+$this->load->model("User");
+
+$object = new User();
+
+$object->username 	= "jhon";
+$object->password 	= md5("doe");
+$object->email 		= "jhon@doe.com";
+$object->role_id 	= 2;
+$object->status_id 	= 2;
+
+$obejct-><dfn>save</dfn>();
+</pre>
+
+<pre>
+$this->load->model("User");
+
+$data = array(
+	'username'	=> "jhon",
+	'password'	=> md5("doe"),
+	'email'	=> "jhon@doe.com",
+	'role_id'	=> 2;
+	'status_id'	=> 2;
+);
+
+$object = new User($data);
+
+$obejct-><dfn>save</dfn>();
+</pre>
+
+<pre>
+$this->load->model("User");
+
+$data = array(
+	'username'	=> "jhon",
+	'password'	=> md5("doe"),
+	'email'	=> "jhon@doe.com",
+	'role_id'	=> 2;
+	'status_id'	=> 2;
+);
+
+$object = new User();
+
+$object->attr($data);
+
+$obejct-><dfn>save</dfn>();
+</pre>
+
+
+<a name="functions_update"></a>
+<h1>Updating Data</h1>
+
+<h2>$this->Model->save()</h2>
+
+<p><var>save()</var> function will automatically detects whether to do an insert or update.</p>
+If the primary key value is available, then it will update the table.
+<pre>
+$this->load->model("User");
+
+$object = $this->User->first(1);
+
+$object->password 	= md5("doedoe");
+$object->status_id 	= 1;
+
+$obejct-><dfn>save</dfn>();
+</pre>
+
+<pre>
+$this->load->model("User");
+
+$data = array(
+	'password'	=> md5("doedoe"),
+	'status_id'	=> 1;
+);
+
+$object = $this->User->first(1);
+
+$object->attr($data);
+
+$obejct-><dfn>save</dfn>();
+</pre>
+
+<a name="functions_delete"></a>
+<h1>Deleting Data</h1>
+
+<h2>$this->Model->delete($where)</h2>
+
+<p><var>delete()</var> function will run delete query for the table.</p>
+
+<h3>By primary key</h3>
+<pre>
+$this->load->model("User");
+
+$this->User->delete(1);
+</pre>
+
+<h3>By some condition</h3>
+<pre>
+$this->load->model("User");
+
+$this->User->delete("status = 2");
+</pre>
+
+<h3>SoftDelete</h3>
+
+<p>When soft deleting a model, 
+	it is not actually removed from your database. 
+	Instead, a <var>deleted</var> timestamp is set on the record.
+</p>
+
+<pre>
+class User extends Nip_Model{
+	public $softDeletes = TRUE;
+}
+</pre>
+
+<h2>$this->Model->forceDelete($where)</h2>
+
+<p><var>forceDelete()</var> function will run delete query for the table if the <dfn>softDeletes</dfn> active.</p>
+
+<h3>By primary key</h3>
+<pre>
+$this->load->model("User");
+
+$this->User->forceDelete(1);
+</pre>
+
+<h3>By some condition</h3>
+<pre>
+$this->load->model("User");
+
+$this->User->forceDelete("status = 2");
+</pre>
+
+<a name="functions_restore"></a>
+<h1>Restoring Data</h1>
+
+<h2>$this->Model->restore($where)</h2>
+
+<p><var>restore()</var> function will restore the deleted data in the table.</p>
+
+<h3>By primary key</h3>
+<pre>
+$this->load->model("User");
+
+$this->User->restore(1);
+</pre>
+
+<h2>$this->Model->justTrash()</h2>
+
+<p>Only trash data that will be returned from the table.</p>
+
+<pre>
+$this->load->model("User");
+
+$result = $this->User->justTrash()->all();
+</pre>
+
+<h2>$this->Model->withTrash()</h2>
+
+<p>All data from database will be returned including the trash data.</p>
+
+<pre>
+$this->load->model("User");
+
+$result = $this->User->withTrash()->all();
+</pre>
+
+
+<a name="functions_relationship"></a>
+<h1>Relationship</h1>
+
+<p>
+	Of course, your database tables are probably related to one another. For example, a blog post may have many comments. Nip_Model supports many types of relationships:
+</p>
+
+<h2>$this->Model->belongsTo($modelName = "ModelName", $foreignKey = "foreign_key_id")</h2>
+
+<p>You must define function to get the other table relationship.</p>
+
+<pre>
+class User extends Nip_Model{
+	
+	public function getRole(){
+		return $this->belongsTo("Role", "role_id"); // role_id is the foreign key in the User table
+	}
+}
+
+
+$object = $this->User->first(1);
+
+echo $object->role->id;
+echo $object->role->title; 
+
+// getRole() can be called without 'get' but the first letter is lowercase. Example : getUserStatus() will be $object->userStatus->variable;
+</pre>
+
+<h2>$this->Model->hasOne($modelName = "ModelName", $foreignKey = "foreign_key_id")</h2>
+
+<p>You must define function to get the other table relationship.</p>
+
+<pre>
+class User extends Nip_Model{
+	
+	public function getPhone(){
+		return $this->hasOne("Phone", "user_id"); // user_id is the foreign key in the Phone table
+	}
+}
+
+
+$object = $this->User->first(1);
+
+echo $object->phone->fax_number; 
+echo $object->phone->mobile_number; 
+
+// getPhone() can be called without 'get' but the first letter is lowercase. Example : getUserStatus() will be $object->userStatus->variable;
+</pre>
+
+<h2>$this->Model->hasMany($modelName = "ModelName", $foreignKey = "foreign_key_id")</h2>
+
+<p>You must define function to get the other table relationship.</p>
+
+<pre>
+class User extends Nip_Model{
+	
+	public function getPhotos(){
+		return $this->hasMany("Photos", "user_id"); // user_id is the foreign key in the Photos table
+	}
+}
+
+
+$object = $this->User->first(1);
+
+$photos = $object->photos;
+
+foreach($photos as $each){
+
+	echo '&lt;img src="'.$each->path_image.'">';
+}
+
+// getPhotos() can be called without 'get' but the first letter is lowercase. Example : getUserStatus() will be $object->userStatus->variable;
+</pre>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="views.html">Views</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="helpers.html">Helpers</a>
+</p>
+<p><a href="http://NipIgniter.com">NipIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2012 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
+</div>
+
+</body>
+</html>

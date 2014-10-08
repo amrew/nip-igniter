@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Controllers : NipIgniter User Guide</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='NipStdio' />
+<meta name='description' content='NipIgniter User Guide' />
+
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../images/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>NipIgniter User Guide Version 2.0</h1></td>
+<td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://nipstudio.com/">NipIgniter Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Controllers
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="ellislab.com/NipIgniter/user-guide/" />Search User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Controllers</h1>
+
+<p>Controllers are the heart of your application, as they determine how HTTP requests should be handled.</p>
+
+
+<ul>
+<li><a href="#nip_igniter_controller">NipIgniter Controller</a></li>
+<li><a href="#hello">Hello World</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#passinguri">Passing URI Segments to Your Functions</a></li>
+<li><a href="#default">Defining a Default Controller</a></li>
+<li><a href="#remapping">Remapping Function Calls</a></li>
+</ul>
+
+
+<a name="nip_igniter_controller"></a>
+<h2>NipIgniter Controller</h2>
+
+<p>
+	A NipIgniter Controller has little difference with CodeIgniter Controller. 
+But, the concept is not different at all. The Differences is the class name, file name, and the URL. The controller also extends to Nip_Controller class.
+</p>
+
+<p>Consider this URI:</p>
+
+<code>example.com/<var>blog</var>/</code>
+
+<p>In the above example, 
+	NipIgniter would attempt to find a controller named 
+	<dfn>BlogController.php</dfn> and load it.
+</p>
+
+<p><strong>When a controller's name matches the first segment of a URI, it will be loaded.</strong></p>
+
+<a name="hello"></a>
+<h2>Let's try it:&nbsp; Hello World!</h2>
+
+<p>Let's create a simple controller so you can see it in action.  Using your text editor, create a file called <dfn>BlogController.php</dfn>, and put the following code in it:</p>
+
+
+<textarea class="textarea" style="width:100%" cols="50" rows="10">
+&lt;?php
+class BlogController extends Nip_Controller {
+
+	public function index()
+	{
+		echo 'Hello World!';
+	}
+}
+?&gt;
+</textarea>
+
+<p>Then save the file to your <dfn>application/controllers/</dfn> folder.</p>
+
+<p>Now visit the your site using a URL similar to this:</p>
+
+<code>example.com/<var>blog</var>/</code>
+
+<p>If you did it right, you should see <samp>Hello World!</samp>.</p>
+
+<p>Note: Class names must use a <dfn>camelcase letter</dfn>. For example: </p>
+
+<pre>
+Class Name 	: 	BlogController
+URL 			: 	example.com/blog
+</pre>
+<pre>
+Class Name 	: 	UserStatusController
+URL 			: 	example.com/user-status
+</pre>
+<pre>
+Class Name 	: 	FooBarFooController
+URL 			: 	example.com/foo-bar-foo
+</pre>
+
+<p>Also, always make sure your controller <dfn>extends</dfn> the Nip_Controller class so that it can inherit all its functions.</p>
+
+
+<a name="functions"></a>
+<h2>Functions</h2>
+
+<p>In the above example the function name is <dfn>index()</dfn>.  The "index" function is always loaded by default if the
+<strong>second segment</strong> of the URI is empty.  Another way to show your "Hello World" message would be this:</p>
+
+<code>example.com/<var>blog</var>/<samp>index</samp>/</code>
+
+<p><strong>The second segment of the URI determines which function in the controller gets called.</strong></p>
+
+<p>Let's try it.  Add a new function to your controller:</p>
+
+
+<textarea class="textarea" style="width:100%" cols="50" rows="25">
+&lt;?php
+class BlogController extends Nip_Controller {
+
+	public function index() // example.com/blog/index
+	{
+		echo 'Hello World!';
+	}
+
+	public function comments() // example.com/blog/comments
+	{
+		echo 'Look at this!';
+	}
+
+	public function anotherFunction() // example.com/blog/another-function
+	{
+		echo 'Look at this!';
+	}
+
+	public function anotherFooBar() // example.com/blog/another-foo-bar
+	{
+		echo 'Look at this!';
+	}
+}
+?&gt;
+</textarea>
+
+<a name="passinguri"></a>
+<h2>Passing URI Segments to your Functions</h2>
+
+<p>If your URI contains more then two segments they will be passed to your function as parameters.</p>
+
+<p>For example, lets say you have a URI like this:</p>
+
+<code>example.com/<var>products</var>/<samp>some-shoes</samp>/<kbd>sandals</kbd>/<dfn>123</dfn></code>
+
+<p>Your function will be passed URI segments 3 and 4 ("sandals" and "123"):</p>
+
+<code>
+&lt;?php<br />
+class ProductsController extends Nip_Controller {<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;public function someShoes($sandals, $id)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo $sandals;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo $id;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+}<br />
+?&gt;
+</code>
+
+<a name="default"></a>
+<h2>Defining a Default Controller</h2>
+
+<p>NipIgniter can be told to load a default controller when a URI is not present,
+as will be the case when only your site root URL is requested.  To specify a default controller, open
+your <dfn>application/config/routes.php</dfn> file and set this variable:</p>
+
+<code>$route['default_controller'] = '<var>blog/some-function</var>';</code>
+
+<a name="remapping"></a>
+<h2>Remapping Function Calls</h2>
+
+<p><dfn>_remap()</dfn> function is used to create login feature. You can look at the file in the <var>application/core/Nip_Controller.php</var></p>
+
+<h1>Function Reference</h1>
+
+<h2>$this->render($string = "view_name", $data = array(), $boolean = FALSE);</h2>
+
+<p>
+	Permits you to load view using a layout. It's another way to load view. We use this function to load view instead of using <dfn>$this->load->view()</dfn>. There is no difference in parameter.
+</p>
+
+<pre>
+class <var>BlogController</var> extends <dfn>Nip_Controller</dfn>{
+	public <dfn>$pageLayout</dfn> = "layout/main";
+	
+	public function someView(){
+		$data['title'] = "With Layout";
+		$this-><dfn>render</dfn>("some-view", $data);
+	}	
+}
+</pre>
+
+<h2>$this->renderPartial($string = "view_name", $data = array(), $boolean = FALSE);</h2>
+
+<p>
+	Permits you to load view <kbd>without a layout</kbd>. 
+	The result is the same with <dfn>$this->load->view()</dfn>.
+</p>
+
+<pre>
+class <var>BlogController</var> extends <dfn>Nip_Controller</dfn>{
+	
+	public function someView(){
+		$data['title'] = "Without Layout";
+		$this-><dfn>renderPartial</dfn>("some-view", $data);
+	}	
+}
+</pre>
+
+<h2>$this->paginate($baseUrl, $totalRow, $limitPerPage, $uri, $queryString = "");</h2>
+
+<p>
+	Permits you to render pagination string based on some configuration. Example : 
+</p>
+
+<pre>
+class <var>BlogController</var> extends <dfn>Nip_Controller</dfn>{
+	
+	public function listing($offset = 0){
+		$uri 			= 3;
+		$limitPerPage 	= 10;
+		$baseUrl 		= site_url("blog/listing");
+
+		$article 	= $this-><dfn>Article</dfn>->all(array("limit"=>$limitPerPage, "offset"=>$offset));
+		$totalRow 	= $this-><dfn>Article</dfn>->count();
+
+		$exampleQueryString = "sort=date&direction=asc";
+		
+		echo $this-><var>paginate</var>($baseUrl, $totalRow, $limitPerPage, $uri, $exampleQueryString);
+	}	
+}
+</pre>
+
+<p><var>Query string</var> will produce link like this : </p>
+<code>example.com/blog/listing/10?sort=date&direction=asc</code>
+
+<h2>$this->createThumb($path, $width = 400, $height = 400);</h2>
+
+<p>
+	Permits you to create thumb based on image path. This function will produce thumbnail image. Example : 
+</p>
+
+<pre>
+class <var>BlogController</var> extends <dfn>Nip_Controller</dfn>{
+	
+	public function update(){
+		$path = "./public/uploads/someimage.jpg";
+		$this->createThumb($path, 500, 300); // will produce <dfn>'/public/uploads/someimage_thumb.jpg'</dfn>
+	}	
+}
+</pre>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="urls.html">NipIgniter URLs</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="reserved_names.html">Reserved Names</a></p>
+<p><a href="http://NipIgniter.com">NipIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2012 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
+</div>
+
+</body>
+</html>

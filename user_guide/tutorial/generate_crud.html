@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>NipIgniter Features : NipIgniter User Guide</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='NipStdio' />
+<meta name='description' content='NipIgniter User Guide' />
+
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../images/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>NipIgniter User Guide Version 2.0</h1></td>
+<td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://nipstudio.com/">Nip Stdio. Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+<a href="index.html">Tutorial</a> &nbsp;&#8250;&nbsp;
+Static pages
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="nipstudio.com/nip-igniter/user_guide/" />Search User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+
+<!-- START CONTENT -->
+<div id="content">
+
+
+<h1>Tutorial &minus; Generate CRUD</h1>
+
+<p class="important"><strong>Note:</strong> This tutorial assumes you've downloaded NipIgniter and <a href="../installation/index.html">installed the framework</a> in your development environment.</p>
+
+<p>First, create some tables manually on your database. For example <var>User</var> and <var>Role</var>.</p>
+<p><var>User</var> table has a relationship <dfn>belongsTo</dfn> with <var>Role</var> table.</p>
+
+<pre>
+CREATE TABLE `role` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `title` varchar(100) NOT NULL,
+ `created` datetime DEFAULT NULL,
+ `updated` datetime DEFAULT NULL,
+ `deleted` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+</pre>
+
+<pre>
+CREATE TABLE `user` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `username` varchar(50) NOT NULL,
+ `password` varchar(100) NOT NULL,
+ `email` varchar(50) NOT NULL,
+ `role_id` int(1) NOT NULL,
+ `created` datetime DEFAULT NULL,
+ `updated` datetime DEFAULT NULL,
+ `deleted` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+</pre>
+
+<p>
+	You can use primary key named <var>id</var>. Although you can use another word for primary key.
+</p>
+<p>
+	If you want to activate the <dfn>Timestamp feature</dfn>, you must add three columns 
+	for timestamps (<var>created</var>, <var>updated</var>, and <var>deleted</var>).<br>
+	<var>Deleted</var> field is used for <dfn>SoftDelete feature</dfn>. 
+	The timestamps field is allowed for NULL.
+</p>
+
+<h2>Generate CRUD</h2>
+
+<p>Visit your base url. For example:</p>
+
+<code>http://localhost/nip-igniter</code>
+
+<p>You will see this page.</p>
+
+<p>Fill in the table name that will be generated. If the checkbox is unchecked it will only generate the <var>model</var> file.</p>
+
+<img src="../images/screenshot/generator.png">
+
+
+<h2>Table Settings</h2>
+
+<p>After the form is submitted, then it will show a <var>settings</var> section.</p>
+
+<p>
+	You can adjust configuration for each columns. 
+	The configuration will be used for <var>view</var>
+</p>
+
+<img src="../images/screenshot/settings.png">
+
+<br>
+
+<img src="../images/screenshot/settings-2.png">
+
+<br>
+<br>
+<h3>Belongs To</h3>
+
+<img src="../images/screenshot/belongsto.png">
+
+<p>
+	The column is foreign key. So, it's required other table as references.
+	You must add some configuration about it.
+</p>
+<ul>
+	<li>Model Name</li>
+	<li>Model's primary key</li>
+	<li>Some column as option label</li>
+</ul>
+
+<h2>Generated Files</h2>
+
+<p>Generator will create some files in the application folder.</p>
+
+<dfn>Controller files</dfn>
+<code>application/controllers/FooBarController.php</code>
+<dfn>Model files</dfn>
+<code>application/models/FooBar.php</code>
+<dfn>View files</dfn>
+<code>application/views/foo-bar/index.php</code>
+<code>application/views/foo-bar/page.php</code>
+<code>application/views/foo-bar/edit.php</code>
+<code>application/views/foo-bar/view.php</code>
+<code>application/views/foo-bar/trash/index.php</code>
+<code>application/views/foo-bar/trash/page.php</code>
+
+<h2>Configuration Settings</h2>
+
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tr>
+	<th>Input Type</th>
+	<th>Description</th>
+</tr>
+<tr>
+	<td class="td"><strong>Text</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="text"&gt;</dfn>.</p>
+		<p>You can change the min.length value and the max length value. It is used for <var>Validation</var></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Number</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="number"&gt;</dfn>.</p>
+		<p>You can change the min.length value and the max length value. It is used for <var>Validation</var></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Password</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="password"&gt;</dfn>.</p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Email</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="email"&gt;</dfn>.</p>
+		<p>You can change the min.length value and the max length value. It is used for <var>Validation</var></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Date</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="text" class="datepicker"&gt;</dfn>.</p>
+		<p>The datepicker class use bootstrap datepicker. <var>http://www.eyecon.ro/bootstrap-datepicker/</var></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Textarea</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the textarea tag like this for the column : <dfn>&lt;textarea&gt;</dfn></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>CKEditor</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the textarea tag like this for the column : <dfn>&lt;textarea class="ckeditor"&gt;</dfn></p>
+		<p>It's a WYSIWYG editor. <var>http://ckeditor.com/</var></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>jQueryTe</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the textarea tag like this for the column : <dfn>&lt;textarea id="some_id"&gt;</dfn></p>
+		<p>It's a WYSIWYG editor. <var>http://jqueryte.com/</var></p>
+
+		<p>If you use jQueryTe, remove the CKEditor javascript source in the <dfn>application/views/layouts/main.php</dfn> file. </p>
+		</p>Remove this source <dfn>&lt;script src="public/ckeditor/ckeditor.js"&gt;</script></dfn></p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Image</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="file"&gt;</dfn>.</p> 
+		<p>You can upload an image with this and add more feature. Like <var>Crop</var> or <var>Create Thumb</var></p>
+		
+		<ul>
+			<li>If the thumb checkbox is checked, then it will generate <var>Create Thumb</var> feature.</li>
+			<li>If the crop checkbox is checked, then it will generate <var>Crop</var> feature.</li>
+		</ul>
+		<p>
+			You can adjust the image width and height for thumbnail size or crop size. And also choose the extension of the image files.
+		</p>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Thumbnail</strong></td>
+	<td class="td">
+		Choose this if the column is used to store thumbnail image when you activate the Thumbnail feature on the some image column.
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>File</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="file"&gt;</dfn>.</p> 
+		<p>
+			You can choose the extension files.
+		</p>
+	</td>
+</tr>
+</table>
+<br>
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tr>
+	<th colspan="2">Belongs To</th>
+</tr>
+<tr>
+	<td class="td"><strong>Select</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;select&gt;</dfn>.</p> 
+		<p>
+			The column is foreign key. So, it's required other table as references.
+			You must add some configuration about it.
+		</p>
+		<ul>
+			<li>Model Name</li>
+			<li>Model's primary key</li>
+			<li>Some column as <dfn>&lt;option&gt;</dfn> label</li>
+		</ul>
+	</td>
+</tr>
+<tr>
+	<td class="td"><strong>Radio</strong></td>
+	<td class="td">
+		<p>In the view file, it will generate the input tag like this for the column : 
+		<dfn>&lt;input type="radio"&gt;</dfn>.</p> 
+		<p>
+			The column is foreign key. So, it's required other table as references.
+			You must add some configuration about it.
+		</p>
+		<ul>
+			<li>Model Name</li>
+			<li>Model's primary key</li>
+			<li>Some column as checkbox label</li>
+		</ul>
+	</td>
+</tr>
+</table>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="index.html">Introduction</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="news_section.html">News section</a>
+</p>
+<p><a href="http://NipIgniter.com">NipIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2014 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
+</div>
+
+</body>
+</html>

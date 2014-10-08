@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Controllers : NipIgniter User Guide</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='NipStdio' />
+<meta name='description' content='NipIgniter User Guide' />
+
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../images/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>NipIgniter User Guide Version 2.0</h1></td>
+<td id="breadcrumb_right"><a href="../toc.html">Table of Contents Page</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://nipstudio.com/">NipIgniter Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Controllers
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="ellislab.com/NipIgniter/user-guide/" />Search User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Authentication</h1>
+
+<p>
+	Saya menyertakan fitur authentication sederhana pada NipIgniter. 
+	Anda dapat menggunakannya jika mau.
+</p>
+
+
+<ul>
+<li><a href="#how_to_use">How to use</a></li>
+<li><a href="#disable">Disable it</a></li>
+</ul>
+
+
+<a name="how_to_use"></a>
+<h2>How to use</h2>
+
+<p>
+	You need to add a field <dfn>role_id</dfn> and <dfn>status_id</dfn> in your <var>user</var> table. Role starting from the number 1 and so on.
+</p>
+<code>
+<strong>Role</strong><br>
+1 : Admin <br>
+2 : Member <br>
+3 : dst... <br>
+</code>
+
+<p>
+	Authentication is used based on the controller and role_id.
+ You must define which method that will be allowed for each role.
+ Please look at this example below. <br>
+ Asterisks<var>(*)</var> mean that the admin role can access any function.
+ But, the member role only can access "<var>someFunction</var>" and "<var>fooBar</var>" function. 
+ The member still can access "<var>index</var>" function. 
+ Because the "<var>index</var>" has defined for all role.
+</p>
+
+<pre>
+class SiteController extends Nip_Controller{
+	/**
+	 * Action rules for user
+	 *
+	 * @var mix
+	 * @access public
+	 */
+	protected $rules = array(
+		'*' => array("index"), 				//all user can access "index"
+		'1' => array("*"),  					//admin can access all function ("index", "someFunction", "fooBar", "adminPage")
+		'2' => array("someFunction", "fooBar") 	//member can access "index", "someFunction" and "fooBar". But member can't access "adminPage" 
+	);	
+
+	public function index(){
+
+		echo "index page";
+	}
+
+	public function someFunction(){
+
+		echo "someFunction page";
+	}
+
+	public function fooBar(){
+
+		echo "fooBar page";
+	}
+
+	public function adminPage(){
+
+		echo "adminPage";
+	}
+}
+</pre>
+
+<p>
+	Status is used to determine user status if it's activa or not when login. 
+	You can modify it in the <dfn>AuthController.php</dfn>
+</p>
+
+<code>
+<strong>Status</strong><br>
+1 : Active <br>
+2 : Non Active <br>
+</code>
+
+<pre>
+<strong>application/controllers/AuthController.php</strong>
+
+/**
+ * Check the user table with username
+ */
+$loginWithUsername = $this->Auth->login(array(
+							'username' => $userkey,
+							'password' => $encPassword,
+							'<var>status_id</var>'=> 1
+						)
+					);
+</pre>
+
+
+<a name="disable"></a>
+<h2>Disable it</h2>
+
+<p>
+	You can turn off the <dfn>$authStatus</dfn> in the <var>application/core/Nip_Controller.php</var>
+</p>
+
+<pre>
+/**
+ * Activated the _remap() function for login
+ *
+ * @var string
+ * @access protected
+ */
+protected $authStatus = <kbd>FALSE</kbd>;
+</pre>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="urls.html">NipIgniter URLs</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="reserved_names.html">Reserved Names</a></p>
+<p><a href="http://NipIgniter.com">NipIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2012 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
+</div>
+
+</body>
+</html>
