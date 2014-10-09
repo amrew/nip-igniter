@@ -25,6 +25,7 @@ class GeneratorController extends Nip_Controller {
 
 	protected $templateName = "default-theme";
 
+	/** Variable ini belum dipake*/
 	public $commonTemplate = array(
 			'text' => array(
 				'title' => 'text',
@@ -82,7 +83,8 @@ class GeneratorController extends Nip_Controller {
 				'config'=> '#filetype',
 			),
 		);
-
+	
+	/** Variable ini belum dipake*/
 	public $belongsToTemplate = array(
 			'select' => array(
 				'title' => 'select',
@@ -96,6 +98,7 @@ class GeneratorController extends Nip_Controller {
 			)
 		);
 
+	/** Variable ini belum dipake*/
 	public $otherTemplate = array(
 			'random' => array(
 				'title' => 'random',
