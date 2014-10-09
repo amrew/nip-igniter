@@ -28,10 +28,14 @@ NipIgniter is right for you if:
  * Bootstrap 3.2
  * Bootflat 2.0.4
  * jQuery 1.11.1
+ * etc.
 
+###How to Install
+ * [Wiki/How to]
 
 ###Resource
  * [Nip Stdio.]
 
 
 [Nip Stdio.]:http://nipstudio.com
+[Wiki/How to]:https://github.com/amrew/nip-igniter/wiki/How-to-install-NipIgniter%3F
