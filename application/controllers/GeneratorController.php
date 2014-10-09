@@ -376,7 +376,7 @@ class GeneratorController extends Nip_Controller {
 				if ($extension == "php") {
 					$temp = implode("", $temp);
 					
-					preg_match_all('/((?:^|[A-Z])[a-z]+)/', $temp,$matches);
+					preg_match_all('/((?:^|[A-Z])[a-z0-9]+)/', $temp,$matches);
 					$controller = $this->extractClassName($matches[0]);
 					
 					if ($controller != "generator" && $controller != "auth") {
