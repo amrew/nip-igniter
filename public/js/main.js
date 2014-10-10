@@ -267,8 +267,8 @@ function setErrorMessage(message, type){
 	}else if(type == "info"){
 		swal("Attention, please.", message, "info");
 		//$("#error-message").html('<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+message+'</div>').find(".alert").addClass("animated fadeInDown");
-	}else{
-		swal("Owh shit!", message, "warning");
+	}else if(type == "no-privilege"){
+		swal("Sorry :(", message, "warning");
 		//$("#error-message").html('<div class="alert alert-default"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+message+'</div>').find(".alert").addClass("animated fadeInDown");
 	}
 }
@@ -284,9 +284,23 @@ function showModal(){
 			},
 			url: currentBtn.attr("href"),
 			type: 'post',
-			success : function(content){
-				$("#modal-body").html(content);
-				$("#modal-global").modal('show');
+			success : function(content, status, xhr){
+				var json = null;
+				var is_json = true;
+
+		    	try {
+		    		json = $.parseJSON(content);
+		        } catch(err) {
+		        	is_json = false;
+		        }
+
+				if(is_json == false){
+					$("#modal-body").html(content);
+					$("#modal-global").modal('show');
+				}else{
+					setErrorMessage(json.message,"no-privilege");
+				}
+				
 				hideLoading();
 			}
 		}).fail(function(data, status){
@@ -318,19 +332,33 @@ function buttonAction(){
 			type: 'post',
 			data: {id: currentBtn.attr('data-id')},
 			success : function(rs){
-				$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
-				
-				if(rs.operation != null){
-					if(rs.operation == 'delete'){
-						$("#tr-"+currentBtn.data('id')).hide();
-					}else if(rs.operation == 'restore'){
-						$("#tr-"+currentBtn.data('id')).show();
+				if(rs.status == 404){
+					setErrorMessage(rs.message,"no-privilege");
+				}else{
+					$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					
+					if(rs.operation != null){
+						if(rs.operation == 'delete'){
+							$("#tr-"+currentBtn.data('id')).hide();
+						}else if(rs.operation == 'restore'){
+							$("#tr-"+currentBtn.data('id')).show();
+						}
 					}
 				}
 
 				hideLoading();
 				buttonAction();
 			}
+		}).fail(function(data, status){
+			if(status == "error"){
+				setErrorMessage("Application error...","danger");
+			}else if(status == "timeout"){
+				setErrorMessage("Connection timeout","warning");
+			}else if(status == "parsererror"){
+				setErrorMessage("Parse Error","warning");
+			}
+
+			hideLoading();
 		});
 	});
 }
@@ -369,12 +397,15 @@ function aboutTrash(){
 				dataType: 'json',
 				data : string,
 				success : function(rs){
-					for(var i in primaries){
-						$("#tr-"+primaries[i]).hide();
-					}
+					if(rs.status == 404){
+						setErrorMessage(rs.message,"no-privilege");
+					}else{
+						for(var i in primaries){
+							$("#tr-"+primaries[i]).hide();
+						}
 
-					$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
-					
+						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					}
 					hideLoading();
 					init();
 				}

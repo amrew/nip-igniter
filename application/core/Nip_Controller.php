@@ -161,10 +161,27 @@ class Nip_Controller extends CI_Controller
 						return;
 					}
 				}
+
+				$message = "You have no privilege to access it!";
+
+				if ($this->input->is_ajax_request()) {
+					echo json_encode(
+							array(
+								"status" => 404, 
+								"message"=> $message
+							)
+						);
+					return;
+				}else{
+					$data["callback"] = !empty($_SERVER['HTTP_REFERER'])
+		   							   ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		   			$data["message"]  = $message;
+					$this->render("partial/error.php", $data);
+					return;
+				}
 			}
 
 			redirect($this->loginFormUrl);
-
 		} else {
 
 			if (method_exists($this, $method)) {

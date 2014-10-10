@@ -36,11 +36,23 @@
 			<!--Modal Body-->
 			<div class="modal-body" id="modal-body">
 				<form class="form-submit" action="<?php echo site_url("generator/delete-table");?>" method="post">
-					<input type="hidden" id="inputTableName" name="table_name" value="">
-					<p>Are you sure want to delete this table?</p>
-					<p>The CRUD file will be deleted, too</p>
-					<button class="btn-dark" type="submit">Delete</button>
+					<input type="hidden" class="inputTableName" name="table_name" value="">
+					<input type="hidden" name="mode" value="only-crud">
+					<p>Please choose this!</p>
+					<div class="text-center">
+						<button class="btn btn-warning btn-block" type="submit">Delete CRUD</button>
+						<div style="height:10px;"></div>
+						
+					</div>
 				</form>
+				<form class="form-submit" action="<?php echo site_url("generator/delete-table");?>" method="post">
+					<input type="hidden" class="inputTableName" name="table_name" value="">
+					<input type="hidden" name="mode" value="table-crud">
+					<div class="text-center">
+						<button class="btn btn-danger btn-block" type="submit">Delete Table and CRUD</button>
+					</div>
+				</form>
+				
 			</div>
 			<!--Modal Footer-->
 			<div class="modal-footer"></div>
@@ -59,7 +71,7 @@ $(function(){
 
 	$(".btn-delete").on("click", function(){
 		var name = $(this).attr("data-name");
-		$("#inputTableName").val(name);
+		$(".inputTableName").val(name);
 		$("#labelTableName").html(name);
 
 		$("#modal-global").modal("show");

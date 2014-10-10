@@ -144,6 +144,7 @@ class GeneratorController extends Nip_Controller {
 		}
 
 		$tableName = $this->input->post("table_name");
+		$mode      = $this->input->post("mode");
 
 		$modelGenerator = new ModelGenerator();
 		$result 		= $modelGenerator->getConfiguration($tableName);
@@ -154,20 +155,32 @@ class GeneratorController extends Nip_Controller {
 			return;
 		}
 
-		if($this->dbforge->drop_table($tableName)) {
-			$dirName  = str_replace("_", "-", $tableName);
+		$dirName  = str_replace("_", "-", $tableName);
 
+		if ($mode == "only-crud") {
 			deleteFolder(APPPATH . "controllers/". $result["modelName"]. "Controller.php");
 			deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
 			deleteFolder(APPPATH . "views/". $dirName);
-
-			$this->setSideMenu();
-
-			$this->msg['success']['message'] = "The ".$tableName." table have successfully deleted.";
+			
+			$this->msg['success']['message'] = "The CRUD files have successfully deleted.";
 			echo json_encode($this->msg['success']);
-		}else{
-			echo json_encode($this->msg['failed']);
+
+		} else if($mode == "table-crud") {
+
+			if ($this->dbforge->drop_table($tableName)) {
+				deleteFolder(APPPATH . "controllers/". $result["modelName"]. "Controller.php");
+				deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
+				deleteFolder(APPPATH . "views/". $dirName);
+
+				$this->msg['success']['message'] = "The ".$tableName." table and CRUD files have successfully deleted.";
+				echo json_encode($this->msg['success']);
+			}else{
+				$this->msg['failed']['message'] = "Failed to delete the ".$tableName." table.";
+				echo json_encode($this->msg['failed']);
+			}
 		}
+
+		$this->setSideMenu();
 	}
 
 	public function getSettings() {
