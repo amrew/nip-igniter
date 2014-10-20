@@ -274,7 +274,7 @@ class Nip_Model extends CI_Model {
 
 			if(isset($config['limit'])){
 				$limit = $config['limit'];
-				
+
 				if(!empty($limit)){
 					
 					if(isset($config['offset'])){
@@ -283,7 +283,10 @@ class Nip_Model extends CI_Model {
 						
 						if(!empty($offset)){
 							$this->db->limit($limit, $offset);
+						}else{
+							$this->db->limit($limit);
 						}
+
 					}else{
 						$this->db->limit($limit);
 					}
