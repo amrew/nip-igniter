@@ -584,7 +584,16 @@ class ModelGenerator extends GeneratorController
 
 		if($isTimestamps){
 			foreach ($timestampsField as $value) {
-				$variable .= "public \${$value};\n\t";
+				if($value == $deletedField){
+					if($isSoftDelete){
+						$variable .= "public \${$value};\n\t";
+					}
+				}else{
+					if($isTimestamps){
+						$variable .= "public \${$value};\n\t";
+					}
+				}
+				
 			}
 		}
 

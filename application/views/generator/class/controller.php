@@ -265,8 +265,11 @@ class {content:class}Controller extends Nip_Controller
 
 		if ($result) {
 			$this->msg['success']['operation'] = 'delete';
-			$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
-			
+			if($this->Model->getSoftDeletes()){
+				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
+			}else{
+				$this->msg['success']['message']   = 'Data has been successfully removed.';
+			}
 			echo json_encode($this->msg['success']);
 			exit();
 		}
