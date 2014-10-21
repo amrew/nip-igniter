@@ -256,16 +256,16 @@ class {content:class}Controller extends Nip_Controller
      * @access public
      */
 	public function delete() {
-		if (!isset($_POST["{content:primary}"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;	
 		}
 
-		${content:primary} 	= $_POST["{content:primary}"];
-		$result = $this->Model->delete(${content:primary});
+		$id 	= $_POST["id"];
+		$result = $this->Model->delete($id);
 
 		if ($result) {
 			$this->msg['success']['operation'] = 'delete';
-			$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.${content:primary}.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
+			$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
 			
 			echo json_encode($this->msg['success']);
 			exit();
@@ -310,12 +310,12 @@ class {content:class}Controller extends Nip_Controller
      * @access public
      */
 	public function restore($from = "list") {
-		if (!isset($_POST["{content:primary}"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;
 		}
 
-		${content:primary} 	= $_POST["{content:primary}"];
-		$result = $this->Model->restore(${content:primary});
+		$id 	= $_POST["id"];
+		$result = $this->Model->restore($id);
 
 		if ($result) {
 			$this->msg['success']['operation'] = 'restore';
@@ -434,12 +434,12 @@ class {content:class}Controller extends Nip_Controller
      * @access public
      */
 	public function forceDelete() {
-		if (!isset($_POST["{content:primary}"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;	
 		}	
 		
-		${content:primary} 	= $_POST["{content:primary}"];
-		$result = $this->Model->forceDelete(${content:primary});
+		$id 	= $_POST["id"];
+		$result = $this->Model->forceDelete($id);
 		
 		if ($result) {
 			$this->msg['success']['operation'] = "delete";
