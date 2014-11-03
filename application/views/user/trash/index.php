@@ -138,8 +138,8 @@
 							<td><?php echo date("d M Y", strtotime($row->deleted));?></td>
 						<?php endif;?>
 						<td class="hidden-print">
-							<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$this->controller}/restore/trash");?>">Restore</button>
-							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$this->controller}/force-delete");?>">Delete</button>
+							<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>
+							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/force-delete");?>">Delete</button>
 						</td>
 					</tr>
 				<?php $offset++;endforeach;?>
@@ -156,8 +156,8 @@
 		<div class="btn-group hidden-print">
 	      <button type="button" class="btn btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
 	      <ul class="dropdown-menu" role="menu">
-	        <li><a href="<?php echo site_url($controller."/restoreTrash");?>" class="btnAboutTrash">Restore</a></li>
-	        <li><a href="<?php echo site_url($controller."/deletePermanently");?>" class="btnAboutTrash">Delete permanently</a></li>
+	        <li><a href="<?php echo site_url($pathController."/restoreTrash");?>" class="btnAboutTrash">Restore</a></li>
+	        <li><a href="<?php echo site_url($pathController."/deletePermanently");?>" class="btnAboutTrash">Delete permanently</a></li>
 	      </ul>
 	    </div>
 
@@ -179,9 +179,9 @@
 
 		<!--Limit row for pagination-->
 		<select id="select-limit">
-			<option value="<?php echo site_url($controller.'/index/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+			<option value="<?php echo site_url($pathController.'/index/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
 			<?php $i=20;while($i<101):?>
-				<option value="<?php echo site_url($controller.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+				<option value="<?php echo site_url($pathController.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 			<?php $i+=10;endwhile;?>
 		</select>
 

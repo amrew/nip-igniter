@@ -2,7 +2,7 @@
 	<div class="col-sm-6 col-md-8 margin-bottom">
 	
 		<!--Button to add new record-->
-		<a class="btn btn-primary btn-sm" href="<?php echo site_url("{$this->controller}/edit");?>">
+		<a class="btn btn-primary btn-sm" href="<?php echo site_url("{$pathController}/edit");?>">
 			<span class="glyphicon glyphicon-plus"></span> New Record
 		</a>
 	
@@ -83,7 +83,7 @@
 					<tr id="tr-<?php echo $row->id;?>">
 						<td>
 							<div class="checkbox">
-				              <input type="checkbox" class="each-checkbox icheck" name="check" value="<?php echo $row->id;?>">
+				              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
 				              <label><?php echo ($offset+1)?></label>
 				            </div>
 						</td>
@@ -106,9 +106,9 @@
 							</td>
 						<?php endif;?>
 						<td class="hidden-print">
-							<a class="btn btn-info btn-xs show-modal" href="<?php echo site_url("{$this->controller}/view/{$row->id}");?>">View</a>
-							<a class="btn btn-info btn-xs" href="<?php echo site_url("{$this->controller}/edit/{$row->id}");?>">Edit</a>
-							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$this->controller}/delete");?>">Delete</button>
+							<a class="btn btn-info btn-xs show-modal" href="<?php echo site_url("{$pathController}/view/{$row->id}");?>">View</a>
+							<a class="btn btn-info btn-xs" href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>">Edit</a>
+							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>">Delete</button>
 						</td>
 					</tr>
 				<?php $offset++;endforeach;?>
@@ -125,7 +125,7 @@
 		<div class="btn-group hidden-print">
 	      <button type="button" class="btn btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
 	      <ul class="dropdown-menu" role="menu">
-	        <li><a href="<?php echo site_url($controller.'/move-to-trash');?>" class="btnAboutTrash">Move to trash</a></li>
+	        <li><a href="<?php echo site_url($pathController.'/move-to-trash');?>" class="btnAboutTrash">Move to trash</a></li>
 	      </ul>
 	    </div>
 
@@ -134,34 +134,47 @@
 
 		<!--Link to trash-->
 		<?php if($this->Model->getSoftDeletes()):?>
-			<a href="<?php echo site_url("{$this->controller}/trash");?>" class="btn btn-xs pull-right hidden-print" title="Trash">
-				<span class="glyphicon glyphicon-trash"></span>
+			<a href="<?php echo site_url("{$pathController}/trash");?>" class="btn btn-xs pull-right hidden-print" title="Trash">
+				<span class="glyphicon glyphicon-trash"></span> Trash
 			</a>
 		<?php endif;?>
 		
 		<!--Button to print this current page-->
 		<button type="button" class="btn btn-xs hidden-print pull-right" id="btn-print" title="Print current page" style="margin-right:6px;">
-	    	<span class="glyphicon glyphicon-print"></span>
+	    	<span class="glyphicon glyphicon-print"></span> Print
 	    </button>
+
+	    <!--Button to generate pdf this current page-->
+		<a href="#" id="btn-excel" title="Download Excel file" class="btn btn-xs hidden-print pull-right" style="margin-right:6px;">
+	    	<span class="glyphicon glyphicon-file"></span> Excel
+	    </a>
+
+	    <!--Button to generate pdf this current page-->
+		<a href="#" id="btn-pdf" title="Download PDF file" class="btn btn-xs hidden-print pull-right" style="margin-right:6px;">
+	    	<span class="glyphicon glyphicon-file"></span> PDF
+	    </a>
 
 	</div>
 </div>
 
 <br>
 
-<div class="row">
+<div class="row hidden-print">
 	<div class="col-xs-12">
 
 		<!--Limit row for pagination-->
 		<select id="select-limit">
-			<option value="<?php echo site_url($controller.'/index/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+			<option value="<?php echo site_url($pathController.'/index/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
 			<?php $i=20;while($i<101):?>
-				<option value="<?php echo site_url($controller.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+				<option value="<?php echo site_url($pathController.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 			<?php $i+=10;endwhile;?>
+			<?php $i=100;while($i<501):?>
+				<option value="<?php echo site_url($pathController.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+			<?php $i+=100;endwhile;?>
 		</select>
 
 		<!--Pagination Link-->
-		<div id="page-container" class="hidden-print pull-right" style="margin-right:10px;">
+		<div id="page-container" class="pull-right" style="margin-right:10px;">
 			<?php echo $pagination;?>
 		</div>
 	</div>

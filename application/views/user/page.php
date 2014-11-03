@@ -8,7 +8,7 @@
 					<tr id="tr-<?php echo $row->id;?>">
 						<td>
 							<div class="checkbox">
-				              <input type="checkbox" class="each-checkbox icheck" name="check" value="<?php echo $row->id;?>">
+				              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
 				              <label><?php echo ($offset+1)?></label>
 				            </div>
 						</td>
@@ -32,9 +32,9 @@
 							</td>
 						<?php endif;?>
 						<td class="hidden-print">
-							<a class="btn btn-info btn-xs show-modal" href="<?php echo site_url("{$this->controller}/view/{$row->id}");?>">View</a>
-							<a class="btn btn-info btn-xs" href="<?php echo site_url("{$this->controller}/edit/{$row->id}");?>">Edit</a>
-							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$this->controller}/delete");?>">Delete</button>
+							<a class="btn btn-info btn-xs show-modal" href="<?php echo site_url("{$pathController}/view/{$row->id}");?>">View</a>
+							<a class="btn btn-info btn-xs" href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>">Edit</a>
+							<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>">Delete</button>
 						</td>
 					</tr>
 				<?php $offset++;endforeach;?>
