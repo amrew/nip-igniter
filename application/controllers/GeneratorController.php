@@ -111,6 +111,7 @@ class GeneratorController extends Nip_Controller {
 		parent::__construct();
 
 		$this->load->dbforge();
+		$this->load->helper('directory');
 	}
 	
 	public function index() {
@@ -128,8 +129,72 @@ class GeneratorController extends Nip_Controller {
 	}
 
 	public function manage() {
+		$map = directory_map(APPPATH.'controllers');
+
+		$array  = $this->_parseFolder("", $map);
+
+		$data['controllerList'] = $array;
 		$data['tableList'] = $this->db->list_tables();
 		$this->render($this->view, $data);
+	}
+
+	public function deleteController() {
+		if (!$this->input->is_ajax_request()) {
+			redirect("generator/manage");
+			return;
+		}
+
+		if(!isset($_POST['table_name'])){
+			echo json_encode($this->msg['failed']);
+			return;
+		}
+
+		$tableName  = $this->input->post("table_name");
+		$folderName = $this->input->post("folder_name");
+		$controllerName = $this->input->post("controller_name");
+		$mode       = $this->input->post("mode");
+
+		if (!$this->db->table_exists($tableName)) {
+			$this->msg['failed']['message'] = "The table doesn't exists.";
+			echo json_encode($this->msg['failed']);
+			return;
+		}
+
+		$destinationView = str_replace("_", "-", $tableName);
+		$modelGenerator  = new ModelGenerator();
+		$result 		 = $modelGenerator->getConfiguration($tableName);
+
+		if(!empty($folderName)){
+			$folderName .= "/";
+		}
+
+		if ($mode == "only-crud") {
+			deleteFolder(APPPATH . "controllers/" . $folderName . $controllerName);
+			deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
+			
+			deleteFolder(APPPATH . "views/". $folderName . $destinationView);
+			
+			$this->msg['success']['message'] = "The CRUD files have successfully deleted.";
+			echo json_encode($this->msg['success']);
+
+		} else if($mode == "table-crud") {
+
+			if ($this->dbforge->drop_table($tableName)) {
+				deleteFolder(APPPATH . "controllers/" . $folderName . $controllerName);
+				deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
+				
+				deleteFolder(APPPATH . "views/". $folderName . $destinationView);
+
+				$this->msg['success']['message'] = "The ".$tableName." table and CRUD files have successfully deleted.";
+				echo json_encode($this->msg['success']);
+			}else{
+				$this->msg['failed']['message'] = "Failed to delete the ".$tableName." table.";
+				echo json_encode($this->msg['failed']);
+			}
+		}
+
+		$this->setSideMenu();
+		$this->clearFolder();
 	}
 
 	public function deleteTable() {
@@ -143,44 +208,22 @@ class GeneratorController extends Nip_Controller {
 			return;
 		}
 
-		$tableName = $this->input->post("table_name");
-		$mode      = $this->input->post("mode");
-
-		$modelGenerator = new ModelGenerator();
-		$result 		= $modelGenerator->getConfiguration($tableName);
+		$tableName  = $this->input->post("table_name");
 		
-		if($result['status'] == 2){
-			$this->msg['failed']['message'] = $result['message'];
+		if (!$this->db->table_exists($tableName)) {
+			$this->msg['failed']['message'] = "The table doesn't exists.";
 			echo json_encode($this->msg['failed']);
 			return;
 		}
 
-		$dirName  = str_replace("_", "-", $tableName);
-
-		if ($mode == "only-crud") {
-			deleteFolder(APPPATH . "controllers/". $result["modelName"]. "Controller.php");
-			deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
-			deleteFolder(APPPATH . "views/". $dirName);
+		if ($this->dbforge->drop_table($tableName)) {
 			
-			$this->msg['success']['message'] = "The CRUD files have successfully deleted.";
+			$this->msg['success']['message'] = "The ".$tableName." table have successfully deleted.";
 			echo json_encode($this->msg['success']);
-
-		} else if($mode == "table-crud") {
-
-			if ($this->dbforge->drop_table($tableName)) {
-				deleteFolder(APPPATH . "controllers/". $result["modelName"]. "Controller.php");
-				deleteFolder(APPPATH . "models/". $result["modelName"]. ".php");
-				deleteFolder(APPPATH . "views/". $dirName);
-
-				$this->msg['success']['message'] = "The ".$tableName." table and CRUD files have successfully deleted.";
-				echo json_encode($this->msg['success']);
-			}else{
-				$this->msg['failed']['message'] = "Failed to delete the ".$tableName." table.";
-				echo json_encode($this->msg['failed']);
-			}
+		}else{
+			$this->msg['failed']['message'] = "Failed to delete the ".$tableName." table.";
+			echo json_encode($this->msg['failed']);
 		}
-
-		$this->setSideMenu();
 	}
 
 	public function getSettings() {
@@ -200,6 +243,9 @@ class GeneratorController extends Nip_Controller {
 						? $_POST['updated_field'] : 'updated';
 		$deletedField = !empty($_POST['deleted_field']) 
 						? $_POST['deleted_field'] : 'deleted';
+
+		$folderName   = !empty($_POST['folder_name']) 
+						? $_POST['folder_name'] : '';
 
 		$modelGenerator = new ModelGenerator();
 		$result 		= $modelGenerator->getConfiguration(
@@ -222,6 +268,8 @@ class GeneratorController extends Nip_Controller {
 		$result['createdField'] = $createdField;
 		$result['updatedField'] = $updatedField;
 		$result['deletedField'] = $deletedField;
+
+		$result['folderName']   = $folderName;
 
 		$result['listModel']    = $this->getListModel();
 
@@ -288,6 +336,9 @@ class GeneratorController extends Nip_Controller {
 		$deletedField = !empty($_POST['deleted_field']) 
 						? $_POST['deleted_field'] : 'deleted';
 
+		$folderName   = !empty($_POST['folder_name']) 
+						? $_POST['folder_name'] : '';
+
 		$modelGenerator = new ModelGenerator();
 		$result 		= $modelGenerator->getConfiguration(
 								$tableName, $createdField, $updatedField, $deletedField, "create"
@@ -309,6 +360,8 @@ class GeneratorController extends Nip_Controller {
 		$result['createdField'] = $createdField;
 		$result['updatedField'] = $updatedField;
 		$result['deletedField'] = $deletedField;
+
+		$result['folderName']   = $folderName;
 		
 		$result['listModel']    = $this->getListModel();
 
@@ -377,11 +430,28 @@ class GeneratorController extends Nip_Controller {
 	}
 
 	protected function setSideMenu() {
-		$this->load->helper('directory');
-
 		$map = directory_map(APPPATH.'controllers');
-		
+
+		$string = "";
+		$array  = $this->_parseFolder("", $map);
+
+		/* Create menu list for each controller */
+		if(!empty($array)){
+			foreach ($array as $row) {
+				$title = ucwords(str_replace("-", " ", $row['title']));
+				$string .= '<li><a href="<?php echo site_url(\''.$row['url'].'\');?>">'.$title.'</a></li>'."\n";
+			}
+		} else {
+			$string .= '<li><a href="#">No controller found</a></li>'."\n";
+		}
+
+		createFile(APPPATH.'views/partial/', 'menu.php', $string);
+	}
+
+	private function _parseFolder($keys = '', $map = array()){
+
 		$array = array();
+
 		/* Get available controller */
 		foreach ($map as $key => $value) {
 			if (!is_array($value)) {
@@ -394,31 +464,51 @@ class GeneratorController extends Nip_Controller {
 					
 					preg_match_all('/((?:^|[A-Z])[a-z0-9]+)/', $temp,$matches);
 					$controller = $this->extractClassName($matches[0]);
+
+					$skipedController = array("generator", "auth", "profile");
 					
-					if ($controller != "generator" && $controller != "auth") {
-						$array[] = $controller;
+					if (!in_array($controller, $skipedController)) {
+						$array[] = array(
+							'title' => $controller, 
+							'url' => $keys.$controller,
+							'filename' => $value,
+							'foldername' => $keys
+						);
 					}
 				}
+			}else{
+				$array = array_merge($array, $this->_parseFolder(str_replace("//", "/", $keys."/".$key."/"), $value));
 			}
 		}
 
-		$string = "";
-		/* Create menu list for each controller */
-		if(!empty($array)){
-			foreach ($array as $value) {
-				$title = ucwords(str_replace("-", " ", $value));
-				$string .= '<li><a href="<?php echo site_url(\''.$value.'\');?>">'.$title.'</a></li>'."\n";
-			}
-		} else {
-			$string .= '<li><a href="#">No controller found</a></li>'."\n";
-		}
-
-		createFile(APPPATH.'views/partial/', 'menu.php', $string);
+		return $array;
 	}
 
-	protected function getListModel(){
-		$this->load->helper('directory');
+	protected function clearFolder(){
+		$map = directory_map(APPPATH.'controllers');
+		$mapView = directory_map(APPPATH.'views');
 
+		$this->_clearFolder(APPPATH.'controllers/', $map);
+		$this->_clearFolder(APPPATH.'views/', $mapView);
+	}
+
+	private function _clearFolder($string = "", $map = array()){
+		foreach ($map as $key => $value) {
+			if(is_array($value) && count($value) > 0){
+				$this->_clearFolder($string . $key . "/", $value);
+
+				$checkMap = directory_map($string . $key);
+				if(count($checkMap) == 0){
+					deleteFolder($string . $key);
+				}
+
+			}else if(is_array($value) && count($value) == 0){
+				deleteFolder($string . $key);
+			}
+		}
+	}
+
+	protected function getListModel(){		
 		$map = directory_map(APPPATH.'models');
 		
 		$array = array();
@@ -792,7 +882,7 @@ Class CrudGenerator extends GeneratorController{
 	public function generate($fields = array(), $settings = array()) {
 		
 		/*  
-			$tableName, $primary$, $modelName, $ignoredField, $isCrud,
+			$tableName, $primary, $modelName, $ignoredField, $isCrud,
 			$isTimestamps, $isSoftDelete, $createdField, $updatedField, $deletedField
 		*/	extract($settings);
 
@@ -812,11 +902,34 @@ Class CrudGenerator extends GeneratorController{
 			}
 		}
 
+		//check folder field
+		$tempFolderName = "";
+
+		if($folderName !== ""){
+			$folderName = trim($folderName, "/");
+
+			$arrFolderName  = explode("/", $folderName);
+			
+			foreach ($arrFolderName as $value) {
+				$tempFolderName .= "$value/";
+				$this->createFolder(APPPATH."controllers/".$tempFolderName);
+			}
+		}
+
+		$belongsTo = array();
+		$fieldShowed = array("'$primary'");
+
 		foreach ($fields as $key => $values) {
+
+			if(isset($values['show'])){
+				$fieldShowed[] = "'$key'";
+			}
 			
 			if ($values['type'] == "select" || $values['type'] == "radio") {
 				$relatedModel .= "'".$values['fk']['model']."',\n\t\t\t\t";
 				$relatedModelData .= "\$data['all".$values['fk']['model']."']	= \$this->".$values['fk']['model']."->all();\n\t\t";
+
+				$belongsTo[$key] = $values;
 			}
 
 			if ($values['type'] == "password") {
@@ -917,6 +1030,28 @@ Class CrudGenerator extends GeneratorController{
 			}
 		}
 
+		$belongsToExcelString = "";
+		$i = 0;
+		foreach ($belongsTo as $key => $row) {
+			if($i != 0){
+				$belongsToExcelString .= " else ";
+			}
+			$belongsToExcelString .= "if(\$key == \"".$key."\"){
+									\$this->spreadsheet->write(\$object->".lcfirst($row['fk']['model'])."->".$row['fk']['label'].");
+								}";
+			$i++;
+		}
+
+		if($belongsToExcelString == ""){
+			$belongsToExcelString  = "\$this->spreadsheet->write(\$value);";
+		}else{
+			$belongsToExcelString .= "else{
+									\$this->spreadsheet->write(\$value);
+								}";
+		}
+
+		$fieldShowed = implode(",", $fieldShowed);
+
 		$template = str_replace("{content:class}", $modelName, $template);
 		$template = str_replace("{content:primary}", $primary, $template);
 		$template = str_replace("{content:related_model}", $relatedModel, $template);
@@ -924,7 +1059,46 @@ Class CrudGenerator extends GeneratorController{
 		$template = str_replace("{content:before_validate}", $beforeValidate, $template);
 		$template = str_replace("{content:before_save}", $beforeSave, $template);
 
+		$template = str_replace("{content:field_showed}", $fieldShowed, $template);		
+		$template = str_replace("{content:belongsto_excel}", $belongsToExcelString, $template);		
+
 		$fileName = $modelName."Controller.php";
+
+		$folderNameString = "";
+		$pathController = "{\$this->controller}";
+
+		if($tempFolderName !== ""){
+			$this->folderTarget .= $tempFolderName;
+
+			$folderNameString = "/**
+	 * Controller folder name
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public \$folder = '".trim($tempFolderName,"/")."';
+
+	/**
+	 * Controller Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected \$controllerSegment = ".(count($arrFolderName) + 1).";
+
+	/**
+	 * Action Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected \$actionSegment = ".(count($arrFolderName) + 2).";";
+
+			$pathController = "{\$this->folder}/{\$this->controller}";
+		}
+
+		$template = str_replace("{content:folder_name}"    , $folderNameString , $template);
+		$template = str_replace("{content:path_controller}", $pathController , $template);
 		
 		$result = createFile($this->folderTarget, $fileName, $template);
 		if($result !== TRUE){
@@ -933,7 +1107,6 @@ Class CrudGenerator extends GeneratorController{
 				"message" => "Cannot create {$modelName}Controller : ".$result['message']
 			);
 		}
-
 
 		/* Create index.php file*/
 		$template = file_get_contents($this->baseTheme. "index.php");
@@ -984,9 +1157,9 @@ Class CrudGenerator extends GeneratorController{
 					if ($values['type'] == "image") {
 					
 						if(isset($values['image']['is_thumb'])){
-							$tbody .= "<td><img width=\"170\" src=\"<?php echo base_url().\$row->".$values['image']['thumb'].";?>\"></td>\n\t\t\t\t\t\t";
+							$tbody .= "<td><img class=\"img-thumbnail\" width=\"170\" src=\"<?php echo base_url().\$row->".$values['image']['thumb'].";?>\"></td>\n\t\t\t\t\t\t";
 						}else{
-							$tbody .= "<td><img width=\"170\" src=\"<?php echo base_url().\$row->".$key.";?>\"></td>\n\t\t\t\t\t\t";	
+							$tbody .= "<td><img class=\"img-thumbnail\" width=\"170\" src=\"<?php echo base_url().\$row->".$key.";?>\"></td>\n\t\t\t\t\t\t";	
 						}
 
 					} else if($values['type'] == "file") {
@@ -1057,11 +1230,18 @@ Class CrudGenerator extends GeneratorController{
 		$fileName = "index.php";
 
 		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/";
 
-		$this->createFolder(APPPATH.$dirPath);
+		if($tempFolderName !== ""){
+			$this->createFolder(APPPATH."views/".$tempFolderName);
+			$viewPathFile = APPPATH."views/".$tempFolderName.$dirName."/";
+		}else{
+			$viewPathFile = APPPATH."views/".$dirName."/";
+		}
+
+		$this->createFolder($viewPathFile);
+		$this->createFolder($viewPathFile."trash/");
 		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile, $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,
@@ -1084,12 +1264,7 @@ Class CrudGenerator extends GeneratorController{
 
 		$fileName = "index.php";
 
-		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/trash/";
-
-		$this->createFolder(APPPATH.$dirPath);
-		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile."trash/", $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,
@@ -1110,12 +1285,7 @@ Class CrudGenerator extends GeneratorController{
 		
 		$fileName = "page.php";
 
-		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/";
-
-		$this->createFolder(APPPATH.$dirPath);
-		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile, $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,
@@ -1136,12 +1306,7 @@ Class CrudGenerator extends GeneratorController{
 		
 		$fileName = "page.php";
 
-		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/trash/";
-
-		$this->createFolder(APPPATH.$dirPath);
-		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile."trash/", $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,
@@ -1162,12 +1327,7 @@ Class CrudGenerator extends GeneratorController{
 		
 		$fileName = "view.php";
 
-		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/";
-
-		$this->createFolder(APPPATH.$dirPath);
-		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile, $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,
@@ -1220,12 +1380,7 @@ Class CrudGenerator extends GeneratorController{
 
 		$fileName = "edit.php";
 
-		$dirName  = str_replace("_", "-", $tableName);
-		$dirPath  = "views/".$dirName."/";
-
-		$this->createFolder(APPPATH.$dirPath);
-		
-		$result = createFile(APPPATH.$dirPath, $fileName, $template);
+		$result = createFile($viewPathFile, $fileName, $template);
 		if($result !== TRUE){
 			return array(
 				"status" => 2,

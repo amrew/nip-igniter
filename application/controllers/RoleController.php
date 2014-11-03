@@ -23,6 +23,7 @@ class RoleController extends Nip_Controller
      */
 	public $pageTitle = "Role";
 
+	
 	/**
      * Message response for ajax request
      *
@@ -107,7 +108,7 @@ class RoleController extends Nip_Controller
 		$this->limit = !empty($limit) 
 					  ? $limit : $this->limit;
 
-		$baseUrl     = site_url("{$this->controller}/index/{$this->limit}");
+		$baseUrl     = site_url("{$this->pathController}/index/{$this->limit}");
 		
 		$queryString = ($_SERVER['QUERY_STRING'] != "") 
 					  ? "?".$_SERVER['QUERY_STRING'] : "";
@@ -171,7 +172,7 @@ class RoleController extends Nip_Controller
 		$data['queryString']= $queryString;
 		
 		if ($this->input->is_ajax_request()) {
-			$view = $this->renderPartial("{$this->controller}/page", $data, TRUE);
+			$view = $this->renderPartial("{$this->pathController}/page", $data, TRUE);
 
 			echo json_encode(array(
 					'pagination' => $pagination,
@@ -179,7 +180,43 @@ class RoleController extends Nip_Controller
 				)
 			);
 		} else {
-			$this->render($this->view, $data);
+			if(isset($_GET['download'])){
+				$this->load->library(array("dompdflib", "spreadsheet"));
+
+				if($_GET['download'] == "excel"){
+					
+					$field = array('id','title');
+
+					$this->spreadsheet->send("Role spreadsheet.xls");
+
+					//head
+					foreach($field as $value){
+						$this->spreadsheet->write( getLabel($value) );
+					}
+
+					echo "\n";
+
+					//body
+					foreach($rows as $object){
+						foreach($object as $key => $value){
+							if(in_array($key, $field)){
+								$this->spreadsheet->write($value);
+							}
+						}
+						echo "\n";
+					}
+
+				} else {
+
+					$this->pageLayout = "layouts/print";
+
+					$view = $this->render("{$this->pathController}/index", $data, TRUE);
+
+					$this->dompdflib->generate($view, "Role report.pdf");	
+				}
+			}else{
+				$this->render($this->view, $data);
+			}
 		}
 	}
 
@@ -224,9 +261,9 @@ class RoleController extends Nip_Controller
 		$data["id"]			= $id;
 		$data["model"]		= $model;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 
-		$this->render("{$this->controller}/edit", $data);
+		$this->render("{$this->pathController}/edit", $data);
 	}
 
 	/**
@@ -243,9 +280,9 @@ class RoleController extends Nip_Controller
 
 		$data['model'] = $model;
 		if ($this->input->is_ajax_request()) {
-			$this->renderPartial("{$this->controller}/view", $data);
+			$this->renderPartial("{$this->pathController}/view", $data);
 		} else {
-			$this->render("{$this->controller}/view", $data);
+			$this->render("{$this->pathController}/view", $data);
 		}
 	}
 
@@ -257,7 +294,7 @@ class RoleController extends Nip_Controller
      * @access public
      */
 	public function delete() {
-		if (!isset($_POST["id"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;	
 		}
 
@@ -266,8 +303,11 @@ class RoleController extends Nip_Controller
 
 		if ($result) {
 			$this->msg['success']['operation'] = 'delete';
-			$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
-			
+			if($this->Model->getSoftDeletes()){
+				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->pathController}/restore").'">Undo</button> if this action is a mistake.';
+			}else{
+				$this->msg['success']['message']   = 'Data has been successfully removed.';
+			}
 			echo json_encode($this->msg['success']);
 			exit();
 		}
@@ -311,7 +351,7 @@ class RoleController extends Nip_Controller
      * @access public
      */
 	public function restore($from = "list") {
-		if (!isset($_POST["id"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;
 		}
 
@@ -349,7 +389,7 @@ class RoleController extends Nip_Controller
 		$this->limit = !empty($limit) 
 					  ? $limit : $this->limit;
 
-		$baseUrl     = site_url("{$this->controller}/trash/{$this->limit}");
+		$baseUrl     = site_url("{$this->pathController}/trash/{$this->limit}");
 		
 		$queryString = ($_SERVER['QUERY_STRING'] != "") 
 					  ? "?".$_SERVER['QUERY_STRING'] : "";
@@ -412,10 +452,10 @@ class RoleController extends Nip_Controller
 		$data['pagination']	= $pagination;
 		$data['queryString']= $queryString;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 		
 		if ($this->input->is_ajax_request()) {
-			$view = $this->renderPartial("{$this->controller}/trash/page", $data, TRUE);
+			$view = $this->renderPartial("{$this->pathController}/trash/page", $data, TRUE);
 
 			echo json_encode(array(
 					'pagination' => $pagination,
@@ -423,7 +463,7 @@ class RoleController extends Nip_Controller
 				)
 			);
 		} else {
-			$this->render("{$this->controller}/trash/index", $data);
+			$this->render("{$this->pathController}/trash/index", $data);
 		}
 	}
 
@@ -435,7 +475,7 @@ class RoleController extends Nip_Controller
      * @access public
      */
 	public function forceDelete() {
-		if (!isset($_POST["id"])) {
+		if (!isset($_POST["id"])) { // id as primary key
 			return;	
 		}	
 		

@@ -152,6 +152,9 @@ class AuthController extends Nip_Controller {
 		 * If one of them is correct then the login success.
 		 */
 		if ($loginWithUsername || $loginWithEmail) {
+			if($this->Auth->role() == 2){ //member
+				$this->urlAfterLogin = "profile";
+			}
 			$this->msg['success']['callback'] = site_url($this->urlAfterLogin);			
 			echo json_encode($this->msg['success']);
 		} else {
