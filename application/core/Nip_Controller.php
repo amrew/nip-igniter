@@ -76,6 +76,14 @@ class Nip_Controller extends CI_Controller
 	public $view;
 
 	/**
+	 * Path to controller name include folder
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public $pathController;
+
+	/**
 	 * Controller Segment on URL
 	 *
 	 * @var integer
@@ -325,8 +333,10 @@ class Nip_Controller extends CI_Controller
 	public function setView(){
 		if($this->folder){
 			$this->view = "{$this->folder}/{$this->controller}/{$this->action}";
+			$this->pathController = "{$this->folder}/{$this->controller}";
 		}else{
 			$this->view = "{$this->controller}/{$this->action}";
+			$this->pathController = "{$this->controller}";
 		}
 		
 	}
