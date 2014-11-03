@@ -23,6 +23,7 @@
 		<input type="hidden" name="Settings[createdField]" value="<?php echo $createdField;?>">
 		<input type="hidden" name="Settings[updatedField]" value="<?php echo $updatedField;?>">
 		<input type="hidden" name="Settings[deletedField]" value="<?php echo $deletedField;?>">
+    <input type="hidden" name="Settings[folderName]"   value="<?php echo $folderName;?>">
 
 	  <!-- Table -->
 	  <table class="table table-bordered">

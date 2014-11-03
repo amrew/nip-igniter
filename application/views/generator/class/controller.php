@@ -23,6 +23,7 @@ class {content:class}Controller extends Nip_Controller
      */
 	public $pageTitle = "{content:class}";
 
+	{content:folder_name}
 	/**
      * Message response for ajax request
      *
@@ -106,7 +107,7 @@ class {content:class}Controller extends Nip_Controller
 		$this->limit = !empty($limit) 
 					  ? $limit : $this->limit;
 
-		$baseUrl     = site_url("{$this->controller}/index/{$this->limit}");
+		$baseUrl     = site_url("{$this->pathController}/index/{$this->limit}");
 		
 		$queryString = ($_SERVER['QUERY_STRING'] != "") 
 					  ? "?".$_SERVER['QUERY_STRING'] : "";
@@ -170,7 +171,7 @@ class {content:class}Controller extends Nip_Controller
 		$data['queryString']= $queryString;
 		
 		if ($this->input->is_ajax_request()) {
-			$view = $this->renderPartial("{$this->controller}/page", $data, TRUE);
+			$view = $this->renderPartial("{$this->pathController}/page", $data, TRUE);
 
 			echo json_encode(array(
 					'pagination' => $pagination,
@@ -178,7 +179,43 @@ class {content:class}Controller extends Nip_Controller
 				)
 			);
 		} else {
-			$this->render($this->view, $data);
+			if(isset($_GET['download'])){
+				$this->load->library(array("dompdflib", "spreadsheet"));
+
+				if($_GET['download'] == "excel"){
+					
+					$field = array({content:field_showed});
+
+					$this->spreadsheet->send("{content:class} spreadsheet.xls");
+
+					//head
+					foreach($field as $value){
+						$this->spreadsheet->write( getLabel($value) );
+					}
+
+					echo "\n";
+
+					//body
+					foreach($rows as $object){
+						foreach($object as $key => $value){
+							if(in_array($key, $field)){
+								{content:belongsto_excel}
+							}
+						}
+						echo "\n";
+					}
+
+				} else {
+
+					$this->pageLayout = "layouts/print";
+
+					$view = $this->render("{$this->pathController}/index", $data, TRUE);
+
+					$this->dompdflib->generate($view, "{content:class} report.pdf");	
+				}
+			}else{
+				$this->render($this->view, $data);
+			}
 		}
 	}
 
@@ -223,9 +260,9 @@ class {content:class}Controller extends Nip_Controller
 		$data["{content:primary}"]			= ${content:primary};
 		$data["model"]		= $model;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 
-		$this->render("{$this->controller}/edit", $data);
+		$this->render("{$this->pathController}/edit", $data);
 	}
 
 	/**
@@ -242,9 +279,9 @@ class {content:class}Controller extends Nip_Controller
 
 		$data['model'] = $model;
 		if ($this->input->is_ajax_request()) {
-			$this->renderPartial("{$this->controller}/view", $data);
+			$this->renderPartial("{$this->pathController}/view", $data);
 		} else {
-			$this->render("{$this->controller}/view", $data);
+			$this->render("{$this->pathController}/view", $data);
 		}
 	}
 
@@ -266,7 +303,7 @@ class {content:class}Controller extends Nip_Controller
 		if ($result) {
 			$this->msg['success']['operation'] = 'delete';
 			if($this->Model->getSoftDeletes()){
-				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->controller}/restore").'">Undo</button> if this action is a mistake.';
+				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->pathController}/restore").'">Undo</button> if this action is a mistake.';
 			}else{
 				$this->msg['success']['message']   = 'Data has been successfully removed.';
 			}
@@ -351,7 +388,7 @@ class {content:class}Controller extends Nip_Controller
 		$this->limit = !empty($limit) 
 					  ? $limit : $this->limit;
 
-		$baseUrl     = site_url("{$this->controller}/trash/{$this->limit}");
+		$baseUrl     = site_url("{$this->pathController}/trash/{$this->limit}");
 		
 		$queryString = ($_SERVER['QUERY_STRING'] != "") 
 					  ? "?".$_SERVER['QUERY_STRING'] : "";
@@ -414,10 +451,10 @@ class {content:class}Controller extends Nip_Controller
 		$data['pagination']	= $pagination;
 		$data['queryString']= $queryString;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 		
 		if ($this->input->is_ajax_request()) {
-			$view = $this->renderPartial("{$this->controller}/trash/page", $data, TRUE);
+			$view = $this->renderPartial("{$this->pathController}/trash/page", $data, TRUE);
 
 			echo json_encode(array(
 					'pagination' => $pagination,
@@ -425,7 +462,7 @@ class {content:class}Controller extends Nip_Controller
 				)
 			);
 		} else {
-			$this->render("{$this->controller}/trash/index", $data);
+			$this->render("{$this->pathController}/trash/index", $data);
 		}
 	}
 

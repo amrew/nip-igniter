@@ -39,6 +39,10 @@
 		            	<input type="checkbox" class="icheck-dark"  name="is_softdelete" id="checkIsSoftDelete" checked>
 		            	<label for="checkIsSoftDelete">SoftDelete</label>
 		            </div>
+		            <hr>
+		            <div class="form-group">
+		            	<input class="form-control" name="folder_name" id="inputFolderName" placeholder="folder name" value="" data-toggle="tooltip" data-placement="right" title="it will create folder in application/controllers/folder_name">
+		            </div>
 		        </div>
 	        </div>
 
