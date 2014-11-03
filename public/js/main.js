@@ -12,6 +12,30 @@ $(function(){
 		window.print();
 	});
 
+	$("#btn-pdf").on('click', function(e){
+		e.preventDefault();
+		var url = window.location.href;
+		console.log(url.indexOf("?"));
+		
+		if(url.indexOf("?") > 0){
+			window.location.href = url + "&download=true";
+		}else{
+			window.location.href = url + "?download=true";
+		}
+	})
+
+	$("#btn-excel").on('click', function(e){
+		e.preventDefault();
+		var url = window.location.href;
+		console.log(url.indexOf("?"));
+		
+		if(url.indexOf("?") > 0){
+			window.location.href = url + "&download=excel";
+		}else{
+			window.location.href = url + "?download=excel";
+		}
+	})
+
 	$('.input-selecter').selecter();
 
 	$('#select-limit').selecter({
