@@ -56,7 +56,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Dashboard</a></li>
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
+            <li><a href="<?php echo site_url("profile");?>">Profile</a></li>
             <li><a href="#">Help</a></li>
 
             <?php if($this->session->userdata("user_id")):?>

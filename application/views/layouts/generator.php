@@ -46,8 +46,8 @@
               </a>
             </li>
             <li>
-              <a href="<?php echo site_url("generator/manage");?>" title="Manage table">
-                <strong>Manage table</strong>
+              <a href="<?php echo site_url("generator/manage");?>" title="Manage controller or table">
+                <strong>Manage</strong>
               </a>
             </li>
             <li class="dropdown">
