@@ -1,56 +1,42 @@
-<section class="content-header">
-    <h1><?php echo $model;?></h1>
-</section>
-<ol class="breadcrumb">
-	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-	<li class="active"><span><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
-</ol>
+<div id="main-content">
+	<ol class="breadcrumb breadcrumb-arrow">
+		<li><a href="<?php echo $callback;?>"><i class="glyphicon glyphicon-circle-arrow-left"></i> Back</a></li>
+		<li class="active"><span><?php echo $model->id?"Edit Record":"New Record";?></span></li>
+	</ol>
+	
+	<div id="ajax-message" class="alert alert-info hide"></div>
 
-<!-- Main content -->
-<section class="content">
-	<div class="row">
-        <!-- left column -->
-        <div class="col-md-7">
-            <!-- general form elements -->
-            <div class="box box-primary">
-                <div class="box-header">
-                    <h3 class="box-title"><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></h3>
-                </div><!-- /.box-header -->
-                <!-- form start -->
-                <div class="box-body">
-	                <div id="ajax-message" class="alert alert-info hide"></div>
+	<form role="form" action="<?php echo current_url();?>" id="form-edit" method="post" enctype="multipart/form-data">
+		<div class="row">
+			<div class="col-md-7">
 
-					<form role="form" action="<?php echo current_url();?>" id="form-edit" method="post" enctype="multipart/form-data">
-						<input type="hidden" name="callback" value="<?php echo $callback;?>">
+				<input type="hidden" name="callback" value="<?php echo $callback;?>">
 
-						<div class="form-group">
+				<div class="form-group">
 					<label for="input_title">Title</label>
 					<input type="text" class="form-control" id="input_title" name="Role[title]" value="<?php echo $model->title;?>" placeholder="Enter Title...">
 					<div class="help-block"></div>
 				</div>
 
 				
-						
-						<div class="form-group">
-							<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>
-						</div>
-						
-						<div class="progress progress-striped active hide">
-					    	<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-					    	</div>
-					    </div>
-
-					</form>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>
 				</div>
-            </div><!-- /.box -->
+				
+				<div class="progress progress-striped active hide">
+			    	<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+			    	</div>
+			    </div>
 
-        </div><!--/.col (left) -->
-        <!-- right column -->
-        <div class="col-md-5">
-            
-        </div><!--/.col (right) -->
-    </div>   <!-- /.row -->
-</section>
+			</div>
+
+			<div class="col-md-6">
+				<!--Another field-->
+			</div>
+		</div>
+
+	</form>
+</div>
 
 <script type="text/javascript">
 $(function(){

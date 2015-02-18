@@ -213,7 +213,8 @@
       <div class="row">
         <!--.col-sm-3-->
         <div class="col-sm-12">
-          <p style="text-align:right">Report Created at <?php echo date("d M Y");?></p>
+          <h2 class="page-header"><?php echo $this->pageTitle;?></h2>
+          <h4 style="text-align:right">Report Created at <?php echo date("d M Y");?></h4>
           <!--Content here..-->
           <?php echo $pageContent;?>
           
