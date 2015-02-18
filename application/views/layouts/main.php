@@ -316,6 +316,17 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
+                        <li class="treeview active">
+                            <a href="#">
+                                <i class="fa fa-bar-chart-o"></i>
+                                <span>Master</span>
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                <?php $this->load->view('partial/menu');?>
+                            </ul>
+                        </li>
+
                         <li>
                             <a href="../widgets.html">
                                 <i class="fa fa-th"></i> <span>Widgets</span> <small class="badge pull-right bg-green">new</small>
@@ -347,13 +358,13 @@
                                 <li><a href="../UI/timeline.html"><i class="fa fa-angle-double-right"></i> Timeline</a></li>
                             </ul>
                         </li>
-                        <li class="treeview active">
+                        <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-edit"></i> <span>Forms</span>
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <li class="active"><a href="general.html"><i class="fa fa-angle-double-right"></i> General Elements</a></li>
+                                <li><a href="general.html"><i class="fa fa-angle-double-right"></i> General Elements</a></li>
                                 <li><a href="advanced.html"><i class="fa fa-angle-double-right"></i> Advanced Elements</a></li>
                                 <li><a href="editors.html"><i class="fa fa-angle-double-right"></i> Editors</a></li>
                             </ul>

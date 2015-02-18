@@ -40,7 +40,7 @@
 								</th>
 								<?php endif;?>
 								
-								<th style="width:100" class="hidden-print">Action</th>
+								<th style="width:100px" class="hidden-print">Action</th>
 							</tr>
 						</thead>
 
