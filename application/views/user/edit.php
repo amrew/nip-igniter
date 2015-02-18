@@ -1,10 +1,10 @@
 <section class="content-header">
     <h1><?php echo $model;?></h1>
-    <ol class="breadcrumb">
-		<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-		<li class="active"><span><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
-	</ol>
 </section>
+<ol class="breadcrumb">
+	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
+	<li class="active"><span><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
+</ol>
 
 <!-- Main content -->
 <section class="content">

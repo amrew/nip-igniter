@@ -68,9 +68,10 @@
 						<tbody class="hidden-print">
 							<tr class="warning">
 								<td>
-									<div class="checkbox1">
+									<div class="checkbox">
+											<input type="checkbox" id="all-checkbox" class="icheck">
 										<label>
-						            		<input type="checkbox" id="all-checkbox" class="icheck">
+											No.
 										</label>
 						            </div>
 						        </td>
@@ -140,16 +141,19 @@
 										<?php if($this->Model->getTimestamps()):?>
 											<td>
 												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span></td>
+													<span class="label label-default">Updated</span>
 												<?php else:?>
-													<span class="label label-default">Created</span></td>
+													<span class="label label-default">Created</span>
 												<?php endif;?>
+											</td>
 											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<?php echo date("d M Y", strtotime($row->updated));?>
-												<?php else:?>
-													<?php echo date("d M Y", strtotime($row->created));?>
-												<?php endif;?>
+												<small>
+													<?php if($row->updated != null && $row->updated != $row->created):?>
+														<?php echo date("d M Y", strtotime($row->updated));?>
+													<?php else:?>
+														<?php echo date("d M Y", strtotime($row->created));?>
+													<?php endif;?>
+												</small>
 											</td>
 										<?php endif;?>
 										<td class="hidden-print">

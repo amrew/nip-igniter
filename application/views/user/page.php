@@ -21,29 +21,32 @@
 										<?php if($this->Model->getTimestamps()):?>
 											<td>
 												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span></td>
+													<span class="label label-default">Updated</span>
 												<?php else:?>
-													<span class="label label-default">Created</span></td>
+													<span class="label label-default">Created</span>
 												<?php endif;?>
+											</td>
 											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<?php echo date("d M Y", strtotime($row->updated));?>
-												<?php else:?>
-													<?php echo date("d M Y", strtotime($row->created));?>
-												<?php endif;?>
+												<small>
+													<?php if($row->updated != null && $row->updated != $row->created):?>
+														<?php echo date("d M Y", strtotime($row->updated));?>
+													<?php else:?>
+														<?php echo date("d M Y", strtotime($row->created));?>
+													<?php endif;?>
+												</small>
 											</td>
 										<?php endif;?>
 										<td class="hidden-print">
 											<!-- Split button -->
 											<div class="btn-group">
-												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal">View</a>
+												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
 													<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 													<span class="caret"></span>
 													<span class="sr-only">Toggle Dropdown</span>
 													</button>
 												<ul class="dropdown-menu" role="menu" style="min-width:50px;">
-													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>">Edit</a></li>
-													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>">Delete</button></li>
+													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>"><i class="fa fa-edit"></i> Edit</a></li>
+													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>"><i class="fa fa-remove"></i> Delete</button></li>
 												</ul>
 											</div>
 										</td>

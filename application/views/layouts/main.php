@@ -18,8 +18,16 @@
         <link href="<?php echo base_url();?>public/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
         <!-- JquerTe -->
         <link href="<?php echo base_url();?>public/jqueryte/jquery-te-1.4.0.css" rel="stylesheet">
+        
+        <link href="<?php echo base_url();?>public/css/pnotify.custom.min.css" rel="stylesheet">
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+        <style type="text/css">
+        .breadcrumb{
+            margin-bottom: 0;
+        }
+        </style>
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -433,6 +441,7 @@
         <script type="text/javascript" src="<?php echo base_url();?>public/ckeditor/ckeditor.js"></script>
         <script type="text/javascript" src="<?php echo base_url();?>public/jqueryte/jquery-te-1.4.0.min.js"></script>
         <script type="text/javascript" src="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.min.js"></script>
+        <script type="text/javascript" src="<?php echo base_url();?>public/js/pnotify.custom.min.js"></script>
 
         <script src="<?php echo base_url();?>public/js/main.js" type="text/javascript"></script>
     </body>

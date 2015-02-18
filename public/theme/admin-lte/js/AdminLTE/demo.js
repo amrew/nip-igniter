@@ -2,7 +2,7 @@ $(function() {
     /* For demo purposes */
     var demo = $("<div />").css({
         position: "fixed",
-        top: "150px",
+        top: "54px",
         right: "0",
         background: "rgba(0, 0, 0, 0.7)",
         "border-radius": "5px 0px 0px 5px",

@@ -1,47 +1,46 @@
 							<?php if(empty($rows)):?>
 								<tr>
-									<td colspan="5" style="text-align:center">No data found.</td>
+									<td colspan="{content:count}" style="text-align:center">No data found.</td>
 								</tr>
 							<?php else:?>
 
 								<?php foreach($rows as $i => $row):?>
-									<tr id="tr-<?php echo $row->id;?>">
+									<tr id="tr-<?php echo $row->{content:primary};?>">
 										<td>
 											<div class="checkbox" style="margin:0">
-								              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
+								              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->{content:primary};?>">
 								              <label><?php echo ($offset+1)?></label>
 								            </div>
 										</td>
 										
-										<td><?php echo $row->title;?></td>
-						
+										{content:tbody}
 										<?php if($this->Model->getTimestamps()):?>
 											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
+												<?php if($row->{content:updatedField} != null && $row->{content:updatedField} != $row->{content:createdField}):?>
 													<span class="label label-default">Updated</span>
 												<?php else:?>
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
 											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<?php echo date("d M Y", strtotime($row->updated));?>
+												<?php if($row->{content:updatedField} != null && $row->{content:updatedField} != $row->{content:createdField}):?>
+													<?php echo date("d M Y", strtotime($row->{content:updatedField}));?>
 												<?php else:?>
-													<?php echo date("d M Y", strtotime($row->created));?>
+													<?php echo date("d M Y", strtotime($row->{content:createdField}));?>
 												<?php endif;?>
 											</td>
 										<?php endif;?>
 										<td class="hidden-print">
 											<!-- Split button -->
 											<div class="btn-group">
-												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
+												<a href="<?php echo site_url("{$pathController}/view/{$row->{content:primary}}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
 													<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 													<span class="caret"></span>
 													<span class="sr-only">Toggle Dropdown</span>
 													</button>
 												<ul class="dropdown-menu" role="menu" style="min-width:50px;">
-													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>"><i class="fa fa-edit"></i> Edit</a></li>
-													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>"><i class="fa fa-remove"></i> Delete</button></li>
+													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->{content:primary}}");?>"><i class="fa fa-edit"></i> Edit</a></li>
+													<li><a href="#" class="btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/delete");?>"><i class="fa fa-remove"></i> Delete</button></li>
 												</ul>
 											</div>
 										</td>

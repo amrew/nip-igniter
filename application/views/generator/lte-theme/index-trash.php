@@ -32,16 +32,11 @@
 								<th width="80">#</th>
 
 								<!--Sorting-->
-								<th>
-					<a href="#" class="sorting" data-field="title" data-direction="asc">
-						Title <span class="glyphicon glyphicon-sort hidden-print"></span>
-					</a>
-				</th>
-				
+								{content:thead}
 								<!--Timestamps-->
 								<?php if($this->Model->getTimestamps()):?>
 								<th colspan="2" class="text-center">
-									<a href="#" class="sorting" data-field="updated" data-direction="asc">
+									<a href="#" class="sorting" data-field="{content:updatedField}" data-direction="asc">
 										Activity <span class="glyphicon glyphicon-sort hidden-print"></span>
 									</a>
 								</th>
@@ -60,13 +55,10 @@
 						            </div>
 						        </td>
 
-								<td>
-					<input type="text" name="title" class="form-control input-search " placeholder="Search by Title..." value="<?php echo isset($_GET["keywords"]["title"])?$_GET["keywords"]["title"]:"";?>">
-				</td>
-				
+								{content:textbox_search_thead}
 								<?php if($this->Model->getTimestamps()):?>
 									<td colspan="2">
-										<input class="form-control input-search datepicker pull-right" name="updated" placeholder="Search by updated date...">
+										<input class="form-control input-search datepicker pull-right" name="{content:updatedField}" placeholder="Search by {content:updatedField} date...">
 									</td>
 								<?php endif;?>
 								<td class="hidden-print"></td>
@@ -77,28 +69,27 @@
 						<tbody id="table-body">
 							<?php if(empty($rows)):?>
 								<tr>
-									<td colspan="5" style="text-align:center">No data found.</td>
+									<td colspan="{content:count}" style="text-align:center">No data found.</td>
 								</tr>
 							<?php else:?>
 
 								<?php foreach($rows as $i => $row):?>
-									<tr id="tr-<?php echo $row->id;?>">
+									<tr id="tr-<?php echo $row->{content:primary};?>">
 										<td>
 											<div class="checkbox" style="margin:0">
-								              <input type="checkbox" class="each-checkbox icheck" name="check" value="<?php echo $row->id;?>">
+								              <input type="checkbox" class="each-checkbox icheck" name="check" value="<?php echo $row->{content:primary};?>">
 								              <label><?php echo ($offset+1)?></label>
 								            </div>
 										</td>
 										
-										<td><?php echo $row->title;?></td>
-						
+										{content:tbody}
 										<?php if($this->Model->getTimestamps()):?>
 											<td><span class="label label-default">Deleted</span></td>
 											<td><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
 										<?php endif;?>
 										<td class="hidden-print">
-											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>
-											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/force-delete");?>">Delete</button>
+											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>
+											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/force-delete");?>">Delete</button>
 										</td>
 									</tr>
 								<?php $offset++;endforeach;?>

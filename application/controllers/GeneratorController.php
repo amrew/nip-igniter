@@ -23,7 +23,7 @@ class GeneratorController extends Nip_Controller {
 			)
 		);
 
-	protected $templateName = "default-theme";
+	protected $templateName = "lte-theme";
 
 	/** Variable ini belum dipake*/
 	public $commonTemplate = array(
