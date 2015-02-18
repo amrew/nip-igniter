@@ -36,11 +36,15 @@ $(function(){
 		}
 	})
 
-	$('.input-selecter').selecter();
+	//$('.input-selecter').selecter();
 
-	$('#select-limit').selecter({
-		customClass : 'custom-selecter pull-right hidden-print',
-		callback: selectCallback
+	// $('#select-limit').selecter({
+	// 	customClass : 'custom-selecter pull-right hidden-print',
+	// 	callback: selectCallback
+	// });
+	$('#select-limit').change(function(){
+		var value = $(this).val();
+		selectCallback(value);
 	});
 
 	$(".btn-random").on("click", function(e){
