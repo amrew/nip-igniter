@@ -36,11 +36,15 @@ $(function(){
 		}
 	})
 
-	$('.input-selecter').selecter();
+	//$('.input-selecter').selecter();
 
-	$('#select-limit').selecter({
-		customClass : 'custom-selecter pull-right hidden-print',
-		callback: selectCallback
+	// $('#select-limit').selecter({
+	// 	customClass : 'custom-selecter pull-right hidden-print',
+	// 	callback: selectCallback
+	// });
+	$('#select-limit').change(function(){
+		var value = $(this).val();
+		selectCallback(value);
 	});
 
 	$(".btn-random").on("click", function(e){
@@ -359,7 +363,11 @@ function buttonAction(){
 				if(rs.status == 404){
 					setErrorMessage(rs.message,"no-privilege");
 				}else{
-					$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					if(typeof(PNotify) !== "undefined"){
+						notify(rs.message, rs.param);
+					}else{
+						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					}
 					
 					if(rs.operation != null){
 						if(rs.operation == 'delete'){
@@ -428,7 +436,11 @@ function aboutTrash(){
 							$("#tr-"+primaries[i]).hide();
 						}
 
-						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+						if(typeof(PNotify) !== "undefined"){
+							notify(rs.message, rs.param);
+						}else{
+							$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+						}
 					}
 					hideLoading();
 					init();
@@ -466,4 +478,15 @@ function getRandomNumeric(length) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
+}
+
+function notify(message, type){
+	
+	var notice = new PNotify({
+	    title: 'Message',
+	    text: message,
+	    type: type
+	});
+
+	console.log("notify");
 }

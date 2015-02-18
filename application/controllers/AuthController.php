@@ -413,7 +413,7 @@ class AuthController extends Nip_Controller {
             
         }
         
-        foreach (explode(";\n", $sql_clean) as $sql) {
+        foreach (explode(";", $sql_clean) as $sql) {
             $sql = trim($sql);
             
             if($sql) {
