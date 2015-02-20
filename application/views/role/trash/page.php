@@ -16,24 +16,12 @@
 										<td><?php echo $row->title;?></td>
 						
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span></td>
-												<?php else:?>
-													<span class="label label-default">Created</span></td>
-												<?php endif;?>
-											<td>
-												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<?php echo date("d M Y", strtotime($row->updated));?>
-												<?php else:?>
-													<?php echo date("d M Y", strtotime($row->created));?>
-												<?php endif;?>
-											</td>
+											<td style="width:60px;"><span class="label label-default">Deleted</span></td>
+											<td style="width:85px;"><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
 										<?php endif;?>
 										<td class="hidden-print">
-											<a class="btn btn-info btn-xs show-modal" href="<?php echo site_url("{$pathController}/view/{$row->id}");?>">View</a>
-											<a class="btn btn-info btn-xs" href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>">Edit</a>
-											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>">Delete</button>
+											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>
+											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/force-delete");?>">Delete</button>
 										</td>
 									</tr>
 								<?php $offset++;endforeach;?>

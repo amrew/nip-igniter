@@ -17,17 +17,17 @@ class User extends Nip_Model {
 	public $deleted;
 	
 	protected $validator = array(
-			'User[username]' => 'required|max_length[255]',
-			'User[email]' => 'required|max_length[255]|valid_email',
-			'User[role_id]' => 'required|numeric',
-			'User[status_id]' => 'required|numeric',
+			'username' => 'required|max_length[255]',
+			'email' => 'required|max_length[255]|valid_email',
+			'role_id' => 'required|numeric',
+			'status_id' => 'required|numeric',
 			);
 	
 	protected $label = array(
-			'User[username]' => 'Username',
-			'User[email]' => 'Email',
-			'User[role_id]' => 'Role',
-			'User[status_id]' => 'Status',
+			'username' => 'Username',
+			'email' => 'Email',
+			'role_id' => 'Role',
+			'status_id' => 'Status',
 			);
 
 	public function __construct($options = array()){

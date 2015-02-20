@@ -84,8 +84,8 @@
 										
 										{content:tbody}
 										<?php if($this->Model->getTimestamps()):?>
-											<td><span class="label label-default">Deleted</span></td>
-											<td><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
+											<td style="width:60px;"><span class="label label-default">Deleted</span></td>
+											<td style="width:85px;"><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
 										<?php endif;?>
 										<td class="hidden-print">
 											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>

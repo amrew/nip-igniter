@@ -16,14 +16,14 @@
 										<td><?php echo $row->title;?></td>
 						
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
+											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<span class="label label-default">Updated</span>
 												<?php else:?>
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
-											<td>
+											<td style="width:85px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<?php echo date("d M Y", strtotime($row->updated));?>
 												<?php else:?>

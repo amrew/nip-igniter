@@ -164,12 +164,43 @@ class Nip_Model extends CI_Model {
      *
      * @access public
      */
-	public function attr($attributes = array()){
+	public function attr($attributes = array(), $value = NULL){
 		if(is_array($attributes)){
 			foreach($attributes as $key => $value){
 				if(property_exists($this,$key)){
 					$this->$key = $value;
 				}
+			}
+		}else{
+			$this->$attributes = $value;
+		}
+	}
+
+	/**
+	 * Checking timestamps
+	 *
+	 * @access protected
+	 */
+	protected function checkTimestamps(){
+		if($this->timestamps){
+			if($this->softDeletes){
+				$this->db->where("{$this->deletedField} IS NULL ");
+			}else if($this->justTrash){
+				$this->db->where("{$this->deletedField} IS NOT NULL ");
+			}
+		}
+	}
+
+	/**
+	 * Remove unexpected field on the object before save
+	 *
+	 * @access protected
+	 */
+	protected function cleanObject(){
+		
+		foreach($this as $key => $value){
+			if(!property_exists($this, $key)){
+				unset($this->$key);
 			}
 		}
 	}
@@ -178,20 +209,16 @@ class Nip_Model extends CI_Model {
      * return one row from the current table
      * 
      * @param mix|string 	$where
+     * @param string 		$orderBy
+     * @param integer 		$offset
      * @param mix|string 	$fields
      * @return object
      *
      * @access public
      */
-	public function first($where = NULL, $fields = NULL){
+	public function first($where = NULL, $orderBy = NULL, $offset = 0, $fields = NULL){
 		
-		if($this->timestamps){
-			if($this->softDeletes){
-				$this->db->where("{$this->deletedField} IS NULL ");
-			}else if($this->justTrash){
-				$this->db->where("{$this->deletedField} IS NOT NULL ");
-			}
-		}
+		$this->checkTimestamps();
 		
 		if($where){
 			if(is_numeric($where)){
@@ -205,13 +232,18 @@ class Nip_Model extends CI_Model {
 			if(is_array($fields)){
 				$this->db->select(implode(",", $fields));
 			}else if(is_string($fields)){
-				$this->db->select($fields);
+				$this->db->select($fields, FALSE);
 			}
 		}
 
-		$this->db->limit(1);
+		if($orderBy){
+			$this->db->order_by($orderBy);
+		}
+
+		$this->db->limit(1, $offset);
+
 		$query = $this->db->get($this->tableName);
-		$data = $query->row_array();
+		$data  = $query->row_array();
 
 		if(!empty($data)){
 			$model = new $this->className();
@@ -220,6 +252,26 @@ class Nip_Model extends CI_Model {
 			return $model;
 		}
 		return NULL;
+	}
+
+	/**
+     * return the last one row from the current table by primary
+     * 
+     * @param mix|string 	$where
+     * @param string 		$orderBy
+     * @param integer 		$offset
+     * @param mix|string 	$fields
+     * @return object
+     *
+     * @access public
+     */
+	public function last($where = NULL, $orderBy = NULL, $offset = 0, $fields = NULL){
+		
+		if($orderBy === NULL){
+			$orderBy = "{$this->primary} desc";
+		}
+
+		return $this->first($where, $orderBy, $offset, $fields);
 	}
 
 	/**
@@ -232,66 +284,64 @@ class Nip_Model extends CI_Model {
      */
 	public function all($config = array()){
 
-		if($this->timestamps){
-			if($this->softDeletes){
-				$this->db->where("{$this->deletedField} IS NULL ");
-			}else if($this->justTrash){
-				$this->db->where("{$this->deletedField} IS NOT NULL ");
-			}
-		}
+		$this->checkTimestamps();
 		
 		if(!empty($config)){
 
-			if(isset($config['where'])){
+			if(isset($config['where']) && !empty($config['where'])){
 				$where = $config['where'];
-
-				if(!empty($where)){
-					
-					$this->db->where($where);
-				}
+				
+				$this->db->where($where);
 			}
 
-			if(isset($config['fields'])){
+			if(isset($config['fields']) && !empty($config['fields'])){
 				$fields = $config['fields'];
 				
-				if(!empty($fields)){
-
-					if(is_array($fields)){
-						$this->db->select(implode(",", $fields));
-					}else if(is_string($fields)){
-						$this->db->select($fields);
-					}
+				if(is_array($fields)){
+					$this->db->select(implode(",", $fields));
+				}else if(is_string($fields)){
+					$this->db->select($fields, FALSE);
 				}
 			}
 			
-			if(isset($config['order_by'])){
+			if(isset($config['order_by']) && !empty($config['order_by'])){
 				$orderBy = $config['order_by'];
 				
-				if(!empty($orderBy)){
-					$this->db->order_by($orderBy);
+				$this->db->order_by($orderBy);
+			}
+
+			if(isset($config['limit']) && !empty($config['limit'])){
+				$limit = $config['limit'];
+	
+				if(isset($config['offset']) && !empty($config['offset'])){
+					$this->db->limit($limit, $offset);
+				}else{
+					$this->db->limit($limit);
 				}
 			}
 
-			if(isset($config['limit'])){
-				$limit = $config['limit'];
+			if(isset($config['join']) && !empty($config['join'])){
+				$join = $config['join'];
 
-				if(!empty($limit)){
-					
-					if(isset($config['offset'])){
-						
-						$offset = $config['offset'];
-						
-						if(!empty($offset)){
-							$this->db->limit($limit, $offset);
-						}else{
-							$this->db->limit($limit);
-						}
-
-					}else{
-						$this->db->limit($limit);
-					}
+				foreach($join as $table => $on){
+					$this->db->join($table, $on);
 				}
-				
+			}
+
+			if(isset($config['left_join']) && !empty($config['left_join'])){
+				$join = $config['left_join'];
+
+				foreach($join as $table => $on){
+					$this->db->join($table, $on, "left");
+				}
+			}
+
+			if(isset($config['right_join']) && !empty($config['right_join'])){
+				$join = $config['right_join'];
+
+				foreach($join as $table => $on){
+					$this->db->join($table, $on, "right");
+				}
 			}
 		}
 		
@@ -300,7 +350,10 @@ class Nip_Model extends CI_Model {
 		$models = array();
 		foreach($query->result_array() as $row){
 			$model = new $this->className();
-			$model->attr($row);
+
+			foreach($row as $key => $value){
+				$model->attr($key, $value);
+			}
 			
 			array_push($models, $model);
 		}
@@ -317,13 +370,7 @@ class Nip_Model extends CI_Model {
      */
 	public function count($where = NULL){
 		
-		if($this->timestamps){
-			if($this->softDeletes){
-				$this->db->where("{$this->deletedField} IS NULL ");
-			}else if($this->justTrash){
-				$this->db->where("{$this->deletedField} IS NOT NULL ");
-			}
-		}
+		$this->checkTimestamps();
 
 		if($where){
 			$this->db->where($where);
@@ -342,6 +389,9 @@ class Nip_Model extends CI_Model {
      * @access public
      */
 	public function save(){
+
+		$this->cleanObject();
+
 		if($this->{$this->primary}){
 			$this->db->where(array($this->primary => $this->{$this->primary}));
 			
@@ -381,13 +431,13 @@ class Nip_Model extends CI_Model {
 			if($where){
 				if(is_numeric($where)){
 					$this->db->where(array($this->primary => $where));
-					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
-				}else if(is_array($where)){
+				}else{
 					$this->db->where($where);
-					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
 				}
-			}else{
-				if($this->{$this->primary}){
+
+				return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
+			} else {
+				if($this->{$this->primary}) {
 					$this->db->where(array($this->primary => $this->{$this->primary}));
 					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
 				}
@@ -411,11 +461,11 @@ class Nip_Model extends CI_Model {
 		if($where){
 			if(is_numeric($where)){
 				$this->db->where(array($this->primary => $where));
-				return $this->db->delete($this->tableName);
-			}else if(is_array($where)){
+			} else {
 				$this->db->where($where);
-				return $this->db->delete($this->tableName);
 			}
+
+			return $this->db->delete($this->tableName);
 		}else{
 			if($this->{$this->primary}){
 				$this->db->where(array($this->primary => $this->{$this->primary}));
@@ -438,12 +488,12 @@ class Nip_Model extends CI_Model {
 		if($where){
 			if(is_numeric($where)){
 				$this->db->where(array($this->primary => $where));
-				return $this->db->update($this->tableName, array("{$this->deletedField}" => NULL));
-			}else if(is_array($where)){
+			} else {
 				$this->db->where($where);
-				return $this->db->update($this->tableName, array("{$this->deletedField}" => NULL));
 			}
-		}else{
+
+			return $this->db->update($this->tableName, array("{$this->deletedField}" => NULL));
+		} else {
 			if($this->{$this->primary}){
 				$this->db->where(array($this->primary => $this->{$this->primary}));
 				return $this->db->update($this->tableName, array("{$this->deletedField}" => NULL));

@@ -45,7 +45,7 @@
 								</th>
 								<?php endif;?>
 								
-								<th style="width:100" class="hidden-print">Action</th>
+								<th style="width:100px" class="hidden-print">Action</th>
 							</tr>
 						</thead>
 
@@ -94,13 +94,13 @@
 										<td><?php echo $row->title;?></td>
 						
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
+											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<span class="label label-default">Updated</span></td>
 												<?php else:?>
 													<span class="label label-default">Created</span></td>
 												<?php endif;?>
-											<td>
+											<td style="width:85px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<?php echo date("d M Y", strtotime($row->updated));?>
 												<?php else:?>

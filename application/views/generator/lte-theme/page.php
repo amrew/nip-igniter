@@ -15,14 +15,14 @@
 										
 										{content:tbody}
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
+											<td style="width:60px;">
 												<?php if($row->{content:updatedField} != null && $row->{content:updatedField} != $row->{content:createdField}):?>
 													<span class="label label-default">Updated</span>
 												<?php else:?>
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
-											<td>
+											<td style="width:85px;">
 												<?php if($row->{content:updatedField} != null && $row->{content:updatedField} != $row->{content:createdField}):?>
 													<?php echo date("d M Y", strtotime($row->{content:updatedField}));?>
 												<?php else:?>

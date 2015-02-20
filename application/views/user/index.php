@@ -109,7 +109,7 @@
 								
 								<?php if($this->Model->getTimestamps()):?>
 									<td colspan="2">
-										<input class="form-control input-search datepicker pull-right" name="updated" placeholder="Search by updated date...">
+										<input class="form-control input-search datepicker pull-right" name="updated" placeholder="Search by date...">
 									</td>
 								<?php endif;?>
 								<td class="hidden-print"></td>
@@ -139,14 +139,14 @@
 										<td><?php echo $row->email;?></td>
 										<td><?php echo $row->role->title;?></td><td><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
+											<td style="width:60px">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<span class="label label-default">Updated</span>
 												<?php else:?>
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
-											<td>
+											<td style="width:85px;">
 												<small>
 													<?php if($row->updated != null && $row->updated != $row->created):?>
 														<?php echo date("d M Y", strtotime($row->updated));?>
