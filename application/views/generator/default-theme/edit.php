@@ -89,7 +89,7 @@ $(function(){
           	if(typeof(array) == "object"){
 	          	for(var key in array){
 	          		if(array[key]!=""){
-		          		$('[name="'+key+'"]')
+		          		$('[name*="'+key+'"]')
 		          			.parents('div.form-group')
 		          			.addClass("has-error")
 		          			.find('div.help-block')

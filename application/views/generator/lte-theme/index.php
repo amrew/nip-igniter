@@ -91,7 +91,7 @@
 												<?php else:?>
 													<span class="label label-default">Created</span></td>
 												<?php endif;?>
-											<td style="width:85px;">
+											<td style="width:90px;">
 												<?php if($row->{content:updatedField} != null && $row->{content:updatedField} != $row->{content:createdField}):?>
 													<?php echo date("d M Y", strtotime($row->{content:updatedField}));?>
 												<?php else:?>

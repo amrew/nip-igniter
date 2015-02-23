@@ -197,9 +197,10 @@ class Nip_Model extends CI_Model {
 	 * @access protected
 	 */
 	protected function cleanObject(){
-		
+		$default = new $this->className();
+
 		foreach($this as $key => $value){
-			if(!property_exists($this, $key)){
+			if(!property_exists($default, $key)){
 				unset($this->$key);
 			}
 		}
@@ -519,7 +520,7 @@ class Nip_Model extends CI_Model {
 			
 			$temp = array();
 
-			if($this->form_validation->run() == FALSE){
+			if($this->form_validation->run($this) == FALSE){
 				$this->messageString = validation_errors();
 
 				foreach($this->validator as $field => $rules){

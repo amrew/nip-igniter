@@ -643,7 +643,7 @@ class ModelGenerator extends GeneratorController
 			) {
 				
 				/* Validator */
-				$validator .= "'{$modelName}[{$key}]' => 'required";
+				$validator .= "'{$key}' => 'required";
 
 				if ($values['type'] == 'text' || $values['type'] == 'email') {
 					if (!empty($values['min_length'])) {
@@ -668,7 +668,7 @@ class ModelGenerator extends GeneratorController
 				$validator .= "',\n\t\t\t";
 				
 				/* Label Validator */
-				$label .= "'{$modelName}[{$key}]' => '".getLabel($key)."',\n\t\t\t";
+				$label .= "'{$key}' => '".getLabel($key)."',\n\t\t\t";
 			}
 		}
 
