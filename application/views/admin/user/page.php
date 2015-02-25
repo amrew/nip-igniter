@@ -8,32 +8,28 @@
 									<tr id="tr-<?php echo $row->id;?>">
 										<td>
 											<div class="checkbox" style="margin:0">
-								              	<input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
-								            	<label>
-								            		<?php echo ($offset+1)?>
-								            	</label>
+								              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
+								              <label><?php echo ($offset+1)?></label>
 								            </div>
 										</td>
 										
 										<td><?php echo $row->username;?></td>
-										<td><?php echo $row->email;?></td>
-										<td><?php echo $row->role->title;?></td><td><?php echo $row->status->title;?></td>
+						<td><?php echo $row->email;?></td>
+						<td><?php echo $row->role->title;?></td><td><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
-											<td>
+											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<span class="label label-default">Updated</span>
 												<?php else:?>
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
-											<td>
-												<small>
-													<?php if($row->updated != null && $row->updated != $row->created):?>
-														<?php echo date("d M Y", strtotime($row->updated));?>
-													<?php else:?>
-														<?php echo date("d M Y", strtotime($row->created));?>
-													<?php endif;?>
-												</small>
+											<td style="width:85px;">
+												<?php if($row->updated != null && $row->updated != $row->created):?>
+													<?php echo date("d M Y", strtotime($row->updated));?>
+												<?php else:?>
+													<?php echo date("d M Y", strtotime($row->created));?>
+												<?php endif;?>
 											</td>
 										<?php endif;?>
 										<td class="hidden-print">

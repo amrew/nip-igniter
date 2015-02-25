@@ -3,7 +3,7 @@
 </section>
 <ol class="breadcrumb">
 	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-	<li class="active"><span><?php echo $model->{content:primary}?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
+	<li class="active"><span><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
 </ol>
 
 <!-- Main content -->
@@ -14,16 +14,22 @@
             <!-- general form elements -->
             <div class="box box-primary">
                 <div class="box-header">
-                    <h3 class="box-title"><?php echo $model->{content:primary}?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></h3>
+                    <h3 class="box-title"><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></h3>
                 </div><!-- /.box-header -->
                 <!-- form start -->
-                <div class="box-body" id="main-content">
+                <div class="box-body">
 	                <div id="ajax-message" class="alert alert-info hide"></div>
 
 					<form role="form" action="<?php echo current_url();?>" id="form-edit" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="callback" value="<?php echo $callback;?>">
 
-						{content:fields}
+						<div class="form-group">
+					<label for="input_title">Title</label>
+					<input type="text" class="form-control" id="input_title" name="Role[title]" value="<?php echo $model->title;?>" placeholder="Enter Title...">
+					<div class="help-block"></div>
+				</div>
+
+				
 						
 						<div class="form-group">
 							<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>

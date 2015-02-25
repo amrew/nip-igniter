@@ -445,7 +445,7 @@ class GeneratorController extends Nip_Controller {
 			$string .= '<li><a href="#">No controller found</a></li>'."\n";
 		}
 
-		createFile(APPPATH.'views/partial/', 'menu.php', $string);
+		createFile(APPPATH.'views/layouts/partial/', 'menu.php', $string);
 	}
 
 	private function _parseFolder($keys = '', $map = array()){

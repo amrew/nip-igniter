@@ -25,6 +25,11 @@
 		<td>:</td>
 		<td><?php echo $model->status->title;?></td>
 	</tr>
+<tr>
+		<td>Picture</td>
+		<td>:</td>
+		<td><img width="170" src="<?php echo base_url().$model->picture;?>"></td>
+	</tr>
 
 	<?php if($this->Model->getTimestamps()):?>
 	<tr>

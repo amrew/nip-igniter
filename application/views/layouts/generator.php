@@ -53,7 +53,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><strong>Result</strong> <b class="caret"></b></a>
               <ul class="dropdown-menu" role="menu">
-                <?php $this->load->view('partial/menu');?>
+                <?php $this->load->view('layouts/partial/menu');?>
               </ul>
             </li>
           </ul>

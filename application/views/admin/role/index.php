@@ -13,7 +13,7 @@
 	                    <a class="btn btn-primary btn-sm pull-left" href="<?php echo site_url("{$pathController}/edit");?>" style="color:#fff">
 							<span class="glyphicon glyphicon-plus"></span> New Record
 						</a>
-					    <input type="text" name="table_search" class="form-control input-sm pull-right input-global-search" style="width: 150px;" placeholder="Search"/>
+					    <input type="text" name="table_search" class="form-control input-sm pull-right input-global-search" style="width: 150px;" placeholder="Search all fields..."/>
                     </div>
                 </div><!-- /.box-header -->
                 <br>
@@ -27,30 +27,15 @@
 						<!--Heading-->
 						<thead>
 							<tr>
-								<th>#</th>
+								<th width="80">#</th>
 
 								<!--Sorting-->
 								<th>
-									<a href="#" class="sorting" data-field="username" data-direction="asc">
-										Username <span class="glyphicon glyphicon-sort hidden-print"></span>
-									</a>
-								</th>
-								<th>
-									<a href="#" class="sorting" data-field="email" data-direction="asc">
-										Email <span class="glyphicon glyphicon-sort hidden-print"></span>
-									</a>
-								</th>
-								<th>
-									<a href="#" class="sorting" data-field="role_id" data-direction="asc">
-										Role <span class="glyphicon glyphicon-sort hidden-print"></span>
-									</a>
-								</th>
-								<th>
-									<a href="#" class="sorting" data-field="status_id" data-direction="asc">
-										Status <span class="glyphicon glyphicon-sort hidden-print"></span>
-									</a>
-								</th>
-								
+					<a href="#" class="sorting" data-field="title" data-direction="asc">
+						Title <span class="glyphicon glyphicon-sort hidden-print"></span>
+					</a>
+				</th>
+				
 								<!--Timestamps-->
 								<?php if($this->Model->getTimestamps()):?>
 								<th colspan="2" class="text-center">
@@ -77,39 +62,12 @@
 						        </td>
 
 								<td>
-									<input type="text" name="username" class="form-control input-search " placeholder="Search by Username..." value="<?php echo isset($_GET["keywords"]["username"])?$_GET["keywords"]["username"]:"";?>">
-								</td>
-								<td>
-									<input type="text" name="email" class="form-control input-search " placeholder="Search by Email..." value="<?php echo isset($_GET["keywords"]["email"])?$_GET["keywords"]["email"]:"";?>">
-								</td>
-								<td>
-									<select name="role_id" class="form-control input-search">
-										<option value="">All</option>
-										<?php foreach($allRole as $row):?>
-											<option value="<?php echo $row->id;?>"
-												<?php if(isset($_GET['keywords']['role_id'])):?>
-													<?php echo $_GET['keywords']['role_id']==$row->id?"selected":"";?>
-												<?php endif;?>
-											><?php echo $row->title;?></option>
-										<?php endforeach;?>
-									</select>
-								</td>
-								<td>
-									<select name="status_id" class="form-control input-search">
-										<option value="">All</option>
-										<?php foreach($allStatus as $row):?>
-											<option value="<?php echo $row->id;?>"
-												<?php if(isset($_GET['keywords']['status_id'])):?>
-													<?php echo $_GET['keywords']['status_id']==$row->id?"selected":"";?>
-												<?php endif;?>
-											><?php echo $row->title;?></option>
-										<?php endforeach;?>
-									</select>
-								</td>
-								
+					<input type="text" name="title" class="form-control input-search " placeholder="Search by Title..." value="<?php echo isset($_GET["keywords"]["title"])?$_GET["keywords"]["title"]:"";?>">
+				</td>
+				
 								<?php if($this->Model->getTimestamps()):?>
 									<td colspan="2">
-										<input class="form-control input-search datepicker pull-right" name="updated" placeholder="Search by date...">
+										<input class="form-control input-search datepicker pull-right" name="updated" placeholder="Search by updated date...">
 									</td>
 								<?php endif;?>
 								<td class="hidden-print"></td>
@@ -120,7 +78,7 @@
 						<tbody id="table-body">
 							<?php if(empty($rows)):?>
 								<tr>
-									<td colspan="8" style="text-align:center">No data found.</td>
+									<td colspan="5" style="text-align:center">No data found.</td>
 								</tr>
 							<?php else:?>
 
@@ -128,32 +86,26 @@
 									<tr id="tr-<?php echo $row->id;?>">
 										<td>
 											<div class="checkbox" style="margin:0">
-								              	<input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
-								            	<label>
-								            		<?php echo ($offset+1)?>
-								            	</label>
+								              <input type="checkbox" class="each-checkbox icheck hidden-print" name="check" value="<?php echo $row->id;?>">
+								              <label><?php echo ($offset+1)?></label>
 								            </div>
 										</td>
 										
-										<td><?php echo $row->username;?></td>
-										<td><?php echo $row->email;?></td>
-										<td><?php echo $row->role->title;?></td><td><?php echo $row->status->title;?></td>
+										<td><?php echo $row->title;?></td>
+						
 										<?php if($this->Model->getTimestamps()):?>
-											<td style="width:60px">
+											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span>
+													<span class="label label-default">Updated</span></td>
 												<?php else:?>
-													<span class="label label-default">Created</span>
+													<span class="label label-default">Created</span></td>
 												<?php endif;?>
-											</td>
-											<td style="width:85px;">
-												<small>
-													<?php if($row->updated != null && $row->updated != $row->created):?>
-														<?php echo date("d M Y", strtotime($row->updated));?>
-													<?php else:?>
-														<?php echo date("d M Y", strtotime($row->created));?>
-													<?php endif;?>
-												</small>
+											<td style="width:90px;">
+												<?php if($row->updated != null && $row->updated != $row->created):?>
+													<?php echo date("d M Y", strtotime($row->updated));?>
+												<?php else:?>
+													<?php echo date("d M Y", strtotime($row->created));?>
+												<?php endif;?>
 											</td>
 										<?php endif;?>
 										<td class="hidden-print">
@@ -176,6 +128,7 @@
 							<?php endif;?>
 						</tbody>
 					</table>
+					
 					<div class="box-footer clearfix hidden-print">
 						<br>
 						<div class="row-fluid">

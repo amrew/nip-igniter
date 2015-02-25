@@ -12,7 +12,7 @@
         <!-- left column -->
         <div class="col-md-7">
             <!-- general form elements -->
-            <div class="box box-primary">
+            <div class="box box-primary" id="main-content">
                 <div class="box-header">
                     <h3 class="box-title"><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></h3>
                 </div><!-- /.box-header -->
@@ -24,12 +24,60 @@
 						<input type="hidden" name="callback" value="<?php echo $callback;?>">
 
 						<div class="form-group">
-					<label for="input_title">Title</label>
-					<input type="text" class="form-control" id="input_title" name="Role[title]" value="<?php echo $model->title;?>" placeholder="Enter Title...">
-					<div class="help-block"></div>
-				</div>
+							<label for="input_username">Username</label>
+							<input type="text" class="form-control" id="input_username" name="User[username]" value="<?php echo $model->username;?>" placeholder="Enter Username...">
+							<div class="help-block"></div>
+						</div>
 
-				
+						<div class="form-group">
+							<label for="input_password">Password</label>
+							<input type="password" class="form-control" id="input_password" name="password" value="" placeholder="Enter Password...">
+							<div class="help-block"></div>
+						</div>
+
+						<div class="form-group">
+							<label for="input_email">Email</label>
+							<input type="email" class="form-control" id="input_email" name="User[email]" value="<?php echo $model->email;?>" placeholder="Enter Email...">
+							<div class="help-block"></div>
+						</div>
+
+						<div class="form-group">
+							<label for="input_role_id">Role</label>
+							<select name="User[role_id]" class="form-control">
+								<option value="">
+									Choose
+								</option>
+								<?php foreach($allRole as $row):?>
+								<option value="<?php echo $row->id;?>" <?php echo ($row->id==$model->role_id?"selected":"");?>>
+									<?php echo $row->title;?>
+								</option>
+								<?php endforeach;?>
+							</select>
+							<div class="help-block"></div>
+						</div>
+
+						<div class="form-group">
+							<label for="input_status_id">Status</label>
+							<?php foreach($allStatus as $row):?>
+								<div class="radio">
+									<input type="radio" id="status_id_<?php echo $row->id;?>" name="User[status_id]" value="<?php echo $row->id;?>" class="iradio" <?php echo ($row->id==$model->status_id?"checked":"");?>>
+									<label for="status_id_<?php echo $row->id;?>"><?php echo $row->title;?></label>
+								</div>
+							<?php endforeach;?>
+							<div class="help-block"></div>
+						</div>
+
+						<?php if(!empty($model->picture)):?>
+						<div class="form-group">
+							<img src="<?php echo base_url().$model->picture;?>" width="100" class="img-circle">
+						</div>
+						<?php endif;?>
+
+						<div class="form-group">
+							<label for="input_picture">Picture</label>
+							<input type="file" class="form-control" id="input_picture" name="picture">
+							<div class="help-block"></div>
+						</div>
 						
 						<div class="form-group">
 							<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>
@@ -109,7 +157,7 @@ $(function(){
           	if(typeof(array) == "object"){
 	          	for(var key in array){
 	          		if(array[key]!=""){
-		          		$('[name="'+key+'"]')
+		          		$('[name*="'+key+'"]')
 		          			.parents('div.form-group')
 		          			.addClass("has-error")
 		          			.find('div.help-block')

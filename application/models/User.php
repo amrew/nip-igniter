@@ -12,6 +12,7 @@ class User extends Nip_Model {
 	public $email;
 	public $role_id;
 	public $status_id;
+	public $picture;
 	public $created;
 	public $updated;
 	public $deleted;

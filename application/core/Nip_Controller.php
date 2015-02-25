@@ -184,7 +184,7 @@ class Nip_Controller extends CI_Controller
 					$data["callback"] = !empty($_SERVER['HTTP_REFERER'])
 		   							   ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 		   			$data["message"]  = $message;
-					$this->render("partial/error.php", $data);
+					$this->render("layouts/partial/error.php", $data);
 					return;
 				}
 			}
@@ -550,7 +550,7 @@ class Nip_Controller extends CI_Controller
 
 			$data['redirect_url'] = $redirectUrl?$redirectUrl:site_url($controller);
 
-			return $this->renderPartial("partial/crop", $data, TRUE);
+			return $this->renderPartial("layouts/partial/crop", $data, TRUE);
 		}
 	}
 

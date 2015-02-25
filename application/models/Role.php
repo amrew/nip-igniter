@@ -13,11 +13,11 @@ class Role extends Nip_Model {
 	public $deleted;
 	
 	protected $validator = array(
-			'Role[title]' => 'required|max_length[100]',
+			'title' => 'required|max_length[100]',
 			);
 	
 	protected $label = array(
-			'Role[title]' => 'Title',
+			'title' => 'Title',
 			);
 
 	public function __construct($options = array()){

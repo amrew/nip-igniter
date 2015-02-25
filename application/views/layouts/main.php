@@ -1,3 +1,9 @@
+<?php 
+  $ci = &get_instance();
+  $ci->load->model(array("Auth"));
+  $user = $ci->Auth->user();
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,18 +20,22 @@
         <link href="<?php echo base_url();?>public/theme/admin-lte/css/iCheck/all.css" rel="stylesheet" type="text/css" />
         <!-- Sweetalert CSS -->
         <link href="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.css" rel="stylesheet">
-        <!-- Jcrop css -->
-        <link href="<?php echo base_url();?>public/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
         <!-- JquerTe -->
         <link href="<?php echo base_url();?>public/jqueryte/jquery-te-1.4.0.css" rel="stylesheet">
         
         <link href="<?php echo base_url();?>public/css/pnotify.custom.min.css" rel="stylesheet">
 
+        <!-- Jcrop css -->
+        <link href="<?php echo base_url();?>public/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
+        
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
         <style type="text/css">
         .breadcrumb{
             margin-bottom: 0;
+        }
+        .jcrop-holder>div>div>img{
+          visibility: hidden !important;
         }
         </style>
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -242,43 +252,7 @@
                             </ul>
                         </li>
                         <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon glyphicon-user"></i>
-                                <span>Jane Doe <i class="caret"></i></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="user-header bg-light-blue">
-                                    <img src="<?php echo base_url();?>public/theme/admin-lte/img/avatar3.png" class="img-circle" alt="User Image" />
-                                    <p>
-                                        Jane Doe - Web Developer
-                                        <small>Member since Nov. 2012</small>
-                                    </p>
-                                </li>
-                                <!-- Menu Body -->
-                                <li class="user-body">
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Followers</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Sales</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </li>
-                                <!-- Menu Footer-->
-                                <li class="user-footer">
-                                    <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                    </div>
-                                    <div class="pull-right">
-                                        <a href="<?php echo site_url("auth/logout");?>" class="btn btn-default btn-flat">Sign out</a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
+                        <?php $this->load->view("layouts/partial/user-panel", array("user"=>$user));?>
                     </ul>
                 </div>
             </nav>
@@ -289,16 +263,7 @@
                 <!-- sidebar: style can be found in sidebar.less -->
                 <section class="sidebar">
                     <!-- Sidebar user panel -->
-                    <div class="user-panel">
-                        <div class="pull-left image">
-                            <img src="<?php echo base_url();?>public/theme/admin-lte/img/avatar3.png" class="img-circle" alt="User Image" />
-                        </div>
-                        <div class="pull-left info">
-                            <p>Hello, Jane</p>
-
-                            <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
-                        </div>
-                    </div>
+                    <?php $this->load->view("layouts/partial/small-user-panel", array("user"=>$user));?>
                     <!-- search form -->
                     <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
@@ -323,7 +288,7 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <?php $this->load->view('partial/menu');?>
+                                <?php $this->load->view('layouts/partial/menu');?>
                             </ul>
                         </li>
                     </ul>

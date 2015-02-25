@@ -23,7 +23,29 @@ class StatusController extends Nip_Controller
      */
 	public $pageTitle = "Status";
 
-	
+	/**
+	 * Controller folder name
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public $folder = 'admin';
+
+	/**
+	 * Controller Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected $controllerSegment = 2;
+
+	/**
+	 * Action Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected $actionSegment = 3;
 	/**
      * Message response for ajax request
      *

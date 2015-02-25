@@ -23,7 +23,29 @@ class UserController extends Nip_Controller
      */
 	public $pageTitle = "User";
 
-	
+	/**
+	 * Controller folder name
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public $folder = 'admin';
+
+	/**
+	 * Controller Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected $controllerSegment = 2;
+
+	/**
+	 * Action Segment on URL
+	 *
+	 * @var integer
+	 * @access public
+	 */
+	protected $actionSegment = 3;
 	/**
      * Message response for ajax request
      *
@@ -265,6 +287,41 @@ class UserController extends Nip_Controller
 					$this->msg['invalid']['message'] = "The Password field is required.";
 					echo json_encode($this->msg['invalid']);
 					exit();
+				}
+
+				if (!empty($_FILES['picture']['name'])) {
+					$this->load->library('upload');
+
+					$folder = './public/uploads/';
+
+					$config['upload_path']	 = $folder;
+					$config['allowed_types'] = 'gif|jpg|png';
+					$config['max_size']		 = '10000';
+
+					$this->upload->initialize($config);
+
+					if (!$this->upload->do_upload('picture')) {
+						$this->msg['failed']['message'] = $this->upload->display_errors();
+						echo json_encode($this->msg['failed']);
+						exit();
+					} else {
+						$data 			= $this->upload->data();
+						$model->picture = $folder.$data['file_name'];
+
+						$isCreateThumb  = FALSE;
+						$isCrop 		= TRUE;
+						
+						//if with cropping
+						if($isCrop){
+							$scaleWidth = 400;
+							$scaleHeight= 400;
+
+							$callback = isset($_POST['callback'])
+									   ? $_POST['callback'] : NULL;
+
+							$this->msg['success']['crop'] = $this->crop($model->picture, $callback, $isCreateThumb, $scaleWidth, $scaleHeight);
+						}
+					}
 				}
 
 

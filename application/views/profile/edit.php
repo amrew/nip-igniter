@@ -1,9 +1,9 @@
 <section class="content-header">
-    <h1><?php echo $model;?></h1>
+    <h1>Profile</h1>
 </section>
 <ol class="breadcrumb">
 	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-	<li class="active"><span><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></span></li>
+	<li class="active"><span><i class="fa fa-edit"></i> Edit Profile</span></li>
 </ol>
 
 <!-- Main content -->
@@ -24,12 +24,34 @@
 						<input type="hidden" name="callback" value="<?php echo $callback;?>">
 
 						<div class="form-group">
-					<label for="input_title">Title</label>
-					<input type="text" class="form-control" id="input_title" name="Status[title]" value="<?php echo $model->title;?>" placeholder="Enter Title...">
-					<div class="help-block"></div>
-				</div>
+							<label for="input_username">Username</label>
+							<input type="text" class="form-control" id="input_username" name="User[username]" value="<?php echo $model->username;?>" placeholder="Enter Username..." readonly>
+							<div class="help-block"></div>
+						</div>
 
-				
+						<div class="form-group">
+							<label for="input_password">Password</label>
+							<input type="password" class="form-control" id="input_password" name="password" value="" placeholder="Enter Password...">
+							<div class="help-block"></div>
+						</div>
+
+						<div class="form-group">
+							<label for="input_email">Email</label>
+							<input type="email" class="form-control" id="input_email" name="User[email]" value="<?php echo $model->email;?>" placeholder="Enter Email...">
+							<div class="help-block"></div>
+						</div>
+
+						<?php if(!empty($model->picture)):?>
+						<div class="form-group">
+							<img src="<?php echo base_url().$model->picture;?>" width="100" class="img-circle">
+						</div>
+						<?php endif;?>
+
+						<div class="form-group">
+							<label for="input_picture">Picture</label>
+							<input type="file" class="form-control" id="input_picture" name="picture">
+							<div class="help-block"></div>
+						</div>
 						
 						<div class="form-group">
 							<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>
@@ -51,6 +73,7 @@
         </div><!--/.col (right) -->
     </div>   <!-- /.row -->
 </section>
+
 
 <script type="text/javascript">
 $(function(){
@@ -109,7 +132,7 @@ $(function(){
           	if(typeof(array) == "object"){
 	          	for(var key in array){
 	          		if(array[key]!=""){
-		          		$('[name="'+key+'"]')
+		          		$('[name*="'+key+'"]')
 		          			.parents('div.form-group')
 		          			.addClass("has-error")
 		          			.find('div.help-block')
