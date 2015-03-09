@@ -23,7 +23,7 @@ class ProfileController extends Nip_Controller {
 	 * @var string
 	 * @access public
 	 */
-	public $pageLayout = "layouts/main";
+	public $pageLayout = "layouts/main3";
 	
 	/**
      * Message response for ajax request

@@ -1,30 +1,67 @@
-<section class="content-header">
-    <h1><i class="fa fa-trash"></i> <?php echo $pageTitle;?> List</h1>
-</section>
-<ol class="breadcrumb">
-	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-	<li><a href="<?php echo site_url($pathController);?>"><?php echo $pageTitle;?></a></li>
-	<li class="active"><span>Trash</span></li>
-</ol>
+<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb">
+	<li>
+		<a href="<?php echo site_url("admin/dashboard");?>">Home</a>
+		<i class="fa fa-circle"></i>
+	</li>
+	<li>
+		<a href="<?php echo $callback;?>"><?php echo $pageTitle;?></a>
+		<i class="fa fa-circle"></i>
+	</li>
+	<li>
+		Trash
+	</li>
+</ul>
 
-<!-- Main content -->
-<section class="content">
-	<div class="row">
-        <!-- left column -->
-        <div class="col-md-12">
-        	<div class="box box-warning">
-                <div class="box-header hidden-print">
-                	<div class="box-tools">
-	                    <input type="text" name="table_search" class="form-control input-sm pull-right input-global-search" style="width: 150px;" placeholder="Search"/>
-                    </div>
-                </div><!-- /.box-header -->
-                <br>
-
-                <div class="box-body no-padding">
-                	<!--Show ajax message here-->
-					<div id="ajax-message"></div>
-
-                	<table class="table table-hover">
+<div id="ajax-message"></div>
+<!-- END PAGE BREADCRUMB -->
+<!-- END PAGE HEADER-->
+<!-- BEGIN PAGE CONTENT-->
+<div class="row">
+	<div class="col-md-12">
+		
+		<!-- Begin: life time stats -->
+		<div class="portlet light">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-list-alt font-green-sharp"></i>
+					<span class="caption-subject font-green-sharp bold uppercase"><?php echo $pageTitle;?> Listing</span>
+					<span class="caption-helper">manage trash records...</span>
+				</div>
+				<div class="actions">
+					<div class="btn-group">
+						<a class="btn btn-default btn-circle" href="#" data-toggle="dropdown">
+						<i class="fa fa-share"></i>
+						<span class="hidden-480">
+						Tools </span>
+						<i class="fa fa-angle-down"></i>
+						</a>
+						<ul class="dropdown-menu pull-right">
+							<li>
+								<a href="#" id="btn-print" title="Print current page">
+								Print Page </a>
+							</li>
+							<!-- <li>
+								<a href="#" id="btn-excel" title="Download Excel file">
+								Export to Excel </a>
+							</li>
+							<li>
+								<a href="#" id="btn-pdf" title="Download PDF file">
+								Export to PDF </a>
+							</li> -->
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="portlet-body">
+				<div class="clearfix">
+					<input type="text" name="table_search" class="form-control pull-right input-global-search" style="width: 150px;" placeholder="Search all fields..."/>
+				</div>
+				<br>
+				<div class="table-container">
+					
+					<!-- Table -->
+	            	<table class="table table-hover">
 						
 						<!--Heading-->
 						<thead>
@@ -62,7 +99,7 @@
 								</th>
 								<?php endif;?>
 								
-								<th style="width:120px" class="hidden-print">Action</th>
+								<th style="width:140px" class="hidden-print">Action</th>
 							</tr>
 						</thead>
 
@@ -136,7 +173,7 @@
 						<td><?php echo $row->email;?></td>
 						<td><?php echo $row->role->title;?></td><td><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
-											<td style="width:60px;"><span class="label label-default">Deleted</span></td>
+											<td style="width:60px;"><span class="badge badge-default badge-roundless">Deleted</span></td>
 											<td style="width:85px;"><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
 										<?php endif;?>
 										<td class="hidden-print">
@@ -149,59 +186,41 @@
 							<?php endif;?>
 						</tbody>
 					</table>
-					<div class="box-footer clearfix hidden-print">
-						<br>
-						<div class="row-fluid">
-							<div class="col-xs-6">
-								
-								<!--Button action for checkbox-->
-								<div class="btn-group hidden-print">
-							      <button type="button" class="btn btn-default btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
-							      <ul class="dropdown-menu" role="menu">
-							        <li><a href="<?php echo site_url($pathController."/restoreTrash");?>" class="btnAboutTrash">Restore</a></li>
-							        <li><a href="<?php echo site_url($pathController."/deletePermanently");?>" class="btnAboutTrash">Delete permanently</a></li>
-							      </ul>
-							    </div>
+				</div>
+			</div>
+		</div>
+		<!-- End: life time stats -->
 
-							</div>
-							<div class="col-xs-6">
+		<div class="clearfix">
+			<!--Button action for checkbox-->
+			<div class="btn-group hidden-print">
+		      <button type="button" class="btn btn-default btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
+		      <ul class="dropdown-menu" role="menu">
+		        <li><a href="<?php echo site_url($pathController."/restoreTrash");?>" class="btnAboutTrash">Restore</a></li>
+		        <li><a href="<?php echo site_url($pathController."/deletePermanently");?>" class="btnAboutTrash">Delete permanently</a></li>
+		      </ul>
+		    </div>
 
-								<!--Button to print this current page-->
-								<button type="button" class="btn btn-default btn-xs hidden-print pull-right" id="btn-print" title="Print current page" style="margin-right:6px;">
-							    	<span class="glyphicon glyphicon-print"></span> Print
-							    </button>
+		    <!--Pagination Link-->
+			<div id="page-container" class="pull-right" style="margin-left:10px;">
+				<?php echo $pagination;?>
+			</div>
 
-							</div>
-						</div>
-						<hr>
-						<div class="row-fluid">
-							<div class="col-xs-12">
+			<!--Limit row for pagination-->
+			<select id="select-limit" class="pull-right form-control" style="width:100px">
+				<option value="<?php echo site_url($pathController.'/trash/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+				<?php $i=20;while($i<101):?>
+					<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+				<?php $i+=10;endwhile;?>
+				<?php $i=100;while($i<501):?>
+					<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+				<?php $i+=100;endwhile;?>
+			</select>
+		</div>
 
-								<!--Pagination Link-->
-								<div id="page-container" class="pull-right" style="margin-left:10px;">
-									<?php echo $pagination;?>
-								</div>
-
-								<!--Limit row for pagination-->
-								<select id="select-limit" class="pull-right form-control" style="width:100px">
-									<option value="<?php echo site_url($pathController.'/trash/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
-									<?php $i=20;while($i<101):?>
-										<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
-									<?php $i+=10;endwhile;?>
-									<?php $i=100;while($i<501):?>
-										<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
-									<?php $i+=100;endwhile;?>
-								</select>
-							</div>
-						</div>
-
-					</div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+	</div>
+</div>
+<!-- END PAGE CONTENT-->
 
 <script type="text/javascript">
 	currentUrl = '<?php echo current_url();?>';

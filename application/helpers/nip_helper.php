@@ -107,3 +107,55 @@ function deleteFolder($path)
 
     return false;
 }
+
+function user(){
+	$ci = &get_instance();
+	$ci->load->model("Auth");
+
+	return $ci->Auth->user();
+}
+
+
+function viewExists($path = NULL){
+	$status   = FALSE;
+	$viewPath = APPPATH."views/";
+
+	if($path){
+		$status = file_exists($viewPath.$path.'.php');
+	}
+	return $status;
+}
+
+function getMimeType($filename)
+{
+    $mimetype = false;
+    if(function_exists('finfo_fopen')) {
+        // open with FileInfo
+    } elseif(function_exists('getimagesize')) {
+        // open with GD
+    } elseif(function_exists('exif_imagetype')) {
+       // open with EXIF
+    } elseif(function_exists('mime_content_type')) {
+       $mimetype = mime_content_type($filename);
+    }
+    return $mimetype;
+}
+
+function isMenuActive($controller = '', $param = ''){
+	$ci = &get_instance();
+	$queryString = ($_SERVER['QUERY_STRING'] != "") 
+					? "?".$_SERVER['QUERY_STRING'] : "";
+	$isParamTrue = TRUE;
+	if(!empty($param)){
+		$isParamTrue = strpos($queryString, $param) !== false;
+	}
+
+	$isControllerTrue = FALSE;
+	if(!empty($controller)){
+		$isControllerTrue = $ci->router->fetch_class() == $controller;
+	}
+
+	if($isControllerTrue && $isParamTrue){
+		echo "active";
+	}
+}

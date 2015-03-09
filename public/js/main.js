@@ -1,7 +1,3 @@
-var currentController;
-var currentUrl;
-var baseUrl;
-
 $(function(){
 	$('.datepicker').datepicker({
 		format: 'yyyy-mm-dd',
@@ -101,11 +97,17 @@ function selectCallback(value, index){
 	window.location.href=value;
 }
 function showLoading(){
-	$("#loading").show();
+	// $("#loading").show();
+	Metronic.blockUI({
+        target: $('.page-header'),
+        animate: true,
+        overlayColor: 'none'
+    });
 }
 
 function hideLoading(){
-	$("#loading").hide();
+	// $("#loading").hide();
+	Metronic.unblockUI($('.page-header'));
 }
 
 function pagination(){
@@ -201,10 +203,15 @@ function sorting(){
 	});
 }
 
-var tempKeywords = "";
 function actionSearch(type){
 	var inputSearchs = $(".input-search");
-	var keywords = "?search=true";
+	var keywords = "";
+
+	if(tempKeywords !== ""){
+		keywords = tempKeywords + "&search=true";
+	}else{
+		keywords = "?search=true";
+	}
 
 	inputSearchs.each(function(index){
 		var input = $(this);
@@ -305,7 +312,8 @@ function showModal(){
 	$(".show-modal").unbind('click').on('click', function(event) {
 		event.preventDefault();		
 		var currentBtn = $(this);
-		
+		var type = currentBtn.attr("data-type");
+
 		$.ajax({
 			beforeSend: function(){
 				showLoading();
@@ -324,6 +332,9 @@ function showModal(){
 
 				if(is_json == false){
 					$("#modal-body").html(content);
+					if(type == 'big'){
+						$("#modal-body").parents('.modal-dialog').addClass("modal-lg");
+					}
 					$("#modal-global").modal('show');
 				}else{
 					setErrorMessage(json.message,"no-privilege");
@@ -363,11 +374,7 @@ function buttonAction(){
 				if(rs.status == 404){
 					setErrorMessage(rs.message,"no-privilege");
 				}else{
-					if(typeof(PNotify) !== "undefined"){
-						notify(rs.message, rs.param);
-					}else{
-						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
-					}
+					notify(rs);
 					
 					if(rs.operation != null){
 						if(rs.operation == 'delete'){
@@ -380,6 +387,55 @@ function buttonAction(){
 
 				hideLoading();
 				buttonAction();
+			}
+		}).fail(function(data, status){
+			if(status == "error"){
+				setErrorMessage("Application error...","danger");
+			}else if(status == "timeout"){
+				setErrorMessage("Connection timeout","warning");
+			}else if(status == "parsererror"){
+				setErrorMessage("Parse Error","warning");
+			}
+
+			hideLoading();
+		});
+	});
+
+	$(".btn-edit").unbind("click").on("click", function(e){
+		e.preventDefault();
+		var current = $(this);
+		var link = current.attr("href");
+
+		$.ajax({
+			beforeSend: function(){
+				showLoading();
+			},
+			url: link,
+			type: 'post',
+			success : function(content, status, xhr){
+				var json = null;
+				var is_json = true;
+
+		    	try {
+		    		json = $.parseJSON(content);
+		        } catch(err) {
+		        	is_json = false;
+		        }
+
+				if(is_json == false){
+					$("#edit-content").html(content);
+					$('#edit-content').pulsate({
+	                    color: "#bf1c56",
+	                    repeat: 3
+	                });
+	                $('html, body').animate({
+		                scrollTop: 0
+		            }, 1000);
+				}else{
+					setErrorMessage(json.message,"no-privilege");
+				}
+				
+				hideLoading();
 			}
 		}).fail(function(data, status){
 			if(status == "error"){
@@ -436,11 +492,7 @@ function aboutTrash(){
 							$("#tr-"+primaries[i]).hide();
 						}
 
-						if(typeof(PNotify) !== "undefined"){
-							notify(rs.message, rs.param);
-						}else{
-							$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
-						}
+						notify(rs);
 					}
 					hideLoading();
 					init();
@@ -480,13 +532,25 @@ function getRandomNumeric(length) {
     return text;
 }
 
-function notify(message, type){
-	
-	var notice = new PNotify({
-	    title: 'Message',
-	    text: message,
-	    type: type
-	});
-
-	console.log("notify");
+function notify(rs){	
+	if(typeof(PNotify) !== "undefined"){
+		var notice = new PNotify({
+		    title: 'Message',
+		    text: rs.message,
+		    type: rs.param
+		});
+	}else if(typeof($.notific8) !== "undefined"){
+		var type = 'amethyst';
+		if(rs.param == 'success'){
+			type = 'lime';
+		}else if(rs.param == "danger"){
+			type = 'ruby';
+		}else if(rs.param == "warning"){
+			type = 'tangerine';
+		}
+		$.notific8('zindex', 11500);
+		$.notific8(rs.message, {theme:type,sticky: true});
+	}else{
+		$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+	}
 }

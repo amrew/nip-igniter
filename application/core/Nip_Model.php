@@ -221,7 +221,7 @@ class Nip_Model extends CI_Model {
 		
 		$this->checkTimestamps();
 		
-		if($where){
+		if($where !== NULL){
 			if(is_numeric($where)){
 				$this->db->where(array($this->primary => $where));
 			}else{
@@ -315,6 +315,7 @@ class Nip_Model extends CI_Model {
 				$limit = $config['limit'];
 	
 				if(isset($config['offset']) && !empty($config['offset'])){
+					$offset = $config['offset'];
 					$this->db->limit($limit, $offset);
 				}else{
 					$this->db->limit($limit);
@@ -390,6 +391,7 @@ class Nip_Model extends CI_Model {
      * @access public
      */
 	public function save(){
+		$this->beforeSave();
 
 		$this->cleanObject();
 
@@ -512,6 +514,8 @@ class Nip_Model extends CI_Model {
      * @access public
      */
 	public function validate(){
+		$this->beforeValidate();
+
 		if(!empty($this->validator)){
 			$this->load->library("form_validation");
 			
@@ -692,6 +696,14 @@ class Nip_Model extends CI_Model {
 		}
 
 		return $data;
+	}
+
+	public function beforeValidate(){
+
+	}
+
+	public function beforeSave(){
+	
 	}
 	
 }

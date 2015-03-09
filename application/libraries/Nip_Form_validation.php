@@ -118,4 +118,20 @@ class Nip_Form_validation extends CI_Form_validation {
 		return FALSE;
 	}
 
+	/**
+	 * Match one field to another when on edit session
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	field
+	 * @return	bool
+	 */
+	public function is_edit_unique($str, $field)
+	{
+		list($table, $field, $primary, $id)=explode('.', $field);
+		$query = $this->CI->db->limit(1)->get_where($table, array($field => $str, $primary." !=" => $id));
+		
+		return $query->num_rows() === 0;
+    }
+
 }

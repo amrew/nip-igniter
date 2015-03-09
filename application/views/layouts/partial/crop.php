@@ -1,9 +1,9 @@
-<div>
+<div class="form-body">
 	<h4>Crop Image</h4>
 
 	<div class="ajax-message" class="alert alert-info hide"></div>
 	
-	<form method="post" action="<?php echo site_url($pathController.'/submit-crop');?>" id="form-cropping"  enctype="multipart/form-data">
+	<form method="post" action="<?php echo site_url($pathController."/submit-crop".(isset($type)?"?type={$type}":""));?>" id="form-cropping"  enctype="multipart/form-data">
 		<input type="hidden" id="x" name="x" value="">
 		<input type="hidden" id="y" name="y" value="">
 		

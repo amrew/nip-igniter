@@ -18,12 +18,12 @@
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span>
+													<span class="badge badge-default badge-roundless">Updated</span>
 												<?php else:?>
-													<span class="label label-default">Created</span>
+													<span class="badge badge-default badge-roundless">Created</span>
 												<?php endif;?>
 											</td>
-											<td style="width:85px;">
+											<td style="width:90px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<?php echo date("d M Y", strtotime($row->updated));?>
 												<?php else:?>
@@ -34,7 +34,7 @@
 										<td class="hidden-print">
 											<!-- Split button -->
 											<div class="btn-group">
-												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
+												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal" style="margin-right:0;"><i class="fa fa-eye"></i> View</a>
 													<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 													<span class="caret"></span>
 													<span class="sr-only">Toggle Dropdown</span>

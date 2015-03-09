@@ -123,7 +123,7 @@ class StatusController extends Nip_Controller
      * @access public
      */
 	public function index($limit = NULL, $offset = 0) {
-		$uri     = 4;
+		$uri     = ($this->actionSegment + 2);
 		$where   = null;
 		$sorting = "id asc";
 
@@ -283,7 +283,7 @@ class StatusController extends Nip_Controller
 		$data["id"]			= $id;
 		$data["model"]		= $model;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
 
 		$this->render("{$this->pathController}/edit", $data);
 	}
@@ -404,7 +404,7 @@ class StatusController extends Nip_Controller
      * @access public
      */
 	public function trash($limit = NULL, $offset = 0){
-		$uri     = 4;
+		$uri     = ($this->actionSegment + 2);
 		$where   = null;
 		$sorting = "id asc";
 
@@ -474,7 +474,7 @@ class StatusController extends Nip_Controller
 		$data['pagination']	= $pagination;
 		$data['queryString']= $queryString;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
 		
 		if ($this->input->is_ajax_request()) {
 			$view = $this->renderPartial("{$this->pathController}/trash/page", $data, TRUE);

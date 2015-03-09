@@ -1,3 +1,11 @@
+<li><a href="<?php echo site_url('/admin/comment');?>">Comment</a></li>
+<li><a href="<?php echo site_url('/admin/media');?>">Media</a></li>
+<li><a href="<?php echo site_url('/admin/menu');?>">Menu</a></li>
+<li><a href="<?php echo site_url('/admin/post');?>">Post</a></li>
+<li><a href="<?php echo site_url('/admin/privilege');?>">Privilege</a></li>
 <li><a href="<?php echo site_url('/admin/role');?>">Role</a></li>
 <li><a href="<?php echo site_url('/admin/status');?>">Status</a></li>
+<li><a href="<?php echo site_url('/admin/term');?>">Term</a></li>
 <li><a href="<?php echo site_url('/admin/user');?>">User</a></li>
+<li><a href="<?php echo site_url('dashboard');?>">Dashboard</a></li>
+<li><a href="<?php echo site_url('file-manager');?>">File Manager</a></li>

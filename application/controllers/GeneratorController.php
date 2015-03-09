@@ -23,7 +23,7 @@ class GeneratorController extends Nip_Controller {
 			)
 		);
 
-	protected $templateName = "lte-theme";
+	protected $templateName = "metronic-theme";
 
 	/** Variable ini belum dipake*/
 	public $commonTemplate = array(
@@ -106,6 +106,18 @@ class GeneratorController extends Nip_Controller {
 				'config'=> '#random'
 			)
 		);
+
+	/**
+	 * Action rules for user
+	 *
+	 * @var mix
+	 * @access public
+	 */
+	protected $rules = array(
+		'*' => array(),
+		'1' => array("*"),  //admin
+		'2' => array() 		//member
+	);
 
 	public function __construct() {
 		parent::__construct();

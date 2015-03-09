@@ -41,7 +41,7 @@ class Nip_Controller extends CI_Controller
 	 * @var string
 	 * @access public
 	 */
-	public $pageLayout = "layouts/main";
+	public $pageLayout = "layouts/main3";
 
 	/**
 	 * Controller folder name
@@ -115,7 +115,7 @@ class Nip_Controller extends CI_Controller
 	 */
 	protected $rules = array(
 		'*' => array(),
-		'1' => array("*"),  //admin
+		'1' => array(),  //admin
 		'2' => array() 		//member
 	);
 
@@ -132,7 +132,7 @@ class Nip_Controller extends CI_Controller
      * @access public
      */
 	public function _remap($method, $params = array()) {
-		
+
 		if($this->authStatus) {
 
 			$roleId = $this->session->userdata('role_id');
@@ -154,6 +154,75 @@ class Nip_Controller extends CI_Controller
 			}
 
 			if (!empty($roleId) && !empty($userId)) {
+
+				$this->load->model(array("Privilege","Menu"));
+
+				$className = get_class($this);
+				$menus = $this->Menu->all(array("where" => array("controller"=>$className)));
+
+				if(!empty($menus)){
+					foreach($menus as $menu){
+						$menuId = $menu->id;
+						$privilege = $this->Privilege->first(array("role_id"=>$roleId, "menu_id"=>$menuId));
+						
+						if($privilege){
+
+							$queryString = ($_SERVER['QUERY_STRING'] != "") 
+						  					? "?".$_SERVER['QUERY_STRING'] : "";
+
+						  	$status = TRUE;
+						  	if(!empty($menu->params)){
+						  		$status = FALSE;
+
+						  		if(strpos($queryString, $menu->params)!==false){
+						  			$status = TRUE;
+						  		}
+						  	}
+
+							if($privilege->view == 1 && $status){
+								$this->rules[$roleId][] = "index";
+								$this->rules[$roleId][] = "view";
+							}
+							if($privilege->create == 1 && $status){
+								if(empty($params)){
+									$this->rules[$roleId][] = "edit";
+									$this->rules[$roleId][] = "crop";
+									$this->rules[$roleId][] = "submitCrop";
+								}
+							}
+							if($privilege->update == 1 && $status){
+								if(!empty($params)){
+									$this->rules[$roleId][] = "edit";
+									$this->rules[$roleId][] = "crop";
+									$this->rules[$roleId][] = "submitCrop";
+								}
+							}
+							if($privilege->delete == 1 && $status){
+								$this->rules[$roleId][] = "delete";
+								$this->rules[$roleId][] = "moveToTrash";
+							}
+							if($privilege->trash == 1 && $status){
+								$this->rules[$roleId][] = "trash";
+							}
+							if($privilege->restore == 1 && $status){
+								$this->rules[$roleId][] = "restore";
+								$this->rules[$roleId][] = "restoreTrash";
+							}
+							if($privilege->delete_permanent == 1 && $status){
+								$this->rules[$roleId][] = "forceDelete";
+								$this->rules[$roleId][] = "deletePermanently";
+							}
+
+							// if($status && count($menus)>1){
+							// 	break;
+							// }
+						}
+					}
+				}
+
+				if(!isset($this->rules[$roleId])){
+					$this->rules[$roleId] = array();
+				}
 
 				$userRules = $this->rules[$roleId];
 
@@ -182,7 +251,7 @@ class Nip_Controller extends CI_Controller
 					return;
 				}else{
 					$data["callback"] = !empty($_SERVER['HTTP_REFERER'])
-		   							   ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		   							   ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
 		   			$data["message"]  = $message;
 					$this->render("layouts/partial/error.php", $data);
 					return;

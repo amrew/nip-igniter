@@ -27,7 +27,7 @@
 								<?php $offset++;endforeach;?>
 
 							<?php endif;?>
-
+							
 							<script type="text/javascript">
 								currentUrl = '<?php echo current_url();?>';
 							</script>
