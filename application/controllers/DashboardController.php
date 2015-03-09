@@ -47,6 +47,6 @@ class DashboardController extends Nip_Controller {
 	}
 
 	public function index(){
-		
+		$this->render("dashboard/index");
 	}
 }
