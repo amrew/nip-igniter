@@ -32,21 +32,6 @@ class UserController extends Nip_Controller
 	public $folder = 'admin';
 
 	/**
-	 * Controller Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected $controllerSegment = 2;
-
-	/**
-	 * Action Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected $actionSegment = 3;
-	/**
      * Message response for ajax request
      *
      * @var mix
@@ -114,6 +99,41 @@ class UserController extends Nip_Controller
 		$this->Model = new User();
 	}
 
+	protected function getSearchWhere(){
+		$where = "";
+		if (isset($_GET['search'])) {
+			if (isset($_GET['keywords']) && isset($_GET['keyword'])) {
+				$keywords  = $_GET['keywords'];
+				$where    .= $this->getSpecificWhere($keywords);
+				$keyword   = $_GET['keyword'];
+				$where    .= " AND " . $this->getWhere($keyword);
+			} else if (isset($_GET['keywords'])) {
+				$keywords  = $_GET['keywords'];	
+				$where    .= $this->getSpecificWhere($keywords);
+			} else if (isset($_GET['keyword'])) {
+				$keyword   = $_GET['keyword'];
+				$where    .= $this->getWhere($keyword);
+			}
+		}
+
+		return $where;
+	}
+
+	protected function getDefaultSorting(){
+		$sorting = "id asc";
+		if (isset($_GET['sorting'])) {
+			if(!isset($_GET['direction'])){
+				$direction = "asc";
+			}else{
+				$direction = $_GET['direction'];
+			}
+
+			$sorting = $_GET['sorting']." ".$direction;
+		}
+
+		return $sorting;
+	}
+
 	/**
      * This action is used to show index, pagination and search page
      * 
@@ -125,68 +145,26 @@ class UserController extends Nip_Controller
      * @access public
      */
 	public function index($limit = NULL, $offset = 0) {
-		$uri     = 4;
 		$where   = null;
-		$sorting = "id asc";
+		$where  .= $this->getSearchWhere();
 
-		$this->limit = !empty($limit) 
-					  ? $limit : $this->limit;
-
+		$sorting = $this->getDefaultSorting();
+		
+		$this->limit = !empty($limit) ? $limit : $this->limit;
 		$baseUrl     = site_url("{$this->pathController}/index/{$this->limit}");
 		
-		$queryString = ($_SERVER['QUERY_STRING'] != "") 
-					  ? "?".$_SERVER['QUERY_STRING'] : "";
+		$rows  = $this->Model->all(
+					array(
+						'where'=>$where, 
+						'limit'=>$this->limit, 
+						'offset'=>$offset, 
+						'order_by'=>$sorting
+					)
+				);
+
+		$total = $this->Model->count($where);
 		
-		if (isset($_GET['search'])) {
-			if (isset($_GET['keywords']) && isset($_GET['keyword'])) {
-				$keywords = $_GET['keywords'];
-				$where    = $this->getSpecificWhere($keywords);
-				
-				$keyword  = $_GET['keyword'];
-				$where    = $where . " AND " . $this->getWhere($keyword);
-			} else if (isset($_GET['keywords'])) {
-				$keywords = $_GET['keywords'];	
-				$where = $this->getSpecificWhere($keywords);
-			} else if (isset($_GET['keyword'])) {
-				$keyword = $_GET['keyword'];
-				$where = $this->getWhere($keyword);
-			}
-		}
-
-		if (isset($_GET['sorting'])) {
-			if(!isset($_GET['direction'])){
-				$direction = "asc";
-			}else{
-				$direction = $_GET['direction'];
-			}
-
-			$sorting = $_GET['sorting']." ".$direction;
-		}
-
-		if ($where !== null) {
-			$rows  = $this->Model->all(
-						array(
-							'where'=>$where, 
-							'limit'=>$this->limit, 
-							'offset'=>$offset, 
-							'order_by'=>$sorting
-						)
-					);
-
-			$total = $this->Model->count($where);
-		} else {
-			$rows  = $this->Model->all(
-						array(
-							'limit'=>$this->limit,
-							'offset'=>$offset, 
-							'order_by'=>$sorting
-						)
-					);
-
-			$total = $this->Model->count();
-		}
-		
-		$pagination = $this->paginate($baseUrl, $total, $this->limit, $uri, $queryString);
+		$pagination = $this->paginate($baseUrl, $total, $this->limit, $offset);
 
 		$data['allRole']	= $this->Role->all();
 		$data['allStatus']	= $this->Status->all();
@@ -195,7 +173,6 @@ class UserController extends Nip_Controller
 		$data['offset']		= $offset;
 		$data['limit']		= $this->limit;
 		$data['pagination']	= $pagination;
-		$data['queryString']= $queryString;
 		
 		if ($this->input->is_ajax_request()) {
 			$view = $this->renderPartial("{$this->pathController}/page", $data, TRUE);
@@ -345,7 +322,7 @@ class UserController extends Nip_Controller
 		$data["id"]			= $id;
 		$data["model"]		= $model;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
 
 		$this->render("{$this->pathController}/edit", $data);
 	}

@@ -82,23 +82,15 @@ class Nip_Controller extends CI_Controller
 	 * @access public
 	 */
 	public $pathController;
-
-	/**
-	 * Controller Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected $controllerSegment = 1;
-
-	/**
-	 * Action Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected $actionSegment = 2;
 	
+	/**
+	 * Url tambahan yang berupa parameter GET
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public $queryString = "";
+
 	/**
 	 * Redirect url to login form
 	 *
@@ -227,6 +219,8 @@ class Nip_Controller extends CI_Controller
 		 * Setting the controller name to $this->controller variable.
 		 */
 		$this->setView();
+
+		$this->queryString = ($_SERVER['QUERY_STRING'] != "") ? "?".$_SERVER['QUERY_STRING'] : "";
 	}
 
 	/**
@@ -241,7 +235,9 @@ class Nip_Controller extends CI_Controller
      * @access public
      */
 	public function render($view, $data = array(), $bool = FALSE){
-		$reflect = new ReflectionClass($this);
+		$this->beforeRender();
+
+		$reflect 	= new ReflectionClass($this);
 		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
 
 		foreach($properties as $prop){
@@ -268,7 +264,9 @@ class Nip_Controller extends CI_Controller
      * @access public
      */
 	public function renderPartial($view, $data = array(), $bool = FALSE){
-		$reflect = new ReflectionClass($this);
+		$this->beforeRender();
+
+		$reflect 	= new ReflectionClass($this);
 		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
 
 		foreach($properties as $prop){
@@ -279,6 +277,12 @@ class Nip_Controller extends CI_Controller
 			return $this->load->view($view,$data,TRUE);
 		}else{
 			$this->load->view($view,$data);
+		}
+	}
+
+	public function beforeRender(){
+		if(!empty($this->paramString)) {
+			$this->paramString = "?".$this->paramString;
 		}
 	}
 	
@@ -295,10 +299,10 @@ class Nip_Controller extends CI_Controller
 		if($controller){
 			$this->controller = $controller;
 		}else{
-			$this->controller = 
-				$this->uri->segment($this->controllerSegment)?
-					$this->uri->segment($this->controllerSegment):
-						$this->getDefaultClass();
+			$controller = $this->router->fetch_class();
+			$controller = getStrippedClass($controller);
+
+			$this->controller = $controller;
 		}
 	}
 
@@ -315,10 +319,7 @@ class Nip_Controller extends CI_Controller
 		if($action){
 			$this->action = $action;
 		}else{
-			$this->action = 
-				$this->uri->segment($this->actionSegment)?
-					$this->uri->segment($this->actionSegment):
-						"index";
+			$this->action = $this->router->fetch_method();
 		}
 
 	}
@@ -342,46 +343,6 @@ class Nip_Controller extends CI_Controller
 	}
 
 	/**
-     * Get default class name for current controller
-     * 
-     * @return string
-     *
-     * @access protected
-     */
-	protected function getDefaultClass(){
-		preg_match_all('/((?:^|[A-Z])[a-z]+)/',get_class($this),$matches);
-		$defaultClass = $this->extractClassName($matches[0]);
-		return $defaultClass;
-	}
-
-	/**
-     * Rename current class name
-     * 
-     * Example : 'UserStatusController' => 'user-status'
-     * 
-     * @param mix $arrClassName
-     * 
-     * @return string
-     *
-     * @access protected
-     */
-	protected function extractClassName($arrClassName = null){
-		if($arrClassName){
-			$newClass = "";
-			foreach ($arrClassName as $i => $value) {
-				if($i==0){
-					$newClass .= strtolower($value);
-				}else{
-					if(strtolower($value) == "controller")
-						break;
-					$newClass .= "-".strtolower($value);
-				}
-			}
-			return $newClass;
-		}
-	}
-
-	/**
      * Generate pagination based on Codeigniter Pagination
      * 
      * @param string 	$baseUrl
@@ -394,40 +355,42 @@ class Nip_Controller extends CI_Controller
      *
      * @access protected
      */
-	protected function paginate($baseUrl, $total, $limit, $uri, $queryString = ""){
+	protected function paginate($baseUrl, $total, $limit, $offset = 0){
 		$this->load->library('pagination');
 
-		$config['base_url'] = $baseUrl;
-		$config['total_rows'] = $total;
-		$config['per_page'] = $limit;
-		$config['uri_segment'] = $uri;
+		$queryString = $this->queryString;
 
-		$config['full_tag_open'] = '<ul class="pagination pull-right" style="margin:0">';
-		$config['full_tag_close'] = '</ul>';
+		$config['base_url'] 	= $baseUrl;
+		$config['total_rows'] 	= $total;
+		$config['per_page'] 	= $limit;
+		
+		$config['full_tag_open'] 	= '<ul class="pagination pull-right" style="margin:0">';
+		$config['full_tag_close'] 	= '</ul>';
 
-		$config['first_link'] = '&laquo;';
-		$config['first_tag_open'] = '<li>';
-		$config['first_tag_close'] = '</li>';
+		$config['first_link'] 		= '&laquo;';
+		$config['first_tag_open'] 	= '<li>';
+		$config['first_tag_close'] 	= '</li>';
 
-		$config['last_link'] = '&raquo;';
-		$config['last_tag_open'] = '<li>';
-		$config['last_tag_close'] = '</li>';
+		$config['last_link'] 		= '&raquo;';
+		$config['last_tag_open'] 	= '<li>';
+		$config['last_tag_close'] 	= '</li>';
 
-		$config['next_link'] = '›';
-		$config['next_tag_open'] = '<li>';
-		$config['next_tag_close'] = '</li>';
+		$config['next_link'] 		= '›';
+		$config['next_tag_open'] 	= '<li>';
+		$config['next_tag_close'] 	= '</li>';
 
-		$config['prev_link'] = '‹';
-		$config['prev_tag_open'] = '<li>';
-		$config['prev_tag_close'] = '</li>';
+		$config['prev_link'] 		= '‹';
+		$config['prev_tag_open'] 	= '<li>';
+		$config['prev_tag_close'] 	= '</li>';
 
-		$config['cur_tag_open'] = '<li class="active"><a>';
-		$config['cur_tag_close'] = '</a></li>';
+		$config['cur_tag_open'] 	= '<li class="active"><a>';
+		$config['cur_tag_close'] 	= '</a></li>';
 
-		$config['num_tag_open'] = '<li>';
-		$config['num_tag_close'] = '</li>';
+		$config['num_tag_open'] 	= '<li>';
+		$config['num_tag_close'] 	= '</li>';
 
-		$config['query_string'] = $queryString;
+		$config['suffix']			= $queryString;
+		$config['offset'] 			= $offset;
 
 		$this->pagination->initialize($config);
 
@@ -496,6 +459,20 @@ class Nip_Controller extends CI_Controller
 		}
 		return "";
 	}
+
+	protected function getDefaultWhere(){
+		$query_string = isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+		parse_str($query_string, $on_address_bar);
+
+		parse_str($this->paramString, $array);
+
+		$where = array();
+		foreach($array as $key => $val){
+			$where[$key] = isset($on_address_bar[$key])?$on_address_bar[$key]:"";
+		}
+
+		return $where;
+	}
 	
 	/**
      * Generate thumb image
@@ -509,12 +486,12 @@ class Nip_Controller extends CI_Controller
      * @access protected
      */
 	public function createThumb($path, $width = 400, $height = 400){
-		$config['source_image']	= $path;
-		$config['create_thumb'] = TRUE;
-		$config['maintain_ratio'] = TRUE;
-		$config['thumb_marker'] = '_thumb';
-		$config['width']	= $width;
-		$config['height']	= $height;
+		$config['source_image']		= $path;
+		$config['create_thumb'] 	= TRUE;
+		$config['maintain_ratio'] 	= TRUE;
+		$config['thumb_marker'] 	= '_thumb';
+		$config['width']			= $width;
+		$config['height']			= $height;
 
 		$this->image_lib->clear();
 
@@ -542,13 +519,13 @@ class Nip_Controller extends CI_Controller
 			$scaleWidth = 1, $scaleHeight = 1){
 		
 		if($path){
-			$data['path'] = $path;
-			$data['is_thumb'] = $isThumb;
+			$data['path'] 			= $path;
+			$data['is_thumb'] 		= $isThumb;
 
-			$data['scale_width'] = $scaleWidth;
-			$data['scale_height'] = $scaleHeight;
+			$data['scale_width'] 	= $scaleWidth;
+			$data['scale_height'] 	= $scaleHeight;
 
-			$data['redirect_url'] = $redirectUrl?$redirectUrl:site_url($controller);
+			$data['redirect_url'] 	= $redirectUrl?$redirectUrl:site_url($this->pathController);
 
 			return $this->renderPartial("layouts/partial/crop", $data, TRUE);
 		}
@@ -569,28 +546,26 @@ class Nip_Controller extends CI_Controller
 			$x = $_POST['x'];
 			$y = $_POST['y'];
 
-			$xWidth = $_POST['x_width'];
-			$yHeight = $_POST['y_height'];
+			$xWidth 	= $_POST['x_width'];
+			$yHeight 	= $_POST['y_height'];
 
-			$imgWidth = $_POST['img_width'];
-			$imgHeight = $_POST['img_height'];
+			$imgWidth 	= $_POST['img_width'];
+			$imgHeight 	= $_POST['img_height'];
 
-			$scaleWidth = $_POST['scale_width'];
-			$scaleHeight = $_POST['scale_height'];
+			$scaleWidth 	= $_POST['scale_width'];
+			$scaleHeight 	= $_POST['scale_height'];
 
 			$isThumb = $_POST['is_thumb']==1?TRUE:FALSE;
 
 			list($realWidth, $realHeight) = getimagesize($imgPath);
-			
-			$this->load->library('image_lib');
 
 			//crop config
-			$config['source_image'] = $imgPath;
-			$config['x_axis'] = ($realWidth/$imgWidth) * $x;
-			$config['y_axis'] = ($realHeight/$imgHeight) * $y;
-			$config['width'] = ($realWidth/$imgWidth) * $xWidth;
-			$config['height'] = ($realHeight/$imgHeight) * $yHeight;
-			$config['maintain_ratio'] = FALSE;
+			$config['source_image'] 	= $imgPath;
+			$config['x_axis'] 			= ($realWidth/$imgWidth)   * $x;
+			$config['y_axis'] 			= ($realHeight/$imgHeight) * $y;
+			$config['width'] 			= ($realWidth/$imgWidth)   * $xWidth;
+			$config['height'] 			= ($realHeight/$imgHeight) * $yHeight;
+			$config['maintain_ratio'] 	= FALSE;
 			
 			$this->image_lib->initialize($config); 
 			

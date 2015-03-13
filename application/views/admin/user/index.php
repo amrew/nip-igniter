@@ -10,7 +10,7 @@
         	<div class="box box-success">
                 <div class="box-header hidden-print">
                 	<div class="box-tools">
-	                    <a class="btn btn-primary btn-sm pull-left" href="<?php echo site_url("{$pathController}/edit");?>" style="color:#fff">
+	                    <a class="btn btn-primary btn-sm pull-left" href="<?php echo site_url("{$pathController}/edit").$queryString;?>" style="color:#fff">
 							<span class="glyphicon glyphicon-plus"></span> New Record
 						</a>
 					    <input type="text" name="table_search" class="form-control input-sm pull-right input-global-search" style="width: 150px;" placeholder="Search all fields..."/>
@@ -154,14 +154,14 @@
 										<td class="hidden-print">
 											<!-- Split button -->
 											<div class="btn-group">
-												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
+												<a href="<?php echo site_url("{$pathController}/view/{$row->id}").$queryString;?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
 													<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 													<span class="caret"></span>
 													<span class="sr-only">Toggle Dropdown</span>
 													</button>
 												<ul class="dropdown-menu" role="menu" style="min-width:50px;">
-													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>"><i class="fa fa-edit"></i> Edit</a></li>
-													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>"><i class="fa fa-remove"></i> Delete</button></li>
+													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}").$queryString;?>"><i class="fa fa-edit"></i> Edit</a></li>
+													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete").$queryString;?>"><i class="fa fa-remove"></i> Delete</button></li>
 												</ul>
 											</div>
 										</td>
@@ -181,7 +181,7 @@
 								<div class="btn-group hidden-print">
 							      <button type="button" class="btn btn-default btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
 							      <ul class="dropdown-menu" role="menu">
-							        <li><a href="<?php echo site_url($pathController.'/move-to-trash');?>" class="btnAboutTrash">Move to trash</a></li>
+							        <li><a href="<?php echo site_url("{$pathController}/move-to-trash").$queryString;?>" class="btnAboutTrash">Move to trash</a></li>
 							      </ul>
 							    </div>
 
@@ -190,7 +190,7 @@
 
 								<!--Link to trash-->
 								<?php if($this->Model->getSoftDeletes()):?>
-									<a href="<?php echo site_url("{$pathController}/trash");?>" class="btn btn-default btn-xs pull-right hidden-print" title="Trash">
+									<a href="<?php echo site_url("{$pathController}/trash").$queryString;?>" class="btn btn-default btn-xs pull-right hidden-print" title="Trash">
 										<span class="glyphicon glyphicon-trash"></span> Trash
 									</a>
 								<?php endif;?>
@@ -223,13 +223,16 @@
 
 								<!--Limit row for pagination-->
 								<select id="select-limit" class="pull-right form-control" style="width:100px">
-									<option value="<?php echo site_url($pathController.'/index/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+									<option value="<?php echo site_url("{$pathController}/index/10").$queryString;?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+									
 									<?php $i=20;while($i<101):?>
-										<option value="<?php echo site_url($pathController.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url("{$pathController}/index/{$i}").$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=10;endwhile;?>
+									
 									<?php $i=100;while($i<501):?>
-										<option value="<?php echo site_url($pathController.'/index/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url("{$pathController}/index/{$i}").$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=100;endwhile;?>
+									
 								</select>
 							</div>
 						</div>
@@ -243,5 +246,6 @@
 </section>
 
 <script type="text/javascript">
-	currentUrl = '<?php echo current_url();?>';
+	currentUrl   = '<?php echo current_url();?>';
+	tempKeywords = '<?php echo $queryString;?>';
 </script>

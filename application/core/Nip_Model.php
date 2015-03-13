@@ -105,6 +105,14 @@ class Nip_Model extends CI_Model {
 	 * @access protected
 	 */
 	protected $deletedField = "deleted";
+
+	/**
+	 * Save relationship object
+	 *
+	 * @var mix
+	 * @access protected
+	 */
+	protected $relationship = array();
 	
 	/**
      * Get current class name
@@ -154,6 +162,18 @@ class Nip_Model extends CI_Model {
 		}else{
 			return parent::__get($key);
 		}
+	}
+
+	public function getProperties(){
+		$reflect = new ReflectionClass($this);
+		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
+
+		$data = array();
+		foreach($properties as $prop){
+			$data[] = $prop->name;
+		}
+
+		return $data;
 	}
 	
 	/**
@@ -295,6 +315,28 @@ class Nip_Model extends CI_Model {
 				$this->db->where($where);
 			}
 
+			if(isset($config['or_where']) && !empty($config['or_where'])){
+				$where = $config['or_where'];
+				
+				$this->db->or_where($where);
+			}
+
+			if(isset($config['like']) && !empty($config['like'])){
+				$where = $config['like'];
+				
+				foreach($where as $key=>$val){
+					$this->db->like($key, $val);
+				}
+			}
+
+			if(isset($config['or_like']) && !empty($config['or_like'])){
+				$where = $config['or_like'];
+				
+				foreach($where as $key=>$val){
+					$this->db->or_like($key, $val);
+				}
+			}
+
 			if(isset($config['fields']) && !empty($config['fields'])){
 				$fields = $config['fields'];
 				
@@ -305,6 +347,12 @@ class Nip_Model extends CI_Model {
 				}
 			}
 			
+			if(isset($config['group_by']) && !empty($config['group_by'])){
+				$groupBy = $config['group_by'];
+				
+				$this->db->group_by($groupBy);
+			}
+
 			if(isset($config['order_by']) && !empty($config['order_by'])){
 				$orderBy = $config['order_by'];
 				
@@ -315,6 +363,7 @@ class Nip_Model extends CI_Model {
 				$limit = $config['limit'];
 	
 				if(isset($config['offset']) && !empty($config['offset'])){
+					$offset = $config['offset'];
 					$this->db->limit($limit, $offset);
 				}else{
 					$this->db->limit($limit);
@@ -564,7 +613,7 @@ class Nip_Model extends CI_Model {
      */
 	public function justTrash(){
 		$this->softDeletes = FALSE;
-		$this->justTrash = TRUE;
+		$this->justTrash   = TRUE;
 		return $this;
 	}
 
@@ -577,7 +626,7 @@ class Nip_Model extends CI_Model {
      */
 	public function withTrash(){
 		$this->softDeletes = FALSE;
-		$this->justTrash = FALSE;
+		$this->justTrash   = FALSE;
 		return $this;	
 	}
 
@@ -590,14 +639,25 @@ class Nip_Model extends CI_Model {
      */
 	public function belongsTo($modelName = NULL, $foreignKey = NULL){
 		if($modelName){
+
 			if(is_null($foreignKey)){
 				$foreignKey = getUnderscoredClass($modelName)."_id";
 			}
 			
+			if(in_array($foreignKey, $this->relationship)){
+				return $this->relationship[$foreignKey];
+			}
+
 			$ci =& get_instance();
 			$ci->load->model($modelName);
 
 			$row = $ci->{$modelName}->first($this->{$foreignKey});
+
+			if(empty($row)){
+				return new $this->className();
+			}
+
+			$this->relationship[$foreignKey] = $row;
 			return $row;
 		}
 		return NULL;
@@ -616,10 +676,20 @@ class Nip_Model extends CI_Model {
 				$foreignKey = getUnderscoredClass($this->className)."_id";
 			}
 
+			if(in_array($foreignKey, $this->relationship)){
+				return $this->relationship[$foreignKey];
+			}
+
 			$ci =& get_instance();
 			$ci->load->model($modelName);
 
 			$row = $ci->{$modelName}->first(array($foreignKey => $this->{$this->primary}));
+			
+			if(empty($row)){
+				return new $this->className();
+			}
+
+			$this->relationship[$foreignKey] = $row;
 			return $row;
 		}
 		return NULL;
@@ -637,10 +707,20 @@ class Nip_Model extends CI_Model {
 			if(is_null($foreignKey)){
 				$foreignKey = getUnderscoredClass($this->className)."_id";
 			}
+
+			if(in_array($foreignKey, $this->relationship)){
+				return $this->relationship[$foreignKey];
+			}
+
 			$ci =& get_instance();
 			$ci->load->model($modelName);
 
 			$array = $ci->{$modelName}->all(array($foreignKey => $this->{$this->primary}));
+
+			if(!empty($array)){
+				$this->relationship[$foreignKey] = $array;
+			}
+
 			return $array;
 		}
 		return NULL;
@@ -680,18 +760,6 @@ class Nip_Model extends CI_Model {
 
 	public function getDeletedField(){
 		return $this->deletedField;
-	}
-
-	public function getProperties(){
-		$reflect = new ReflectionClass($this);
-		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
-
-		$data = array();
-		foreach($properties as $prop){
-			$data[] = $prop->name;
-		}
-
-		return $data;
 	}
 	
 }

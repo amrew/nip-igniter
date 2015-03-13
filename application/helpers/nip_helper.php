@@ -1,4 +1,10 @@
 <?php
+/**
+* Mengambil label dari sebuah field table.
+* Contoh: 
+* - status_id  	=> Status
+* - name 		=> Name
+*/
 function getLabel($string){
 	$array = explode("_", $string);
 	$arrayUpperCase = array_map("ucwords", $array);
@@ -7,6 +13,12 @@ function getLabel($string){
 	return $string;
 }
 
+/**
+* Mengambil nama kelas dari sebuah table.
+* Contoh: 
+* - user  			=> User
+* - article_tag 	=> ArticleTag
+*/
 function getClassName($string){
 	$array = explode("_", $string);
 	$arrayUpperCase = array_map("ucwords", $array);
@@ -14,12 +26,24 @@ function getClassName($string){
 	return $string;
 }
 
+/**
+* Mengambil nama dengan separator strip (-) dari suatu kelas.
+* Contoh: 
+* - UserStatus  	=> user-status
+* - ArticleTag 		=> article-tag
+*/
 function getStrippedClass($camelCaseClass){
 	preg_match_all('/((?:^|[A-Z])[a-z]+)/',$camelCaseClass ,$matches);
 	$strippedClass = changeClassName($matches[0]);
 	return $strippedClass;
 }
 
+/**
+* Mengambil nama dengan separator underscore (_) dari suatu kelas.
+* Contoh: 
+* - UserStatus  	=> user_status
+* - ArticleTag 		=> article_tag
+*/
 function getUnderscoredClass($camelCaseClass){
 	preg_match_all('/((?:^|[A-Z])[a-z]+)/',$camelCaseClass ,$matches);
 	$strippedClass = changeClassName($matches[0], "_");
@@ -67,6 +91,19 @@ function debug($var){
 
 function getRandomString($length = 8) {
     $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < $length; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    
+    return implode($pass); //turn the array into a string
+}
+
+function getRandomNumber($length = 8) {
+    $alphabet = "0123456789";
     $pass = array(); //remember to declare $pass as an array
     
     $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache

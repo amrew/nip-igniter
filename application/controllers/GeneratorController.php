@@ -134,7 +134,7 @@ class GeneratorController extends Nip_Controller {
 		$array  = $this->_parseFolder("", $map);
 
 		$data['controllerList'] = $array;
-		$data['tableList'] = $this->db->list_tables();
+		$data['tableList'] 		= $this->db->list_tables();
 		$this->render($this->view, $data);
 	}
 
@@ -149,10 +149,10 @@ class GeneratorController extends Nip_Controller {
 			return;
 		}
 
-		$tableName  = $this->input->post("table_name");
-		$folderName = $this->input->post("folder_name");
+		$tableName  	= $this->input->post("table_name");
+		$folderName 	= $this->input->post("folder_name");
 		$controllerName = $this->input->post("controller_name");
-		$mode       = $this->input->post("mode");
+		$mode       	= $this->input->post("mode");
 
 		if (!$this->db->table_exists($tableName)) {
 			$this->msg['failed']['message'] = "The table doesn't exists.";
