@@ -3,7 +3,7 @@
 </section>
 <ol class="breadcrumb">
 	<li><a href="<?php echo $callback;?>"><i class="fa fa-chevron-circle-left"></i> Back</a></li>
-	<li><a href="<?php echo site_url($pathController);?>"><?php echo $pageTitle;?></a></li>
+	<li><a href="<?php echo site_url($pathController).$queryString;?>"><?php echo $pageTitle;?></a></li>
 	<li class="active"><span>Trash</span></li>
 </ol>
 
@@ -85,11 +85,11 @@
 										{content:tbody}
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;"><span class="label label-default">Deleted</span></td>
-											<td style="width:85px;"><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
+											<td style="width:90px;"><small><?php echo date("d M Y", strtotime($row->deleted));?></small></td>
 										<?php endif;?>
 										<td class="hidden-print">
-											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/restore/trash");?>">Restore</button>
-											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/force-delete");?>">Delete</button>
+											<button class="btn btn-success btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/restore/trash").$queryString;?>">Restore</button>
+											<button class="btn btn-danger btn-xs btn-action" data-id="<?php echo $row->{content:primary};?>" data-url="<?php echo site_url("{$pathController}/force-delete").$queryString;?>">Delete</button>
 										</td>
 									</tr>
 								<?php $offset++;endforeach;?>
@@ -106,8 +106,8 @@
 								<div class="btn-group hidden-print">
 							      <button type="button" class="btn btn-default btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
 							      <ul class="dropdown-menu" role="menu">
-							        <li><a href="<?php echo site_url($pathController."/restoreTrash");?>" class="btnAboutTrash">Restore</a></li>
-							        <li><a href="<?php echo site_url($pathController."/deletePermanently");?>" class="btnAboutTrash">Delete permanently</a></li>
+							        <li><a href="<?php echo site_url($pathController."/restoreTrash").$queryString;?>" class="btnAboutTrash">Restore</a></li>
+							        <li><a href="<?php echo site_url($pathController."/deletePermanently").$queryString;?>" class="btnAboutTrash">Delete permanently</a></li>
 							      </ul>
 							    </div>
 
@@ -132,12 +132,12 @@
 
 								<!--Limit row for pagination-->
 								<select id="select-limit" class="pull-right form-control" style="width:100px">
-									<option value="<?php echo site_url($pathController.'/trash/10');?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
+									<option value="<?php echo site_url($pathController.'/trash/10').$queryString;?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
 									<?php $i=20;while($i<101):?>
-										<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url($pathController.'/trash/'.$i).$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=10;endwhile;?>
 									<?php $i=100;while($i<501):?>
-										<option value="<?php echo site_url($pathController.'/trash/'.$i);?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url($pathController.'/trash/'.$i).$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=100;endwhile;?>
 								</select>
 							</div>

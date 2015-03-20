@@ -241,7 +241,7 @@ class Nip_Model extends CI_Model {
 		
 		$this->checkTimestamps();
 		
-		if($where){
+		if($where !== NULL){
 			if(is_numeric($where)){
 				$this->db->where(array($this->primary => $where));
 			}else{

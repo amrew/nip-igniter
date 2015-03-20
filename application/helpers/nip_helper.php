@@ -144,3 +144,18 @@ function deleteFolder($path)
 
     return false;
 }
+
+function isActive($controller = "", $params = ""){
+	$ci = &get_instance();
+	
+	$isParams = TRUE;
+	if(!empty($params)){
+		$isParams     = strpos($ci->queryString, $params) !== false;
+	}
+	
+	$isController = $ci->router->fetch_class() == $controller;
+
+	if($isParams && $isController){
+		echo " active ";
+	}
+}

@@ -23,7 +23,7 @@
 													<span class="label label-default">Created</span>
 												<?php endif;?>
 											</td>
-											<td style="width:85px;">
+											<td style="width:90px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<?php echo date("d M Y", strtotime($row->updated));?>
 												<?php else:?>
@@ -34,14 +34,14 @@
 										<td class="hidden-print">
 											<!-- Split button -->
 											<div class="btn-group">
-												<a href="<?php echo site_url("{$pathController}/view/{$row->id}");?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
+												<a href="<?php echo site_url("{$pathController}/view/{$row->id}").$queryString;?>" type="button" class="btn btn-info btn-xs show-modal"><i class="fa fa-eye"></i> View</a>
 													<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 													<span class="caret"></span>
 													<span class="sr-only">Toggle Dropdown</span>
 													</button>
 												<ul class="dropdown-menu" role="menu" style="min-width:50px;">
-													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}");?>"><i class="fa fa-edit"></i> Edit</a></li>
-													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete");?>"><i class="fa fa-remove"></i> Delete</button></li>
+													<li><a href="<?php echo site_url("{$pathController}/edit/{$row->id}").$queryString;?>"><i class="fa fa-edit"></i> Edit</a></li>
+													<li><a href="#" class="btn-action" data-id="<?php echo $row->id;?>" data-url="<?php echo site_url("{$pathController}/delete").$queryString;?>"><i class="fa fa-remove"></i> Delete</button></li>
 												</ul>
 											</div>
 										</td>

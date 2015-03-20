@@ -1,6 +1,7 @@
 var currentController;
 var currentUrl;
 var baseUrl;
+var tempKeywords;
 
 $(function(){
 	$('.datepicker').datepicker({
@@ -201,10 +202,23 @@ function sorting(){
 	});
 }
 
-var tempKeywords = "";
 function actionSearch(type){
 	var inputSearchs = $(".input-search");
-	var keywords = "?search=true";
+	var keywords = "";
+	var stringSplited = "";
+
+	if(tempKeywords.indexOf('search') == 1){
+		tempKeywords = "";
+	}else if(tempKeywords.indexOf('&search') != -1){
+		stringSplited = tempKeywords.split("&search");
+		tempKeywords = stringSplited[0];
+	}
+
+	if(tempKeywords !== ""){
+		keywords = tempKeywords + "&search=true";
+	}else{
+		keywords = "?search=true";
+	}
 
 	inputSearchs.each(function(index){
 		var input = $(this);

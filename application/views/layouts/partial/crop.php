@@ -3,7 +3,7 @@
 
 	<div class="ajax-message" class="alert alert-info hide"></div>
 	
-	<form method="post" action="<?php echo site_url($pathController.'/submit-crop');?>" id="form-cropping"  enctype="multipart/form-data">
+	<form method="post" action="<?php echo site_url($pathController."/submit-crop".$queryString);?>" id="form-cropping"  enctype="multipart/form-data">
 		<input type="hidden" id="x" name="x" value="">
 		<input type="hidden" id="y" name="y" value="">
 		
@@ -23,10 +23,12 @@
 		<div class="form-group">
 			<img id="jcrop-target" src="<?php echo base_url().$path;?>" class="img-responsive img-thumbnail">
 		</div>
+
+		<input type="hidden" id="is_skip" name="is_skip" value="false">
 		
 		<div class="form-group">
 			<button type="submit" class="btn btn-primary" id="btn-cropping">Crop Now!</button> or 
-			<a href="" class="btn btn-default">Skip this section</a>
+			<button type="submit" class="btn btn-primary" id="btn-skip">Skip this section</button>
 		</div>
 		
 		<div class="progress progress-striped active hide">
@@ -63,6 +65,11 @@ function showCoords(c)
 };
 
 function submitForm(){
+$("#btn-skip").on("click", function(){
+	$("#is_skip").val("true");
+	console.log($("#is_skip").val());
+});
+
 $("#form-cropping").on('submit', function(event) {
   event.preventDefault();
   var currentForm = $(this);

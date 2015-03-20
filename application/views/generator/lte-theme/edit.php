@@ -7,7 +7,7 @@
 </ol>
 
 <!-- Main content -->
-<section class="content">
+<section class="content" id="main-content">
 	<div class="row">
         <!-- left column -->
         <div class="col-md-7">
@@ -20,7 +20,7 @@
                 <div class="box-body" id="main-content">
 	                <div id="ajax-message" class="alert alert-info hide"></div>
 
-					<form role="form" action="<?php echo current_url();?>" id="form-edit" method="post" enctype="multipart/form-data">
+					<form role="form" action="<?php echo current_url().$queryString;?>" id="form-edit" method="post" enctype="multipart/form-data">
 						<input type="hidden" name="callback" value="<?php echo $callback;?>">
 
 						{content:fields}

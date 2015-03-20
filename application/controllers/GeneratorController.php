@@ -430,6 +430,7 @@ class GeneratorController extends Nip_Controller {
 	}
 
 	protected function setSideMenu() {
+		return;
 		$map = directory_map(APPPATH.'controllers');
 
 		$string = "";
@@ -463,7 +464,7 @@ class GeneratorController extends Nip_Controller {
 					$temp = implode("", $temp);
 					
 					preg_match_all('/((?:^|[A-Z])[a-z0-9]+)/', $temp,$matches);
-					$controller = $this->extractClassName($matches[0]);
+					$controller = changeClassName($matches[0]);
 
 					$skipedController = array("generator", "auth", "profile");
 					
@@ -1076,23 +1077,23 @@ Class CrudGenerator extends GeneratorController{
 	 * @var string
 	 * @access public
 	 */
-	public \$folder = '".trim($tempFolderName,"/")."';
+	public \$folder = '".trim($tempFolderName,"/")."';";
 
-	/**
-	 * Controller Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected \$controllerSegment = ".(count($arrFolderName) + 1).";
+	// /**
+	//  * Controller Segment on URL
+	//  *
+	//  * @var integer
+	//  * @access public
+	//  */
+	// protected \$controllerSegment = ".(count($arrFolderName) + 1).";
 
-	/**
-	 * Action Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected \$actionSegment = ".(count($arrFolderName) + 2).";";
+	// /**
+	//  * Action Segment on URL
+	//  *
+	//  * @var integer
+	//  * @access public
+	//  */
+	// protected \$actionSegment = ".(count($arrFolderName) + 2).";";
 
 			$pathController = "{\$this->folder}/{\$this->controller}";
 		}

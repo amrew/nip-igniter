@@ -17,7 +17,7 @@
                     <h3 class="box-title"><?php echo $model->id?'<i class="fa fa-edit"></i> Edit Record':'<i class="fa fa-plus-circle"></i> New Record';?></h3>
                 </div><!-- /.box-header -->
                 <!-- form start -->
-                <div class="box-body">
+                <div class="box-body" id="main-content">
 	                <div id="ajax-message" class="alert alert-info hide"></div>
 
 					<form role="form" action="<?php echo current_url();?>" id="form-edit" method="post" enctype="multipart/form-data">

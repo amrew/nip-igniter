@@ -25,6 +25,8 @@
         
         <link href="<?php echo base_url();?>public/css/pnotify.custom.min.css" rel="stylesheet">
 
+        <link href="<?php echo base_url();?>public/eternicode-datepicker/css/datepicker.css" rel="stylesheet">
+
         <!-- Jcrop css -->
         <link href="<?php echo base_url();?>public/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
         
@@ -48,7 +50,7 @@
     <body class="skin-blue">
         <!-- header logo: style can be found in header.less -->
         <header class="header">
-            <a href="<?php echo base_url();?>public/theme/admin-lte/index.html" class="logo">
+            <a href="<?php echo base_url();?>" class="logo">
                 <!-- Add the class icon to your logo image or logo icon to add the margining -->
                 Nip Igniter
             </a>
@@ -281,16 +283,8 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="treeview active">
-                            <a href="#">
-                                <i class="fa fa-table"></i>
-                                <span>Master Data</span>
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </a>
-                            <ul class="treeview-menu">
-                                <?php $this->load->view('layouts/partial/menu');?>
-                            </ul>
-                        </li>
+                        
+                        <?php $this->load->view('layouts/partial/menu');?>
                     </ul>
                 </section>
                 <!-- /.sidebar -->

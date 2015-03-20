@@ -30,7 +30,6 @@ class UserController extends Nip_Controller
 	 * @access public
 	 */
 	public $folder = 'admin';
-
 	/**
      * Message response for ajax request
      *
@@ -78,6 +77,15 @@ class UserController extends Nip_Controller
 	public $limit = 10;
 
 	/**
+     * Define the default where field.
+     *
+     * @var string
+     * @access public
+     */
+	public $defaultWhere      = "";
+	public $defaultWhereArray = array();
+
+	/**
      * In this function, we load some model for this controller 
      * and create new object for the $Model variable
      * 
@@ -99,18 +107,48 @@ class UserController extends Nip_Controller
 		$this->Model = new User();
 	}
 
+	protected function getDefaultWhere(){
+		$where = null;
+		if(!empty($this->defaultWhere)){
+			parse_str($this->defaultWhere, $fields);
+
+			if(!empty($fields)){
+				$array = array();
+				foreach($fields as $key => $val){
+					$this->defaultWhereArray[] = $key;
+
+					$value = isset($_GET[$key])?$_GET[$key]:"";
+					$array[] = "{$key} = '{$value}'";
+				}
+				$where = implode(" AND ", $array);
+			}
+		}
+
+		return $where;
+	}
+
 	protected function getSearchWhere(){
-		$where = "";
+		$where = $this->getDefaultWhere();
+
 		if (isset($_GET['search'])) {
 			if (isset($_GET['keywords']) && isset($_GET['keyword'])) {
+				if(!empty($where)){
+					$where .= " AND ";
+				}
 				$keywords  = $_GET['keywords'];
 				$where    .= $this->getSpecificWhere($keywords);
 				$keyword   = $_GET['keyword'];
 				$where    .= " AND " . $this->getWhere($keyword);
 			} else if (isset($_GET['keywords'])) {
+				if(!empty($where)){
+					$where .= " AND ";
+				}
 				$keywords  = $_GET['keywords'];	
 				$where    .= $this->getSpecificWhere($keywords);
 			} else if (isset($_GET['keyword'])) {
+				if(!empty($where)){
+					$where .= " AND ";
+				}
 				$keyword   = $_GET['keyword'];
 				$where    .= $this->getWhere($keyword);
 			}
@@ -145,9 +183,7 @@ class UserController extends Nip_Controller
      * @access public
      */
 	public function index($limit = NULL, $offset = 0) {
-		$where   = null;
-		$where  .= $this->getSearchWhere();
-
+		$where   = $this->getSearchWhere();
 		$sorting = $this->getDefaultSorting();
 		
 		$this->limit = !empty($limit) ? $limit : $this->limit;
@@ -246,6 +282,8 @@ class UserController extends Nip_Controller
 		}
 
 		if (isset($_POST["User"])) {
+			$this->load->library('upload');
+			
 			$fields = $_POST["User"];
 			$model->attr($fields);
 
@@ -267,9 +305,12 @@ class UserController extends Nip_Controller
 				}
 
 				if (!empty($_FILES['picture']['name'])) {
-					$this->load->library('upload');
 
-					$folder = './public/uploads/';
+					$folder = "./public/uploads/".strtolower("{$this->Model}/");
+
+					if(!is_dir($folder)){
+						mkdir($folder);
+					}
 
 					$config['upload_path']	 = $folder;
 					$config['allowed_types'] = 'gif|jpg|png';
@@ -322,7 +363,7 @@ class UserController extends Nip_Controller
 		$data["id"]			= $id;
 		$data["model"]		= $model;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
-		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController).$this->queryString;
 
 		$this->render("{$this->pathController}/edit", $data);
 	}
@@ -365,7 +406,7 @@ class UserController extends Nip_Controller
 		if ($result) {
 			$this->msg['success']['operation'] = 'delete';
 			if($this->Model->getSoftDeletes()){
-				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->pathController}/restore").'">Undo</button> if this action is a mistake.';
+				$this->msg['success']['message']   = 'Data has been successfully removed. <button class="btn-action btn btn-warning btn-xs" data-id="'.$id.'" data-url="'.site_url("{$this->pathController}/restore").$this->queryString.'">Undo</button> if this action is a mistake.';
 			}else{
 				$this->msg['success']['message']   = 'Data has been successfully removed.';
 			}
@@ -443,68 +484,24 @@ class UserController extends Nip_Controller
      * @access public
      */
 	public function trash($limit = NULL, $offset = 0){
-		$uri     = 4;
-		$where   = null;
-		$sorting = "id asc";
-
-		$this->limit = !empty($limit) 
-					  ? $limit : $this->limit;
-
-		$baseUrl     = site_url("{$this->pathController}/trash/{$this->limit}");
+		$where   = $this->getSearchWhere();
+		$sorting = $this->getDefaultSorting();
 		
-		$queryString = ($_SERVER['QUERY_STRING'] != "") 
-					  ? "?".$_SERVER['QUERY_STRING'] : "";
+		$this->limit = !empty($limit) ? $limit : $this->limit;
+		$baseUrl     = site_url("{$this->pathController}/index/{$this->limit}");
 		
-		if (isset($_GET['search'])) {
-			if (isset($_GET['keywords']) && isset($_GET['keyword'])) {
-				$keywords = $_GET['keywords'];
-				$where    = $this->getSpecificWhere($keywords);
-				
-				$keyword  = $_GET['keyword'];
-				$where    = $where . " AND " . $this->getWhere($keyword);
-			} else if (isset($_GET['keywords'])) {
-				$keywords = $_GET['keywords'];	
-				$where = $this->getSpecificWhere($keywords);
-			} else if (isset($_GET['keyword'])) {
-				$keyword = $_GET['keyword'];
-				$where = $this->getWhere($keyword);
-			}
-		}
+		$rows  = $this->Model->justTrash()->all(
+					array(
+						'where'=>$where, 
+						'limit'=>$this->limit, 
+						'offset'=>$offset, 
+						'order_by'=>$sorting
+					)
+				);
 
-		if (isset($_GET['sorting'])) {
-			if(!isset($_GET['direction'])){
-				$direction = "asc";
-			}else{
-				$direction = $_GET['direction'];
-			}
-
-			$sorting = $_GET['sorting']." ".$direction;
-		}
-
-		if ($where !== null) {
-			$rows  = $this->Model->justTrash()->all(
-						array(
-							'where'=>$where, 
-							'limit'=>$this->limit, 
-							'offset'=>$offset, 
-							'order_by'=>$sorting
-						)
-					);
-
-			$total = $this->Model->justTrash()->count($where);
-		} else {
-			$rows  = $this->Model->justTrash()->all(
-						array(
-							'limit'=>$this->limit,
-							'offset'=>$offset, 
-							'order_by'=>$sorting
-						)
-					);
-
-			$total = $this->Model->justTrash()->count();
-		}
+		$total = $this->Model->count($where);
 		
-		$pagination = $this->paginate($baseUrl, $total, $this->limit, $uri, $queryString);
+		$pagination = $this->paginate($baseUrl, $total, $this->limit, $offset);
 
 		$data['allRole']	= $this->Role->all();
 		$data['allStatus']	= $this->Status->all();
@@ -513,12 +510,11 @@ class UserController extends Nip_Controller
 		$data['offset']		= $offset;
 		$data['limit']		= $this->limit;
 		$data['pagination']	= $pagination;
-		$data['queryString']= $queryString;
 		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
 		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
 		
 		if ($this->input->is_ajax_request()) {
-			$view = $this->renderPartial("{$this->pathController}/trash/page", $data, TRUE);
+			$view = $this->renderPartial("{$this->pathController}/page", $data, TRUE);
 
 			echo json_encode(array(
 					'pagination' => $pagination,

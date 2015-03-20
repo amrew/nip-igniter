@@ -539,6 +539,29 @@ class Nip_Controller extends CI_Controller
      * @access public
      */
 	public function submitCrop(){
+
+		$is_skip = isset($_POST['is_skip'])?$_POST['is_skip']:false;
+
+		if($is_skip == "true"){
+			$imgPath = $_POST['img_path'];
+			$dirname = dirname($imgPath);
+			$basename = basename($imgPath);
+			list($raw, $ext) = explode(".", $basename);
+
+			$newfile = $dirname.'/'. $raw . "_thumb" . "." . $ext;
+			if (!copy($imgPath, $newfile)) {
+
+				$this->msg['failed']['message'] = "Failed to skip this section.";
+				echo json_encode($this->msg['failed']);
+				exit();
+
+			} else {
+				$this->msg['success']['message'] = "Image has been successfully cropped";
+			}
+
+			echo json_encode($this->msg['success']);
+			exit();
+		}
 		
 		if(isset($_POST['img_path'])){
 			$imgPath = $_POST['img_path'];
@@ -546,31 +569,35 @@ class Nip_Controller extends CI_Controller
 			$x = $_POST['x'];
 			$y = $_POST['y'];
 
-			$xWidth 	= $_POST['x_width'];
-			$yHeight 	= $_POST['y_height'];
+			$xWidth = $_POST['x_width'];
+			$yHeight = $_POST['y_height'];
 
-			$imgWidth 	= $_POST['img_width'];
-			$imgHeight 	= $_POST['img_height'];
+			$imgWidth = $_POST['img_width'];
+			$imgHeight = $_POST['img_height'];
 
-			$scaleWidth 	= $_POST['scale_width'];
-			$scaleHeight 	= $_POST['scale_height'];
+			$scaleWidth = $_POST['scale_width'];
+			$scaleHeight = $_POST['scale_height'];
 
 			$isThumb = $_POST['is_thumb']==1?TRUE:FALSE;
 
 			list($realWidth, $realHeight) = getimagesize($imgPath);
+			
+			$this->load->library('image_lib');
 
 			//crop config
-			$config['source_image'] 	= $imgPath;
-			$config['x_axis'] 			= ($realWidth/$imgWidth)   * $x;
-			$config['y_axis'] 			= ($realHeight/$imgHeight) * $y;
-			$config['width'] 			= ($realWidth/$imgWidth)   * $xWidth;
-			$config['height'] 			= ($realHeight/$imgHeight) * $yHeight;
-			$config['maintain_ratio'] 	= FALSE;
+			$config['source_image'] = $imgPath;
+			$config['x_axis'] = ($realWidth/$imgWidth) * $x;
+			$config['y_axis'] = ($realHeight/$imgHeight) * $y;
+			$config['width'] = ($realWidth/$imgWidth) * $xWidth;
+			$config['height'] = ($realHeight/$imgHeight) * $yHeight;
+			$config['maintain_ratio'] = FALSE;
 			
 			$this->image_lib->initialize($config); 
 			
 			if ( ! $this->image_lib->crop()){
 				$this->msg['failed']['message'] = $this->image_lib->display_errors();
+				echo json_encode($this->msg['failed']);
+				exit();
 			}else{
 				
 				if($isThumb){

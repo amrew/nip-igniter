@@ -181,7 +181,7 @@
 								<div class="btn-group hidden-print">
 							      <button type="button" class="btn btn-default btn-xs dropdown-toggle pull-left" data-toggle="dropdown" title="Action for checkbox above">Action <span class="caret"></span></button>
 							      <ul class="dropdown-menu" role="menu">
-							        <li><a href="<?php echo site_url("{$pathController}/move-to-trash").$queryString;?>" class="btnAboutTrash">Move to trash</a></li>
+							        <li><a href="<?php echo site_url($pathController.'/move-to-trash').$queryString;?>" class="btnAboutTrash">Move to trash</a></li>
 							      </ul>
 							    </div>
 
@@ -223,16 +223,13 @@
 
 								<!--Limit row for pagination-->
 								<select id="select-limit" class="pull-right form-control" style="width:100px">
-									<option value="<?php echo site_url("{$pathController}/index/10").$queryString;?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
-									
+									<option value="<?php echo site_url($pathController.'/index/10').$queryString;?>" <?php echo 10==$limit?"selected":"";?>>Limit</option>
 									<?php $i=20;while($i<101):?>
-										<option value="<?php echo site_url("{$pathController}/index/{$i}").$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url($pathController.'/index/'.$i).$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=10;endwhile;?>
-									
 									<?php $i=100;while($i<501):?>
-										<option value="<?php echo site_url("{$pathController}/index/{$i}").$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
+										<option value="<?php echo site_url($pathController.'/index/'.$i).$queryString;?>" <?php echo $i==$limit?"selected":"";?>><?php echo $i;?></option>
 									<?php $i+=100;endwhile;?>
-									
 								</select>
 							</div>
 						</div>
