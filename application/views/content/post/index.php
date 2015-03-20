@@ -125,8 +125,12 @@
 								            </div>
 										</td>
 										
-										<td><?php echo $row->title;?></td>
-						<td><?php echo $row->term->title;?></td><td><?php echo $row->status->title;?></td>
+										<td>
+											<strong><?php echo $row->title;?></strong>
+											<small><?php echo $row->summary;?></small>
+										</td>
+										<td><?php echo $row->term->title;?></td>
+										<td><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>

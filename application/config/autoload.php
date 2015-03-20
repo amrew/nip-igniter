@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database','session','image_lib');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url','nip_helper');
+$autoload['helper'] = array('url', 'text', 'nip_helper');
 
 
 /*

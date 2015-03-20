@@ -35,11 +35,13 @@
 								<div class="help-block"></div>
 							</div>
 
+							<?php if(!empty($model->slug)):?>
 							<div class="form-group">
 								<label for="input_slug">Slug</label>
 								<input type="text" class="form-control" id="input_slug" name="Post[slug]" value="<?php echo $model->slug;?>" placeholder="Enter Slug...">
 								<div class="help-block"></div>
 							</div>
+							<?php endif;?>
 
 							<?php if(!empty($model->thumb)):?>
 							<div class="form-group">
@@ -83,7 +85,16 @@
 
 							<div class="form-group">
 								<label for="input_parent_id">Parent</label>
-								<input type="text" class="form-control" id="input_parent_id" name="Post[parent_id]" value="<?php echo $model->parent_id;?>" placeholder="Enter Parent...">
+								<select name="Post[parent_id]" class="form-control">
+									<option value="">
+										Choose
+									</option>
+									<?php foreach($allPage as $row):?>
+									<option value="<?php echo $row->id;?>" <?php echo ($row->id==$model->parent_id?"selected":"");?>>
+										<?php echo $row->title;?>
+									</option>
+									<?php endforeach;?>
+								</select>
 								<div class="help-block"></div>
 							</div>
 
@@ -105,23 +116,8 @@
 	                <div class="box-body" id="main-content">
 		                	
 							<div class="form-group">
-								<label for="input_status_id">Status</label>
-								<select name="Post[status_id]" class="form-control">
-									<option value="">
-										Choose
-									</option>
-									<?php foreach($allStatus as $row):?>
-									<option value="<?php echo $row->id;?>" <?php echo ($row->id==$model->status_id?"selected":"");?>>
-										<?php echo $row->title;?>
-									</option>
-									<?php endforeach;?>
-								</select>
-								<div class="help-block"></div>
-							</div>
-
-							<div class="form-group">
 								<label for="input_allow_comment">Allow Comment</label>
-								<input type="number" class="form-control" id="input_allow_comment" name="Post[allow_comment]" value="<?php echo $model->allow_comment;?>" placeholder="Enter Allow Comment...">
+								<input type="checkbox" class="form-control" id="input_allow_comment" name="Post[allow_comment]" value="1" <?php echo $model->allow_comment == NULL || $model->allow_comment == 1?"checked":"";?> placeholder="Enter Allow Comment...">
 								<div class="help-block"></div>
 							</div>
 
@@ -139,10 +135,25 @@
 
 							<div class="form-group">
 								<label for="input_publish_date">Publish Date</label>
-								<input type="text" class="form-control datepicker" id="input_publish_date" name="Post[publish_date]" value="<?php echo $model->publish_date;?>" placeholder="Enter Publish Date...">
+								<input type="text" class="form-control datepicker" id="input_publish_date" name="Post[publish_date]" value="<?php echo $model->publish_date?:date("Y-m-d");?>" placeholder="Enter Publish Date...">
 								<div class="help-block"></div>
 							</div>
-							
+
+							<div class="form-group">
+								<label for="input_status_id">Status</label>
+								<select name="Post[status_id]" class="form-control">
+									<option value="">
+										Choose
+									</option>
+									<?php foreach($allStatus as $row):?>
+									<option value="<?php echo $row->id;?>" <?php echo ($row->id==$model->status_id?"selected":"");?>>
+										<?php echo $row->title;?>
+									</option>
+									<?php endforeach;?>
+								</select>
+								<div class="help-block"></div>
+							</div>
+
 							<div class="form-group">
 								<button type="submit" class="btn btn-primary btn-large" id="btnSubmit">Submit</button>
 							</div>
@@ -217,7 +228,7 @@ $(function(){
           	if(typeof(array) == "object"){
 	          	for(var key in array){
 	          		if(array[key]!=""){
-		          		$('[name*="'+key+'"]')
+		          		$('[name="<?php echo $model;?>['+key+']"]')
 		          			.parents('div.form-group')
 		          			.addClass("has-error")
 		          			.find('div.help-block')

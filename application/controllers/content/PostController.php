@@ -102,7 +102,7 @@ class PostController extends Nip_Controller
 				'Term',
 				'Status',
 				'User',
-				
+				'Auth'
 			)
 		);
 		$this->Model = new Post();
@@ -205,7 +205,6 @@ class PostController extends Nip_Controller
 
 		$data['allTerm']	= $this->Term->all();
 		$data['allStatus']	= $this->Status->all();
-		$data['allUser']	= $this->User->all();
 		
 		$data['rows']		= $rows;
 		$data['offset']		= $offset;
@@ -290,7 +289,8 @@ class PostController extends Nip_Controller
 			
 			$fields = $_POST["Post"];
 			$model->attr($fields);
-
+			$model->allow_comment = isset($fields['allow_comment'])?1:0;
+			$model->user_id = $this->Auth->primary();
 			
 			if ($model->validate()) {
 								if (!empty($_FILES['image']['name'])) {
@@ -357,6 +357,7 @@ class PostController extends Nip_Controller
 		$data['allTerm']	= $this->Term->all();
 		$data['allStatus']	= $this->Status->all();
 		$data['allUser']	= $this->User->all();
+		$data['allPage']	= $this->Post->active()->all(array("where"=>array("type"=>"page")));
 		
 		$data["id"]			= $id;
 		$data["model"]		= $model;

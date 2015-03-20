@@ -16,10 +16,10 @@ class Post extends Nip_Model {
 	public $author_id;
 	public $image;
 	public $thumb;
-	public $parent_id;
-	public $order;
-	public $view_count;
-	public $comment_count;
+	public $parent_id = 0;
+	public $order = 0;
+	public $view_count = 0;
+	public $comment_count = 0;
 	public $allow_comment;
 	public $meta_title;
 	public $meta_description;
@@ -32,17 +32,12 @@ class Post extends Nip_Model {
 			'title' => 'required|max_length[255]',
 			'content' => 'required',
 			'slug' => 'required|max_length[255]',
-			'category_id' => 'required|numeric',
 			'type' => 'required|max_length[50]',
 			'status_id' => 'required|numeric',
 			'author_id' => 'required|numeric',
-			'parent_id' => 'required|max_length[11]',
 			'order' => 'required',
 			'view_count' => 'required',
 			'comment_count' => 'required',
-			'allow_comment' => 'required',
-			'meta_title' => 'required|max_length[70]',
-			'meta_description' => 'required',
 			'publish_date' => 'required',
 			);
 	
@@ -50,17 +45,12 @@ class Post extends Nip_Model {
 			'title' => 'Title',
 			'content' => 'Content',
 			'slug' => 'Slug',
-			'category_id' => 'Category',
 			'type' => 'Type',
 			'status_id' => 'Status',
 			'author_id' => 'Author',
-			'parent_id' => 'Parent',
 			'order' => 'Order',
 			'view_count' => 'View Count',
 			'comment_count' => 'Comment Count',
-			'allow_comment' => 'Allow Comment',
-			'meta_title' => 'Meta Title',
-			'meta_description' => 'Meta Description',
 			'publish_date' => 'Publish Date',
 			);
 
@@ -80,4 +70,18 @@ class Post extends Nip_Model {
 		return $this->belongsTo('User','author_id');
 	}
 
+	public function getSummary($limit = 30){
+		return word_limiter(strip_tags($this->content), $limit);
+	}
+
+	public function beforeValidate(){
+		if(empty($this->slug)){
+			$this->slug = url_title($this->title, "-", TRUE);
+		}
+	}
+
+	public function active(){
+		$this->db->where("status_id = 1 AND publish_date <= now()");
+		return $this;
+	}
 }

@@ -164,6 +164,14 @@ class Nip_Model extends CI_Model {
 		}
 	}
 
+	public function beforeValidate(){
+
+	}
+
+	public function beforeSave(){
+		
+	}
+
 	public function getProperties(){
 		$reflect = new ReflectionClass($this);
 		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
@@ -440,6 +448,8 @@ class Nip_Model extends CI_Model {
      */
 	public function save(){
 
+		$this->beforeSave();
+
 		$this->cleanObject();
 
 		if($this->{$this->primary}){
@@ -561,6 +571,8 @@ class Nip_Model extends CI_Model {
      * @access public
      */
 	public function validate(){
+		$this->beforeValidate();
+
 		if(!empty($this->validator)){
 			$this->load->library("form_validation");
 			

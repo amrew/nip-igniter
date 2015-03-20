@@ -13,16 +13,19 @@
 								            </div>
 										</td>
 										
-										<td><?php echo $row->title;?></td>
-						<td><?php echo $row->term->title;?></td><td><?php echo $row->status->title;?></td>
+										<td>
+											<strong><?php echo $row->title;?></strong>
+											<small><?php echo $row->summary;?></small>
+										</td>
+										<td><?php echo $row->term->title;?></td>
+										<td><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
-													<span class="label label-default">Updated</span>
+													<span class="label label-default">Updated</span></td>
 												<?php else:?>
-													<span class="label label-default">Created</span>
+													<span class="label label-default">Created</span></td>
 												<?php endif;?>
-											</td>
 											<td style="width:90px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>
 													<?php echo date("d M Y", strtotime($row->updated));?>
