@@ -18,8 +18,8 @@ class User extends Nip_Model {
 	public $deleted;
 	
 	protected $validator = array(
-			'username' => 'required|max_length[255]',
-			'email' => 'required|max_length[255]|valid_email',
+			'username' => 'required|max_length[255]|is_unique[user.username]',
+			'email' => 'required|max_length[255]|valid_email|is_unique[user.email]',
 			'role_id' => 'required|numeric',
 			'status_id' => 'required|numeric',
 			);
@@ -33,6 +33,11 @@ class User extends Nip_Model {
 
 	public function __construct($options = array()){
 		parent::__construct($options);
+	}
+
+	public function beforeValidate(){
+		$this->validator['username'] = 'required|max_length[255]|is_edit_unique[user.username.id.'.$this->id.']';
+		$this->validator['email'] = 'required|max_length[255]|is_edit_unique[user.email.id.'.$this->id.']';
 	}
 	
 	public function getRole(){

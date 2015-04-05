@@ -84,4 +84,9 @@ class Post extends Nip_Model {
 		$this->db->where("status_id = 1 AND publish_date <= now()");
 		return $this;
 	}
+
+	public function getPathImage(){
+		$pathImage = base_url().str_replace("./", '', $this->image);
+		return $pathImage;
+	}
 }

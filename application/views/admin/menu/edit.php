@@ -74,6 +74,12 @@
 					<div class="help-block"></div>
 				</div>
 
+				<div class="form-group">
+							<label for="input_core">is Core?</label>
+							<input type="checkbox" class="form-control" id="input_core" name="Menu[core]" value="1" <?php echo $model->core == 1?"checked":"";?>>
+							<div class="help-block"></div>
+						</div>
+
 				
 						
 						<div class="form-group">

@@ -14,11 +14,14 @@
 										</td>
 										
 										<td>
-											<strong><?php echo $row->title;?></strong>
+											<?php if(!empty($row->image)):?>
+												<img src="<?php echo $row->pathImage;?>" width="100" class="pull-left img-thumbnail" style="margin-right:8px">
+											<?php endif;?>
+											<strong><?php echo $row->title;?></strong><br>
 											<small><?php echo $row->summary;?></small>
 										</td>
-										<td><?php echo $row->term->title;?></td>
-										<td><?php echo $row->status->title;?></td>
+										<td class="text-center"><?php echo $row->term->title;?></td>
+										<td class="text-center"><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>

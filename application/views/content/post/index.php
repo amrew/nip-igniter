@@ -74,7 +74,7 @@
 								<td>
 					<input type="text" name="title" class="form-control input-search " placeholder="Search by Title..." value="<?php echo isset($_GET["keywords"]["title"])?$_GET["keywords"]["title"]:"";?>">
 				</td>
-				<td>
+				<td width="150">
 					<select name="category_id" class="form-control input-search">
 						<option value="">All</option>
 						<?php foreach($allTerm as $row):?>
@@ -86,7 +86,7 @@
 						<?php endforeach;?>
 					</select>
 				</td>
-				<td>
+				<td width="100">
 					<select name="status_id" class="form-control input-search">
 						<option value="">All</option>
 						<?php foreach($allStatus as $row):?>
@@ -126,11 +126,14 @@
 										</td>
 										
 										<td>
-											<strong><?php echo $row->title;?></strong>
+											<?php if(!empty($row->image)):?>
+												<img src="<?php echo $row->pathImage;?>" width="100" class="pull-left img-thumbnail" style="margin-right:8px">
+											<?php endif;?>
+											<strong><?php echo $row->title;?></strong><br>
 											<small><?php echo $row->summary;?></small>
 										</td>
-										<td><?php echo $row->term->title;?></td>
-										<td><?php echo $row->status->title;?></td>
+										<td class="text-center"><?php echo $row->term->title;?></td>
+										<td class="text-center"><?php echo $row->status->title;?></td>
 										<?php if($this->Model->getTimestamps()):?>
 											<td style="width:60px;">
 												<?php if($row->updated != null && $row->updated != $row->created):?>

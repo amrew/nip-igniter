@@ -17,20 +17,26 @@ class Term extends Nip_Model {
 	
 	protected $validator = array(
 			'title' => 'required|max_length[255]',
-			'description' => 'required',
-			'slug' => 'required|max_length[255]',
+			'slug' => 'max_length[255]|is_unique[term.slug]',
 			'type' => 'required|max_length[50]',
 			);
 	
 	protected $label = array(
 			'title' => 'Title',
-			'description' => 'Description',
 			'slug' => 'Slug',
 			'type' => 'Type',
 			);
 
 	public function __construct($options = array()){
 		parent::__construct($options);
+	}
+
+	public function beforeValidate(){
+		if(empty($this->slug)){
+			$this->slug = url_title($this->title, '-', TRUE);
+		}
+
+		$this->validator['slug'] = 'max_length[255]|is_edit_unique[term.slug.id.'.$this->id.']';
 	}
 	
 }

@@ -14,6 +14,7 @@ class Menu extends Nip_Model {
 	public $params;
 	public $order = 0;
 	public $icon = 'fa fa-table';
+	public $core = 0;
 	public $created;
 	public $updated;
 	public $deleted;
