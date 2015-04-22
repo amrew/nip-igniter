@@ -252,7 +252,7 @@ class Nip_Model extends CI_Model {
 		if($where !== NULL){
 			if(is_numeric($where)){
 				$this->db->where(array($this->primary => $where));
-			}else{
+			}else if(!empty($where)){
 				$this->db->where($where);
 			}
 		}
