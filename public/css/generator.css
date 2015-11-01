@@ -1,9 +1,9 @@
 body{
 	background: 
 	linear-gradient(
-      rgba(26,188,156, 0.95), 
-      rgba(26,188,156, 0.95)
-    ), url("../img/back.jpg");
+      rgba(26,188,156, 0.6), 
+      rgba(26,188,156, 0.6)
+    ), url("../img/back2.jpg");
 
 	background-size: 100%;
 	padding-bottom: 3em;
@@ -50,13 +50,18 @@ body{
 }
 
 .navbar-custom a{
-	color: #fff !important;
+	color: #fff;
 }
 .navbar-custom a:hover{
 	text-decoration: underline;
+	color: #333;
 }
 .navbar-custom .nav li a.current, 
 .navbar-custom .nav li a:active {
+	border-bottom: none;
+}
+
+.nav-tabs-custom{
 	border-bottom: none;
 }
 
@@ -93,6 +98,7 @@ body{
 	font-size: 48px;
 	color: #ffffff;
 	text-align: center;
+	margin-top: 40px;
 }
 
 .form-generator .checkbox{
@@ -104,11 +110,6 @@ body{
 	border-radius: 0;
 	height: 45px;
 	border:none;
-}
-
-.icheckbox_flat_custom, 
-.iradio_flat_custom {
-	background: url(../bootflat/bootflat/img/check_flat/custom.png) no-repeat;
 }
 
 .btn-dark{
@@ -166,18 +167,22 @@ body{
 .input-selecter{
 	border-radius: 0;
 }
+.selecter{
+	margin-top: 0px;
+	max-width: 100%;
+}
 .selecter .selecter-selected{
 	border-radius: 0;
 }
 
-a{
+/*a{
 	color:#fff;
 }
 
 a:hover{
 	color:#fff;
 	text-decoration: underline;
-}
+}*/
 
 table a{
 	color:#2C3E50;

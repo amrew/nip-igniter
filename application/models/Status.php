@@ -13,11 +13,11 @@ class Status extends Nip_Model {
 	public $deleted;
 	
 	protected $validator = array(
-			'Status[title]' => 'required|max_length[255]',
+			'title' => 'required|max_length[255]',
 			);
 	
 	protected $label = array(
-			'Status[title]' => 'Title',
+			'title' => 'Title',
 			);
 
 	public function __construct($options = array()){

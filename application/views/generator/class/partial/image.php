@@ -1,7 +1,10 @@
 				if (!empty($_FILES['{partial:key}']['name'])) {
-					$this->load->library('upload');
 
-					$folder = './public/uploads/';
+					$folder = "./public/uploads/".strtolower("{$this->Model}/");
+
+					if(!is_dir($folder)){
+						mkdir($folder);
+					}
 
 					$config['upload_path']	 = $folder;
 					$config['allowed_types'] = '{partial:allowed_types}';

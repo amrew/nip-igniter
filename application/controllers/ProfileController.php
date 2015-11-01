@@ -50,16 +50,32 @@ class ProfileController extends Nip_Controller {
 		);
 
 	/**
-	 * Action rules for user
-	 *
-	 * @var mix
-	 * @access public
-	 */
-	protected $rules = array(
-		'*' => array(),
-		'1' => array("*"),  //admin
-		'2' => array("*") 	//member
-	);
+     * This method is used for authentication. 
+     * Check session login based on user_id and role_id.
+     * You must have user table and role table.
+     * 
+     * @param string 	$method
+     * @param mix 		$params
+     *
+     * @return void
+     *
+     * @access public
+     */
+	public function _remap($method, $params = array()) {
+
+		$roleId = $this->session->userdata('role_id');
+		$userId = $this->session->userdata('user_id');
+
+		if (!empty($roleId) && !empty($userId)) {
+
+			if (method_exists($this, $method)) {
+				return call_user_func_array(array($this, $method), $params);
+			}
+		}
+
+		show_404();
+		return;
+	}
 
 	public function __construct(){
 		parent::__construct();
@@ -69,6 +85,89 @@ class ProfileController extends Nip_Controller {
 	public function index(){
 		$data['model'] = $this->Auth->user();
 		$this->render($this->view, $data);
+	}
+
+	public function edit(){
+		$model = $this->Auth->user();
+
+		if (isset($_POST["User"])) {
+			$fields = $_POST["User"];
+			
+			unset($fields['status_id']);
+			unset($fields['role_id']);
+			unset($fields['username']);
+
+			$model->attr($fields);
+
+			$password    = $this->input->post("password");
+			$rawpassword = $password;
+
+			if (!empty($password)) {
+				$password        = sha1($password);
+				$model->password = $password;
+			}
+
+			if ($model->validate()) {
+				if (empty($model->password)) {
+					$this->msg['invalid']['message'] = "The Password field is required.";
+					echo json_encode($this->msg['invalid']);
+					exit();
+				}
+
+				if (!empty($_FILES['picture']['name'])) {
+					$this->load->library('upload');
+
+					$folder = './public/uploads/';
+
+					$config['upload_path']	 = $folder;
+					$config['allowed_types'] = 'gif|jpg|png';
+					$config['max_size']		 = '10000';
+
+					$this->upload->initialize($config);
+
+					if (!$this->upload->do_upload('picture')) {
+						$this->msg['failed']['message'] = $this->upload->display_errors();
+						echo json_encode($this->msg['failed']);
+						exit();
+					} else {
+						$data 			= $this->upload->data();
+						$model->picture = $folder.$data['file_name'];
+
+						$isCreateThumb  = FALSE;
+						$isCrop 		= TRUE;
+						
+						//if with cropping
+						if($isCrop){
+							$scaleWidth = 400;
+							$scaleHeight= 400;
+
+							$callback = isset($_POST['callback'])
+									   ? $_POST['callback'] : NULL;
+
+							$this->msg['success']['crop'] = $this->crop($model->picture, $callback, $isCreateThumb, $scaleWidth, $scaleHeight);
+						}
+					}
+				}
+
+
+				if ($model->save()) {
+					echo json_encode($this->msg['success']);
+				} else {
+					echo json_encode($this->msg['failed']);
+				}
+
+				exit();
+			} else {
+				$this->msg['invalid']['message'] = $model->messageArray();
+				echo json_encode($this->msg['invalid']);
+				exit();
+			}
+		}
+
+		$data['model'] = $model;
+		$data["callback"]	= !empty($_SERVER['HTTP_REFERER'])
+		   					 ? $_SERVER['HTTP_REFERER'] : site_url($this->controller);
+		$this->render("profile/edit", $data);	
 	}
 
 }

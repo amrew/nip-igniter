@@ -1,11 +1,18 @@
 var currentController;
 var currentUrl;
 var baseUrl;
+var tempKeywords;
 
 $(function(){
 	$('.datepicker').datepicker({
 		format: 'yyyy-mm-dd',
 	});
+
+	$('.timepicker').timepicker({
+        minuteStep: 1,
+        showSeconds: true,
+        showMeridian: false,
+    });
 
 	$("#btn-print").on('click', function(e){
 		e.preventDefault();
@@ -36,11 +43,15 @@ $(function(){
 		}
 	})
 
-	$('.input-selecter').selecter();
+	//$('.input-selecter').selecter();
 
-	$('#select-limit').selecter({
-		customClass : 'custom-selecter pull-right hidden-print',
-		callback: selectCallback
+	// $('#select-limit').selecter({
+	// 	customClass : 'custom-selecter pull-right hidden-print',
+	// 	callback: selectCallback
+	// });
+	$('#select-limit').change(function(){
+		var value = $(this).val();
+		selectCallback(value);
 	});
 
 	$(".btn-random").on("click", function(e){
@@ -197,10 +208,23 @@ function sorting(){
 	});
 }
 
-var tempKeywords = "";
 function actionSearch(type){
 	var inputSearchs = $(".input-search");
-	var keywords = "?search=true";
+	var keywords = "";
+	var stringSplited = "";
+
+	if(tempKeywords.indexOf('search') == 1){
+		tempKeywords = "";
+	}else if(tempKeywords.indexOf('&search') != -1){
+		stringSplited = tempKeywords.split("&search");
+		tempKeywords = stringSplited[0];
+	}
+
+	if(tempKeywords !== ""){
+		keywords = tempKeywords + "&search=true";
+	}else{
+		keywords = "?search=true";
+	}
 
 	inputSearchs.each(function(index){
 		var input = $(this);
@@ -359,7 +383,11 @@ function buttonAction(){
 				if(rs.status == 404){
 					setErrorMessage(rs.message,"no-privilege");
 				}else{
-					$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					if(typeof(PNotify) !== "undefined"){
+						notify(rs.message, rs.param);
+					}else{
+						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+					}
 					
 					if(rs.operation != null){
 						if(rs.operation == 'delete'){
@@ -428,7 +456,11 @@ function aboutTrash(){
 							$("#tr-"+primaries[i]).hide();
 						}
 
-						$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+						if(typeof(PNotify) !== "undefined"){
+							notify(rs.message, rs.param);
+						}else{
+							$("#ajax-message").html('<div class="alert alert-'+rs.param+'"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>'+rs.message+'</div>');
+						}
 					}
 					hideLoading();
 					init();
@@ -466,4 +498,50 @@ function getRandomNumeric(length) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
+}
+
+function notify(message, type){
+	
+	var notice = new PNotify({
+	    title: 'Message',
+	    text: message,
+	    type: type
+	});
+
+	console.log("notify");
+}
+
+function str_replace(search, replace, subject, count) {
+  var i = 0,
+    j = 0,
+    temp = '',
+    repl = '',
+    sl = 0,
+    fl = 0,
+    f = [].concat(search),
+    r = [].concat(replace),
+    s = subject,
+    ra = Object.prototype.toString.call(r) === '[object Array]',
+    sa = Object.prototype.toString.call(s) === '[object Array]';
+  s = [].concat(s);
+  if (count) {
+    this.window[count] = 0;
+  }
+
+  for (i = 0, sl = s.length; i < sl; i++) {
+    if (s[i] === '') {
+      continue;
+    }
+    for (j = 0, fl = f.length; j < fl; j++) {
+      temp = s[i] + '';
+      repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
+      s[i] = (temp)
+        .split(f[j])
+        .join(repl);
+      if (count && s[i] !== temp) {
+        this.window[count] += (temp.length - s[i].length) / f[j].length;
+      }
+    }
+  }
+  return sa ? s : s[0];
 }

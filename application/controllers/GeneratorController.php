@@ -9,6 +9,18 @@
  */
 class GeneratorController extends Nip_Controller {
 
+	/**
+	 * Action rules for user
+	 *
+	 * @var mix
+	 * @access public
+	 */
+	protected $rules = array(
+		'*' => array(),
+		'1' => array('*'),  //admin
+		'2' => array() 		//member
+	);
+
 	public $pageTitle  = "Nip Igniter - CRUD Generator for CodeIgniter";
 	public $pageLayout = "layouts/generator";
 
@@ -23,92 +35,11 @@ class GeneratorController extends Nip_Controller {
 			)
 		);
 
-	protected $templateName = "default-theme";
-
-	/** Variable ini belum dipake*/
-	public $commonTemplate = array(
-			'text' => array(
-				'title' => 'text',
-				'path'  => 'form/text.php',
-				'config'=> '#length'
-			),
-			'number' => array(
-				'title' => 'number',
-				'path'  => 'form/number.php',
-				'config'=> '#length',
-			),
-			'password' => array(
-				'title' => 'password',
-				'path'  => 'form/password.php',
-				'config'=> '',
-			),
-			'email' => array(
-				'title' => 'email',
-				'path'  => 'form/email.php',
-				'config'=> '#length',
-			),
-			'date' => array(
-				'title' => 'date',
-				'path'  => 'form/date.php',
-				'config'=> '',
-			),
-			'textarea' => array(
-				'title' => 'textarea',
-				'path'  => 'form/textarea.php',
-				'config'=> '',
-			),
-			'ckeditor' => array(
-				'title' => 'ckeditor',
-				'path'  => 'form/ckeditor.php',
-				'config'=> '',
-			),
-			'jqueryte' => array(
-				'title' => 'jqueryte',
-				'path'  => 'form/jqueryte.php',
-				'config'=> '',
-			),
-			'image' => array(
-				'title' => 'image',
-				'path'  => 'form/image.php',
-				'config'=> '#image,#filetype',
-			),
-			'thumbnail' => array(
-				'title' => 'thumbnail',
-				'path'  => '',
-				'config'=> '',
-			),
-			'file' => array(
-				'title' => 'file',
-				'path'  => 'form/file.php',
-				'config'=> '#filetype',
-			),
-		);
-	
-	/** Variable ini belum dipake*/
-	public $belongsToTemplate = array(
-			'select' => array(
-				'title' => 'select',
-				'path'  => 'form/select.php',
-				'config'=> '#belongsto'
-			),
-			'radio' => array(
-				'title' => 'radio',
-				'path'  => 'form/radio.php',
-				'config'=> '#belongsto',
-			)
-		);
-
-	/** Variable ini belum dipake*/
-	public $otherTemplate = array(
-			'random' => array(
-				'title' => 'random',
-				'path'  => 'form/random.php',
-				'config'=> '#random'
-			)
-		);
+	protected $templateName = "lte-theme";
 
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('Auth');
 
 		$this->load->dbforge();
 		$this->load->helper('directory');
@@ -134,7 +65,7 @@ class GeneratorController extends Nip_Controller {
 		$array  = $this->_parseFolder("", $map);
 
 		$data['controllerList'] = $array;
-		$data['tableList'] = $this->db->list_tables();
+		$data['tableList'] 		= $this->db->list_tables();
 		$this->render($this->view, $data);
 	}
 
@@ -149,10 +80,10 @@ class GeneratorController extends Nip_Controller {
 			return;
 		}
 
-		$tableName  = $this->input->post("table_name");
-		$folderName = $this->input->post("folder_name");
+		$tableName  	= $this->input->post("table_name");
+		$folderName 	= $this->input->post("folder_name");
 		$controllerName = $this->input->post("controller_name");
-		$mode       = $this->input->post("mode");
+		$mode       	= $this->input->post("mode");
 
 		if (!$this->db->table_exists($tableName)) {
 			$this->msg['failed']['message'] = "The table doesn't exists.";
@@ -430,6 +361,7 @@ class GeneratorController extends Nip_Controller {
 	}
 
 	protected function setSideMenu() {
+		return;
 		$map = directory_map(APPPATH.'controllers');
 
 		$string = "";
@@ -445,7 +377,7 @@ class GeneratorController extends Nip_Controller {
 			$string .= '<li><a href="#">No controller found</a></li>'."\n";
 		}
 
-		createFile(APPPATH.'views/partial/', 'menu.php', $string);
+		createFile(APPPATH.'views/layouts/partial/', 'menu.php', $string);
 	}
 
 	private function _parseFolder($keys = '', $map = array()){
@@ -463,7 +395,7 @@ class GeneratorController extends Nip_Controller {
 					$temp = implode("", $temp);
 					
 					preg_match_all('/((?:^|[A-Z])[a-z0-9]+)/', $temp,$matches);
-					$controller = $this->extractClassName($matches[0]);
+					$controller = changeClassName($matches[0]);
 
 					$skipedController = array("generator", "auth", "profile");
 					
@@ -477,6 +409,7 @@ class GeneratorController extends Nip_Controller {
 					}
 				}
 			}else{
+				$key =  str_replace("\\", "", $key);
 				$array = array_merge($array, $this->_parseFolder(str_replace("//", "/", $keys."/".$key."/"), $value));
 			}
 		}
@@ -643,7 +576,7 @@ class ModelGenerator extends GeneratorController
 			) {
 				
 				/* Validator */
-				$validator .= "'{$modelName}[{$key}]' => 'required";
+				$validator .= "'{$key}' => 'required";
 
 				if ($values['type'] == 'text' || $values['type'] == 'email') {
 					if (!empty($values['min_length'])) {
@@ -668,7 +601,7 @@ class ModelGenerator extends GeneratorController
 				$validator .= "',\n\t\t\t";
 				
 				/* Label Validator */
-				$label .= "'{$modelName}[{$key}]' => '".getLabel($key)."',\n\t\t\t";
+				$label .= "'{$key}' => '".getLabel($key)."',\n\t\t\t";
 			}
 		}
 
@@ -942,7 +875,7 @@ Class CrudGenerator extends GeneratorController{
 			\$raw{$key} = \${$key};
 
 			if (!empty(\${$key})) {
-				\${$key}        = \$this->encrypt->sha1(\${$key});
+				\${$key}        = sha1(\${$key});
 				\$model->{$key} = \${$key};
 			}\n";
 			//===endcontent====//
@@ -1076,23 +1009,23 @@ Class CrudGenerator extends GeneratorController{
 	 * @var string
 	 * @access public
 	 */
-	public \$folder = '".trim($tempFolderName,"/")."';
+	public \$folder = '".trim($tempFolderName,"/")."';";
 
-	/**
-	 * Controller Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected \$controllerSegment = ".(count($arrFolderName) + 1).";
+	// /**
+	//  * Controller Segment on URL
+	//  *
+	//  * @var integer
+	//  * @access public
+	//  */
+	// protected \$controllerSegment = ".(count($arrFolderName) + 1).";
 
-	/**
-	 * Action Segment on URL
-	 *
-	 * @var integer
-	 * @access public
-	 */
-	protected \$actionSegment = ".(count($arrFolderName) + 2).";";
+	// /**
+	//  * Action Segment on URL
+	//  *
+	//  * @var integer
+	//  * @access public
+	//  */
+	// protected \$actionSegment = ".(count($arrFolderName) + 2).";";
 
 			$pathController = "{\$this->folder}/{\$this->controller}";
 		}

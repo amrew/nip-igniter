@@ -2,119 +2,78 @@
 
 class Nip_Router extends CI_Router {
 	
-	function _validate_request($segments)
-    {
-    	$temp = $segments[0];
-		$segments[0] = $this->change_class_name($segments[0]);
-
-        if (file_exists(APPPATH.'controllers/'.$segments[0].EXT))
-        {
-            return $segments;
-        }
-
-        $segments[0] = $temp;
-
-        if (is_dir(APPPATH.'controllers/'.$segments[0]))
-        {
-            $this->set_directory($segments[0]);
-            $segments = array_slice($segments, 1);
-
-            /* ----------- ADDED CODE ------------ */
-
-
-            while(count($segments) > 0 && is_dir(APPPATH.'controllers/'.$this->directory.$segments[0]))
-            {
-            	// Set the directory and remove it from the segment array
-            //$this->set_directory($this->directory . $segments[0]);
-            if (substr($this->directory, -1, 1) == '/')
-                $this->directory = $this->directory . $segments[0];
-            else
-                $this->directory = $this->directory . '/' . $segments[0];
-
-            $segments = array_slice($segments, 1);
-            }
-
-            if (substr($this->directory, -1, 1) != '/')
-                $this->directory = $this->directory . '/';
-
-            /* ----------- END ------------ */
-
-            if (count($segments) > 0)
-            {
-
-            	$segments[0] = $this->change_class_name($segments[0]);
-
-                if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().'/'.$segments[0].EXT))
-                {
-                    show_404($this->fetch_directory().$segments[0]);
-                }
-            }
-            else
-            {
-                $this->set_class($this->default_controller);
-                $this->set_method('index');
-
-                if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().'/' .$this->default_controller.EXT))
-                {
-                    $this->directory = '';
-                    return array();
-                }
-
-            }
-
-            return $segments;
-        }
-
-        show_404($segments[0]);
-    }
+	public $postfix_controller_name = 'Controller';
 
 	/**
-	 * Fetch the current class
+	 * Set class name
 	 *
-	 * @access	public
-	 * @return	string
+	 * @param	string	$class	Class name
+	 * @return	void
 	 */
-	function fetch_class()
+	public function set_class($class)
 	{
-		//$this->class = $this->change_class_name($this->class);
-		return $this->class;
-	}
-
-	function change_class_name($name){
-		$array = explode("-", $name);
-		$array_upper_case = array_map("ucwords", $array);
-		$string = implode("", $array_upper_case);
-		$string .= "Controller";
-		return $string;
+		$class = $this->camelize_name($class) . $this->postfix_controller_name;
+		$this->class = str_replace(array('/', '.'), '', $class);
 	}
 
 	/**
-	 *  Fetch the current method
+	 * Set method name
 	 *
-	 * @access	public
-	 * @return	string
+	 * @param	string	$method	Method name
+	 * @return	void
 	 */
-	function fetch_method()
+	public function set_method($method)
 	{
-		if ($this->method == $this->fetch_class())
+		$method = $this->camelize_name($method, TRUE);
+		$this->method = $method;
+	}
+
+	protected function camelize_name($name, $is_lower_first = FALSE){
+		$array = explode('-', $name);
+		$array = array_map('ucfirst', $array);
+		$new_name = implode('', $array);
+
+		if($is_lower_first){
+			$new_name = lcfirst($new_name);
+		}
+		return $new_name;
+	}
+
+	/**
+	 * Set default controller
+	 *
+	 * @return	void
+	 */
+	protected function _set_default_controller()
+	{
+		if (empty($this->default_controller))
 		{
-			return 'index';
+			show_error('Unable to determine what should be displayed. A default route has not been specified in the routing file.');
 		}
 
-		$this->method = $this->change_method_name($this->method);
-		return $this->method;
-	}
+		// Is the method being specified?
+		if (sscanf($this->default_controller, '%[^/]/%s', $class, $method) !== 2)
+		{
+			$method = 'index';
+		}
 
-	function change_method_name($name){
-		$array = explode("-", $name);
-		$array_upper_case = array_map("ucwords", $array);
-		$string = implode("", $array_upper_case);
-		$string = $this->lowerfirst($string);
-		return $string;
-	}
+		$find_class = $this->camelize_name($class) . $this->postfix_controller_name;;
 
-	function lowerfirst($str){
-		$str[0] = strtolower($str[0]);
-        return (string)$str;
+		if ( ! file_exists(APPPATH.'controllers/'.$this->directory.ucfirst($find_class).'.php'))
+		{
+			// This will trigger 404 later
+			return;
+		}
+
+		$this->set_class($class);
+		$this->set_method($method);
+
+		// Assign routed segments, index starting from 1
+		$this->uri->rsegments = array(
+			1 => $class,
+			2 => $method
+		);
+
+		log_message('debug', 'No URI present. Default controller set.');
 	}
 }

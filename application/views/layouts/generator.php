@@ -10,12 +10,17 @@
 
     <title><?php echo $pageTitle;?></title>
 
-    <!-- Bootflat CSS -->
-    <link href="<?php echo base_url();?>public/bootflat/css/site.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="<?php echo base_url();?>public/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Sweetalert CSS -->
     <link href="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.css" rel="stylesheet">
     
+    <!-- iCheck CSS -->
+    <link href="<?php echo base_url();?>public/theme/admin-lte/css/iCheck/all.css" rel="stylesheet">
+    
+    <link href="<?php echo base_url();?>public/selecter/jquery.fs.selecter.min.css" rel="stylesheet">
+
     <!-- Generator CSS -->
     <link href="<?php echo base_url();?>public/css/generator.css" rel="stylesheet">
 
@@ -28,7 +33,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-inverse navbar-fixed-top navbar-custom" role="navigation">
+    <div class="navbar navbar-fixed-top navbar-custom" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -50,12 +55,12 @@
                 <strong>Manage</strong>
               </a>
             </li>
-            <li class="dropdown">
+            <!--<li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><strong>Result</strong> <b class="caret"></b></a>
               <ul class="dropdown-menu" role="menu">
-                <?php $this->load->view('partial/menu');?>
+                <?php //$this->load->view('layouts/partial/menu');?>
               </ul>
-            </li>
+            </li>-->
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
@@ -89,10 +94,13 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/javascript" src="<?php echo base_url();?>public/bootflat/js/site.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url();?>public/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url();?>public/js/jquery.form.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url();?>public/js/bootstrap3-typeahead.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.min.js"></script>
+    
+    <script type="text/javascript" src="<?php echo base_url();?>public/selecter/jquery.fs.selecter.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url();?>public/theme/admin-lte/js/plugins/iCheck/icheck.min.js"></script>
    
   </body>
 </html>

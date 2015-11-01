@@ -1,47 +1,100 @@
 <div class="container">
-	<form id="form-main" class="form-submit" role="form" action="<?php echo site_url($controller.'/login');?>">
-		<div class="form-generator">
-			<h3 class="logo">Sign In</h3>
-			
-			<div id="ajax-response">
-				<?php
-					$message = $this->session->flashdata('message');
-					if(!empty($message)):
-				?>
-					<div class="alert alert-danger">
-						<button type="button" class="close" data-dismiss="alert">
-							<span aria-hidden="true">&times;</span>
-							<span class="sr-only">Close</span>
-						</button>
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs nav-tabs-custom" role="tablist" style="width: 300px;margin: auto;">
+		<li role="presentation" class="active"><a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a></li>
+	    <li role="presentation"><a href="#signup" aria-controls="signup" role="tab" data-toggle="tab">Register</a></li>
+	</ul>
 
-						<?php echo $message;?>
+	  <!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="login">
+
+			<form id="form-main" class="form-submit" role="form" action="<?php echo site_url($controller.'/login');?>">
+				<div class="form-generator">
+					<h3 class="logo">Sign In</h3>
+					
+					<div id="ajax-response">
+						<?php
+							$message = $this->session->flashdata('message');
+							if(!empty($message)):
+						?>
+							<div class="alert alert-danger">
+								<button type="button" class="close" data-dismiss="alert">
+									<span aria-hidden="true">&times;</span>
+									<span class="sr-only">Close</span>
+								</button>
+
+								<?php echo $message;?>
+							</div>
+						<?php endif;?>
 					</div>
-				<?php endif;?>
-			</div>
 
-			<input type="text" class="form-control input-custom" id="inputUserkey" name="userkey" placeholder="Username or Email..." required autofocus>
-			<input type="password" class="form-control input-custom" id="inputPassword" name="password" placeholder="Password" required>
-		    
-		    <div class="clearfix" style="margin-top:24px;">			
-	            <button id="btnGenerate" class="btn-dark pull-left" type="submit" data-loading-text="Please wait...">Login</button> 
-	        	<span class="pull-right">
-	        		<a href="<?php echo site_url("auth/forgot");?>">Forgot Password</a>
-	        	</span>
-	        </div>
+					<input type="text" class="form-control input-custom" id="inputUserkey" name="userkey" placeholder="Username or Email..." required autofocus>
+					<input type="password" class="form-control input-custom" id="inputPassword" name="password" placeholder="Password" required>
+				    
+				    <div class="clearfix" style="margin-top:24px;">			
+			            <button id="btnGenerate" class="btn-dark pull-left" type="submit" data-loading-text="Please wait...">Login</button> 
+			        	<span class="pull-right">
+			        		<a href="<?php echo site_url("auth/forgot");?>">Forgot Password</a>
+			        	</span>
+			        </div>
 
-	        <!--Remove this when your web on production mode-->
-	        <?php if(!$this->db->table_exists("user")):?>
-	        	<br><button id="btnInstall" class="btn-dark-green btn-full" type="submit" data-loading-text="Please wait...">Install example user data</button> 
-	        	<script type="text/javascript">$("#btnGenerate").attr("disabled","true");</script>
-	        <?php endif;?>
-	        <!--//Remove this when your web on production mode-->
+			        <!--Remove this when your web on production mode-->
+			        <?php if(!$this->db->table_exists("user")):?>
+			        	<br><button id="btnInstall" class="btn-dark-green btn-full" type="button" data-loading-text="Please wait...">Install example user data</button> 
+			        	<script type="text/javascript">$("#btnGenerate").attr("disabled","true");</script>
+			        <?php endif;?>
+			        <!--//Remove this when your web on production mode-->
 
-	        <div class="trigger">
-		        <span class="glyphicon glyphicon-log-in" style="font-size:48px;"></span>
-		    </div>
+			        <div class="trigger">
+				        <span class="glyphicon glyphicon-log-in" style="font-size:48px;"></span>
+				    </div>
 
-        </div>
-	</form>
+		        </div>
+			</form>
+
+	    </div>
+	    <div role="tabpanel" class="tab-pane" id="signup">
+	    	
+	    	<form id="form-signup" class="form-submit" role="form" action="<?php echo site_url($controller.'/signup');?>">
+				<div class="form-generator">
+					<h3 class="logo">Sign Up</h3>
+					
+					<div id="ajax-response">
+						<?php
+							$message = $this->session->flashdata('message');
+							if(!empty($message)):
+						?>
+							<div class="alert alert-danger">
+								<button type="button" class="close" data-dismiss="alert">
+									<span aria-hidden="true">&times;</span>
+									<span class="sr-only">Close</span>
+								</button>
+
+								<?php echo $message;?>
+							</div>
+						<?php endif;?>
+					</div>
+
+					<input type="text" class="form-control input-custom" id="inputUsername" name="username" placeholder="Username..." required autofocus>
+					<input type="email" class="form-control input-custom" id="inputEmail" name="email" placeholder="Email..." required>
+					<input type="password" class="form-control input-custom" id="inputPassword" name="password" placeholder="Password..." required>
+					<input type="password" class="form-control input-custom" id="inputRePassword" name="repassword" placeholder="Ulangi Password..." required>
+				    
+				    <div class="clearfix" style="margin-top:24px;">			
+			            <button id="btnGenerate" class="btn-dark" style="width:100%" type="submit" data-loading-text="Please wait...">Daftar</button> 
+			        </div>
+
+			        <div class="trigger">
+				        <span class="glyphicon glyphicon-edit" style="font-size:48px;"></span>
+				    </div>
+				    
+		        </div>
+			</form>
+
+	    </div>
+	</div>
+	
 </div>
 
 <!--Remove this when your web on production mode-->
@@ -61,8 +114,6 @@
 					<button class="btn-dark" type="submit">Yes, please.</button>
 				</form>
 			</div>
-			<!--Modal Footer-->
-			<div class="modal-footer"></div>
 		</div>
 	</div>
 </div>
@@ -73,8 +124,6 @@ $(function(){
 	var docHeight = $(document).height();
     var formHeight = $(".form-generator").height();
     
-    $(".form-generator").css("margin-top",(docHeight - formHeight - 90)/3);
-
     $('[data-toggle="tooltip"]').tooltip();
 
 	$('.form-submit').unbind('submit').on('submit', function(e){
@@ -84,7 +133,7 @@ $(function(){
 
 		form.ajaxSubmit({
 			beforeSubmit: function(){
-				$('#ajax-response').html("");
+				form.find('#ajax-response').html("");
 				btn.button('loading');
 			},
 			type: 'post',
@@ -93,13 +142,13 @@ $(function(){
 			success: function(rs){
 				if(rs.status == 1){
 					
-					$('#ajax-response').append('<div class="alert alert-'+rs.param+'"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> '+rs.message+'</div>');
+					form.find('#ajax-response').append('<div class="alert alert-'+rs.param+'"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> '+rs.message+'</div>');
 					
 					if(typeof(rs.callback) !== "undefined"){
 						window.location.href=rs.callback;
 					}
 				}else{
-					$('#ajax-response').append('<div class="alert alert-'+rs.param+'"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> '+rs.message+'</div>');
+					form.find('#ajax-response').append('<div class="alert alert-'+rs.param+'"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> '+rs.message+'</div>');
 				}
 				btn.button('reset');
 			},
@@ -109,7 +158,7 @@ $(function(){
 		});
 
 	});
-	
+
 	/** Remove this when your web on production mode*/
 	$("#btnInstall").on("click", function(e){
 		e.preventDefault();		

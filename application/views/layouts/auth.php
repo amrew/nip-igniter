@@ -10,8 +10,8 @@
 
     <title><?php echo $pageTitle;?></title>
 
-    <!-- Bootflat CSS -->
-    <link href="<?php echo base_url();?>public/bootflat/css/site.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="<?php echo base_url();?>public/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Sweetalert CSS -->
     <link href="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.css" rel="stylesheet">
@@ -28,7 +28,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-inverse navbar-fixed-top navbar-custom" role="navigation">
+    <div class="navbar navbar-fixed-top navbar-custom" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -56,7 +56,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/javascript" src="<?php echo base_url();?>public/bootflat/js/site.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url();?>public/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url();?>public/js/jquery.form.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url();?>public/sweetalert-master/lib/sweet-alert.min.js"></script>
     

@@ -39,7 +39,7 @@ class AuthController extends Nip_Controller {
 			),
 			"failed" => array(
 				"status" => 2,
-				"message" => '<span class="glyphicon glyphicon-remove-circle"></span> Failed to login',
+				"message" => '<span class="glyphicon glyphicon-remove-circle"></span> Failed',
 				"param" => "alert alert-danger"
 			),
 			"invalid" => array(
@@ -55,7 +55,7 @@ class AuthController extends Nip_Controller {
 	 * @var string
 	 * @access public
 	 */
-	public $urlAfterLogin = "generator/index";
+	public $urlAfterLogin = "admin/kendaraan/edit";
 	
 	/**
      * When you've already logged in and tried to access logout function,
@@ -126,7 +126,7 @@ class AuthController extends Nip_Controller {
 			
 		$userkey 	 = $this->input->post("userkey");
 		$password 	 = $this->input->post("password");
-		$encPassword = $this->encrypt->sha1($password);
+		$encPassword = sha1($password);
 
 		/**
 		 * Check the user table with username
@@ -152,14 +152,98 @@ class AuthController extends Nip_Controller {
 		 * If one of them is correct then the login success.
 		 */
 		if ($loginWithUsername || $loginWithEmail) {
-			if($this->Auth->role() == 2){ //member
-				$this->urlAfterLogin = "profile";
-			}
+			
+			$this->urlAfterLogin = $this->getUrlAfterLogin();
+
 			$this->msg['success']['callback'] = site_url($this->urlAfterLogin);			
 			echo json_encode($this->msg['success']);
 		} else {
 			echo json_encode($this->msg['failed']);
 		}
+	}
+
+	public function signup(){
+		$model = new User();
+		
+		if (isset($_POST["username"])) {
+			$this->load->library(array('upload', 'encrypt'));
+			
+			$model->username = $this->input->post('username');
+			$model->email = $this->input->post('email');
+			$model->role_id = 2;
+			$model->status_id = 1;
+
+			$password    = $this->input->post("password");
+			$repassword    = $this->input->post("repassword");
+
+			if ($password != $repassword) {
+				$this->msg['invalid']['message'] = "Password tidak sama.";
+				echo json_encode($this->msg['invalid']);
+				exit();
+			}
+
+			if (!empty($password)) {
+				$password        = sha1($password);
+				$model->password = $password;
+			}
+
+			if ($model->validate()) {
+				if (empty($model->password)) {
+					$this->msg['invalid']['message'] = "The Password field is required.";
+					echo json_encode($this->msg['invalid']);
+					exit();
+				}
+
+				if ($model->save()) {
+					$this->msg['success']['message'] = '<span class="glyphicon glyphicon-ok-circle"></span> Sign up success. Please login first.';
+					echo json_encode($this->msg['success']);
+				} else {
+					echo json_encode($this->msg['failed']);
+				}
+
+				exit();
+			} else {
+				$this->msg['invalid']['message'] = $model->messageString();
+				echo json_encode($this->msg['invalid']);
+				exit();
+			}
+		}
+	}
+
+	protected function getUrlAfterLogin(){
+		$this->load->model('Menu');
+
+		$menus = $this->Menu->all(array(
+	        "where"=>array("privilege.role_id"=>$this->Auth->role()),
+	        "order_by"=>"parent_menu_id asc, order asc",
+	        "left_join" => array(
+	            "privilege" => "privilege.menu_id = menu.id"
+	        ),
+	        "fields" => "menu.*, 
+	                    privilege.view,
+	                    privilege.create,
+	                    privilege.update,"
+	    ));
+
+	    if(empty($menus)){
+	    	return 'profile';
+	    }
+
+	    $url = "";
+	    foreach($menus as $menu){
+	    	if($menu->view == 1){
+	    		$url = $menu->url;
+	    	}else if($menu->create == 1){
+	    		$url = $menu->url.'/edit';
+	    	}
+
+	    	if(!empty($menu->params)){
+	    		$url = $url.'?'.$menu->params;
+	    	}
+	    	break;
+	    }
+
+	    return $url;
 	}
 
 	/**
@@ -383,7 +467,7 @@ class AuthController extends Nip_Controller {
 	     * save the new password to the database
 	     */
 		$user->activation_code = "";
-		$user->password = $this->encrypt->sha1($password);
+		$user->password = sha1($password);
 		
 		if($user->save()){
 			$this->msg['success']['message'] = "You've successfully reseted the password. Please login first.";
@@ -413,7 +497,7 @@ class AuthController extends Nip_Controller {
             
         }
         
-        foreach (explode(";\n", $sql_clean) as $sql) {
+        foreach (explode(";", $sql_clean) as $sql) {
             $sql = trim($sql);
             
             if($sql) {
