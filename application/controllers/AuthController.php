@@ -55,7 +55,7 @@ class AuthController extends Nip_Controller {
 	 * @var string
 	 * @access public
 	 */
-	public $urlAfterLogin = "admin/kendaraan/edit";
+	public $urlAfterLogin = "generator";
 	
 	/**
      * When you've already logged in and tried to access logout function,
