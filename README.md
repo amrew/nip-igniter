@@ -1,4 +1,4 @@
-NipIgniter 2.0.2
+NipIgniter 3
 ===========
 
 NipIgniter is a tool that is used to create a CRUD based on available tables in the database. Or you can create a new table with a simple way. 
