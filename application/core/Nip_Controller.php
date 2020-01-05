@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
  *
@@ -8,677 +10,691 @@
  * @version    2.0
  * @link       http://nipstudio.com
  */
-class Nip_Controller extends CI_Controller 
+class Nip_Controller extends CI_Controller
 {
-	
-	/**
-	 * Activated the _remap() function for login
-	 *
-	 * @var string
-	 * @access protected
-	 */
-	protected $authStatus = TRUE;
 
-	/**
-	 * Title of page
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $pageTitle;
+    /**
+     * Activated the _remap() function for login
+     *
+     * @var string
+     * @access protected
+     */
+    protected $authStatus = true;
 
-	/**
-	 * Partial view
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $pageContent;
+    /**
+     * Title of page
+     *
+     * @var string
+     * @access public
+     */
+    public $pageTitle;
 
-	/**
-	 * Layout view path
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $pageLayout = "layouts/main";
+    /**
+     * Partial view
+     *
+     * @var string
+     * @access public
+     */
+    public $pageContent;
 
-	/**
-	 * Controller folder name
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $folder = null;
+    /**
+     * Layout view path
+     *
+     * @var string
+     * @access public
+     */
+    public $pageLayout = "layouts/main";
 
-	/**
-	 * Controller name in the current URL
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $controller;
+    /**
+     * Controller folder name
+     *
+     * @var string
+     * @access public
+     */
+    public $folder = null;
 
-	/**
-	 * Action name in the current URL
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $action;
+    /**
+     * Controller name in the current URL
+     *
+     * @var string
+     * @access public
+     */
+    public $controller;
 
-	/**
-	 * Combination of URL to view folder
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $view;
+    /**
+     * Action name in the current URL
+     *
+     * @var string
+     * @access public
+     */
+    public $action;
 
-	/**
-	 * Path to controller name include folder
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $pathController;
-	
-	/**
-	 * Url tambahan yang berupa parameter GET
-	 *
-	 * @var string
-	 * @access public
-	 */
-	public $queryString = "";
+    /**
+     * Combination of URL to view folder
+     *
+     * @var string
+     * @access public
+     */
+    public $view;
 
-	/**
-	 * Redirect url to login form
-	 *
-	 * @var string
-	 * @access public
-	 */
-	protected $loginFormUrl = 'auth';
+    /**
+     * Path to controller name include folder
+     *
+     * @var string
+     * @access public
+     */
+    public $pathController;
 
-	/**
-	 * Action rules for user
-	 *
-	 * @var mix
-	 * @access public
-	 */
-	protected $rules = array(
-		'*' => array(),
-		'1' => array(),  //admin
-		'2' => array() 		//member
-	);
+    /**
+     * Url tambahan yang berupa parameter GET
+     *
+     * @var string
+     * @access public
+     */
+    public $queryString = "";
 
-	/**
-     * This method is used for authentication. 
+    /**
+     * Redirect url to login form
+     *
+     * @var string
+     * @access public
+     */
+    protected $loginFormUrl = 'auth';
+
+    /**
+     * Action rules for user
+     *
+     * @var mix
+     * @access public
+     */
+    protected $rules = array(
+        '*' => array(),
+        '1' => array(), //admin
+        '2' => array(), //member
+    );
+
+    /**
+     * This method is used for authentication.
      * Check session login based on user_id and role_id.
      * You must have user table and role table.
-     * 
-     * @param string 	$method
-     * @param mix 		$params
+     *
+     * @param string     $method
+     * @param mix         $params
      *
      * @return void
      *
      * @access public
      */
-	public function _remap($method, $params = array()) {
+    public function _remap($method, $params = array())
+    {
 
-		if($this->authStatus) {
+        if ($this->authStatus) {
 
-			$roleId = $this->session->userdata('role_id');
-			$userId = $this->session->userdata('user_id');
+            $roleId = $this->session->userdata('role_id');
+            $userId = $this->session->userdata('user_id');
 
-			$allAllowedMethod = isset($this->rules['*'])?$this->rules['*']:null;
+            $allAllowedMethod = isset($this->rules['*']) ? $this->rules['*'] : null;
 
-			if (!empty($allAllowedMethod)) {
-					
-				if (in_array('*', $allAllowedMethod) || in_array($method, $allAllowedMethod)) {
-					
-					if (method_exists($this, $method)) {
-						return call_user_func_array(array($this, $method), $params);
-					}
-					
-					show_404();
-					return;
-				}
-			}
+            if (!empty($allAllowedMethod)) {
 
-			if (!empty($roleId) && !empty($userId)) {
+                if (in_array('*', $allAllowedMethod) || in_array($method, $allAllowedMethod)) {
 
-				$this->load->model(array("Privilege","Menu"));
+                    if (method_exists($this, $method)) {
+                        return call_user_func_array(array($this, $method), $params);
+                    }
 
-				$className = get_class($this);
-				$menus = $this->Menu->all(array("where" => array("controller"=>$className, "core" => 1)));
+                    show_404();
+                    return;
+                }
+            }
 
-				if(!empty($menus)){
-					foreach($menus as $menu){
-						$menuId = $menu->id;
-						$privilege = $this->Privilege->first(array("role_id"=>$roleId, "menu_id"=>$menuId));
-						
-						if($privilege){
+            if (!empty($roleId) && !empty($userId)) {
 
-							$queryString = ($_SERVER['QUERY_STRING'] != "") 
-						  					? "?".$_SERVER['QUERY_STRING'] : "";
+                $this->load->model(array("Privilege", "Menu"));
 
-						  	$status = TRUE;
-						  	if(!empty($menu->params)){
-						  		$status = FALSE;
+                $className = get_class($this);
+                $menus = $this->Menu->all(array("where" => array("controller" => $className, "core" => 1)));
 
-						  		if(strpos($queryString, $menu->params)!==false){
-						  			$status = TRUE;
-						  		}
-						  	}
+                if (!empty($menus)) {
+                    foreach ($menus as $menu) {
+                        $menuId = $menu->id;
+                        $privilege = $this->Privilege->first(array("role_id" => $roleId, "menu_id" => $menuId));
 
-							if($privilege->view == 1 && $status){
-								$this->rules[$roleId][] = "index";
-								$this->rules[$roleId][] = "view";
-							}
-							if($privilege->create == 1 && $status){
-								$this->rules[$roleId][] = "printPreview";
-								
-								if(empty($params)){
-									$this->rules[$roleId][] = "edit";
-									$this->rules[$roleId][] = "multiEdit";
-									$this->rules[$roleId][] = "crop";
-									$this->rules[$roleId][] = "submitCrop";
-								}
-							}
-							if($privilege->update == 1 && $status){
-								if(!empty($params)){
-									$this->rules[$roleId][] = "edit";
-									$this->rules[$roleId][] = "crop";
-									$this->rules[$roleId][] = "submitCrop";
-								}
-							}
-							if($privilege->delete == 1 && $status){
-								$this->rules[$roleId][] = "delete";
-								$this->rules[$roleId][] = "moveToTrash";
-							}
-							if($privilege->trash == 1 && $status){
-								$this->rules[$roleId][] = "trash";
-							}
-							if($privilege->restore == 1 && $status){
-								$this->rules[$roleId][] = "restore";
-								$this->rules[$roleId][] = "restoreTrash";
-							}
-							if($privilege->delete_permanent == 1 && $status){
-								$this->rules[$roleId][] = "forceDelete";
-								$this->rules[$roleId][] = "deletePermanently";
-							}
+                        if ($privilege) {
 
-							// if($status && count($menus)>1){
-							// 	break;
-							// }
-						}
-					}
-				}
+                            $queryString = ($_SERVER['QUERY_STRING'] != "")
+                            ? "?" . $_SERVER['QUERY_STRING'] : "";
 
-				if(!isset($this->rules[$roleId])){
-					$this->rules[$roleId] = array();
-				}
+                            $status = true;
+                            if (!empty($menu->params)) {
+                                $status = false;
 
-				$userRules = $this->rules[$roleId];
+                                if (strpos($queryString, $menu->params) !== false) {
+                                    $status = true;
+                                }
+                            }
 
-				if (!empty($userRules)) {
+                            if ($privilege->view == 1 && $status) {
+                                $this->rules[$roleId][] = "index";
+                                $this->rules[$roleId][] = "view";
+                            }
+                            if ($privilege->create == 1 && $status) {
+                                $this->rules[$roleId][] = "printPreview";
 
-					if (in_array('*', $userRules) || in_array($method, $userRules)) {
-						
-						if (method_exists($this, $method)) {
-							return call_user_func_array(array($this, $method), $params);
-						}
-						
-						show_404();
-						return;
-					}
-				}
+                                if (empty($params)) {
+                                    $this->rules[$roleId][] = "edit";
+                                    $this->rules[$roleId][] = "multiEdit";
+                                    $this->rules[$roleId][] = "crop";
+                                    $this->rules[$roleId][] = "submitCrop";
+                                }
+                            }
+                            if ($privilege->update == 1 && $status) {
+                                if (!empty($params)) {
+                                    $this->rules[$roleId][] = "edit";
+                                    $this->rules[$roleId][] = "crop";
+                                    $this->rules[$roleId][] = "submitCrop";
+                                }
+                            }
+                            if ($privilege->delete == 1 && $status) {
+                                $this->rules[$roleId][] = "delete";
+                                $this->rules[$roleId][] = "moveToTrash";
+                            }
+                            if ($privilege->trash == 1 && $status) {
+                                $this->rules[$roleId][] = "trash";
+                            }
+                            if ($privilege->restore == 1 && $status) {
+                                $this->rules[$roleId][] = "restore";
+                                $this->rules[$roleId][] = "restoreTrash";
+                            }
+                            if ($privilege->delete_permanent == 1 && $status) {
+                                $this->rules[$roleId][] = "forceDelete";
+                                $this->rules[$roleId][] = "deletePermanently";
+                            }
 
-				$message = "You have no privilege to access it!";
+                            // if($status && count($menus)>1){
+                            //     break;
+                            // }
+                        }
+                    }
+                }
 
-				if ($this->input->is_ajax_request()) {
-					echo json_encode(
-							array(
-								"status" => 404, 
-								"message"=> $message
-							)
-						);
-					return;
-				}else{
-					$data["callback"] = !empty($_SERVER['HTTP_REFERER'])
-		   							   ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
-		   			$data["message"]  = $message;
-					$this->render("layouts/partial/error.php", $data);
-					return;
-				}
-			}
+                if (!isset($this->rules[$roleId])) {
+                    $this->rules[$roleId] = array();
+                }
 
-			redirect($this->loginFormUrl);
-		} else {
+                $userRules = $this->rules[$roleId];
 
-			if (method_exists($this, $method)) {
-				return call_user_func_array(array($this, $method), $params);
-			}
-			
-			show_404();
-			return;
-		}
-	}
+                if (!empty($userRules)) {
 
-	/**
+                    if (in_array('*', $userRules) || in_array($method, $userRules)) {
+
+                        if (method_exists($this, $method)) {
+                            return call_user_func_array(array($this, $method), $params);
+                        }
+
+                        show_404();
+                        return;
+                    }
+                }
+
+                $message = "You have no privilege to access it!";
+
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(
+                        array(
+                            "status" => 404,
+                            "message" => $message,
+                        )
+                    );
+                    return;
+                } else {
+                    $data["callback"] = !empty($_SERVER['HTTP_REFERER'])
+                    ? $_SERVER['HTTP_REFERER'] : site_url($this->pathController);
+                    $data["message"] = $message;
+                    $this->render("layouts/partial/error.php", $data);
+                    return;
+                }
+            }
+
+            redirect($this->loginFormUrl);
+        } else {
+
+            if (method_exists($this, $method)) {
+                return call_user_func_array(array($this, $method), $params);
+            }
+
+            show_404();
+            return;
+        }
+    }
+
+    /**
      * In this function, we initialize some method for settings controller's variable
-     * 
+     *
      * @return void
      *
      * @access public
      */
-	public function __construct(){
-		parent::__construct();
-		/**
-		 * Default timezone. You can change it based on your location.
-		 */
-		date_default_timezone_set("Asia/Jakarta");
+    public function __construct()
+    {
+        parent::__construct();
+        /**
+         * Default timezone. You can change it based on your location.
+         */
+        date_default_timezone_set("Asia/Jakarta");
 
-		/**
-		 * Setting the controller name to $this->controller variable.
-		 */
-		$this->setController();
-		/**
-		 * Setting the action name to $this->action variable.
-		 */
-		$this->setAction();
-		/**
-		 * Setting the controller name to $this->controller variable.
-		 */
-		$this->setView();
+        /**
+         * Setting the controller name to $this->controller variable.
+         */
+        $this->setController();
+        /**
+         * Setting the action name to $this->action variable.
+         */
+        $this->setAction();
+        /**
+         * Setting the controller name to $this->controller variable.
+         */
+        $this->setView();
 
-		$this->queryString = ($_SERVER['QUERY_STRING'] != "") ? "?".$_SERVER['QUERY_STRING'] : "";
-	}
+        $this->queryString = ($_SERVER['QUERY_STRING'] != "") ? "?" . $_SERVER['QUERY_STRING'] : "";
+    }
 
-	/**
+    /**
      * Showing view with template layout
-     * 
-     * @param string 	$view View name on folder views
-     * @param mix 		$data Data that will be shown on View
-     * @param boolean	$bool If it's TRUE, the return will be string
-     * 
+     *
+     * @param string     $view View name on folder views
+     * @param mix         $data Data that will be shown on View
+     * @param boolean    $bool If it's TRUE, the return will be string
+     *
      * @return void
      *
      * @access public
      */
-	public function render($view, $data = array(), $bool = FALSE){
-		$this->beforeRender();
+    public function render($view, $data = array(), $bool = false)
+    {
+        $this->beforeRender();
 
-		$reflect 	= new ReflectionClass($this);
-		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
+        $reflect = new ReflectionClass($this);
+        $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
 
-		foreach($properties as $prop){
-			$data[$prop->name] = $this->{$prop->name};
-		}
+        foreach ($properties as $prop) {
+            $data[$prop->name] = $this->{$prop->name};
+        }
 
-		$data['pageContent'] = $this->load->view($view, $data, TRUE);
-		if($bool){
-			return $this->load->view($this->pageLayout, $data, TRUE);
-		}else{
-			$this->load->view($this->pageLayout, $data);
-		}
-	}
-	
-	/**
+        $data['pageContent'] = $this->load->view($view, $data, true);
+        if ($bool) {
+            return $this->load->view($this->pageLayout, $data, true);
+        } else {
+            $this->load->view($this->pageLayout, $data);
+        }
+    }
+
+    /**
      * Showing view without template layout
-     * 
-     * @param string 	$view View name on folder views
-     * @param mix 		$data Data that will be shown on View
-     * @param boolean	$bool If it's TRUE, the return will be string
-     * 
+     *
+     * @param string     $view View name on folder views
+     * @param mix         $data Data that will be shown on View
+     * @param boolean    $bool If it's TRUE, the return will be string
+     *
      * @return void
      *
      * @access public
      */
-	public function renderPartial($view, $data = array(), $bool = FALSE){
-		$this->beforeRender();
+    public function renderPartial($view, $data = array(), $bool = false)
+    {
+        $this->beforeRender();
 
-		$reflect 	= new ReflectionClass($this);
-		$properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
+        $reflect = new ReflectionClass($this);
+        $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
 
-		foreach($properties as $prop){
-			$data[$prop->name] = $this->{$prop->name};
-		}
+        foreach ($properties as $prop) {
+            $data[$prop->name] = $this->{$prop->name};
+        }
 
-		if($bool){
-			return $this->load->view($view,$data,TRUE);
-		}else{
-			$this->load->view($view,$data);
-		}
-	}
+        if ($bool) {
+            return $this->load->view($view, $data, true);
+        } else {
+            $this->load->view($view, $data);
+        }
+    }
 
-	public function beforeRender(){
-		if(!empty($this->paramString)) {
-			$this->paramString = "?".$this->paramString;
-		}
-	}
-	
-	/**
+    public function beforeRender()
+    {
+        if (!empty($this->paramString)) {
+            $this->paramString = "?" . $this->paramString;
+        }
+    }
+
+    /**
      * Set controller name
-     * 
+     *
      * @param string $controller
-     * 
+     *
      * @return void
      *
      * @access public
      */
-	public function setController($controller = null){
-		if($controller){
-			$this->controller = $controller;
-		}else{
-			$controller = $this->router->fetch_class();
-			$controller = getStrippedClass($controller);
+    public function setController($controller = null)
+    {
+        if ($controller) {
+            $this->controller = $controller;
+        } else {
+            $controller = $this->router->fetch_class();
+            $controller = getStrippedClass($controller);
 
-			$this->controller = $controller;
-		}
-	}
+            $this->controller = $controller;
+        }
+    }
 
-	/**
+    /**
      * Set action name
-     * 
+     *
      * @param string $action
-     * 
+     *
      * @return void
      *
      * @access public
      */
-	public function setAction($action = null){
-		if($action){
-			$this->action = $action;
-		}else{
-			$this->action = $this->router->fetch_method();
-		}
+    public function setAction($action = null)
+    {
+        if ($action) {
+            $this->action = $action;
+        } else {
+            $this->action = $this->router->fetch_method();
+        }
 
-	}
-	
-	/**
+    }
+
+    /**
      * Set view name
-     * 
+     *
      * @return void
      *
      * @access public
      */
-	public function setView(){
-		if($this->folder){
-			$this->view = "{$this->folder}/{$this->controller}/{$this->action}";
-			$this->pathController = "{$this->folder}/{$this->controller}";
-		}else{
-			$this->view = "{$this->controller}/{$this->action}";
-			$this->pathController = "{$this->controller}";
-		}
-		
-	}
+    public function setView()
+    {
+        if ($this->folder) {
+            $this->view = "{$this->folder}/{$this->controller}/{$this->action}";
+            $this->pathController = "{$this->folder}/{$this->controller}";
+        } else {
+            $this->view = "{$this->controller}/{$this->action}";
+            $this->pathController = "{$this->controller}";
+        }
 
-	/**
+    }
+
+    /**
      * Generate pagination based on Codeigniter Pagination
-     * 
-     * @param string 	$baseUrl
-     * @param integer 	$total
-     * @param integer 	$limit
-     * @param integer 	$uri
-     * @param string 	$queryString
-     * 
+     *
+     * @param string     $baseUrl
+     * @param integer     $total
+     * @param integer     $limit
+     * @param integer     $uri
+     * @param string     $queryString
+     *
      * @return string
      *
      * @access protected
      */
-	protected function paginate($baseUrl, $total, $limit, $offset = 0){
-		$this->load->library('pagination');
+    protected function paginate($baseUrl, $total, $limit, $offset = 0)
+    {
+        $this->load->library('pagination');
 
-		$config['base_url'] 	= $baseUrl;
-		$config['total_rows'] 	= $total;
-		$config['per_page'] 	= $limit;
-		
-		$config['full_tag_open'] 	= '<ul class="pagination pull-right" style="margin:0">';
-		$config['full_tag_close'] 	= '</ul>';
+        $config['base_url'] = $baseUrl;
+        $config['total_rows'] = $total;
+        $config['per_page'] = $limit;
 
-		$config['first_link'] 		= '&laquo;';
-		$config['first_tag_open'] 	= '<li>';
-		$config['first_tag_close'] 	= '</li>';
+        $config['full_tag_open'] = '<ul class="pagination pull-right" style="margin:0">';
+        $config['full_tag_close'] = '</ul>';
 
-		$config['last_link'] 		= '&raquo;';
-		$config['last_tag_open'] 	= '<li>';
-		$config['last_tag_close'] 	= '</li>';
+        $config['first_link'] = '&laquo;';
+        $config['first_tag_open'] = '<li>';
+        $config['first_tag_close'] = '</li>';
 
-		$config['next_link'] 		= '›';
-		$config['next_tag_open'] 	= '<li>';
-		$config['next_tag_close'] 	= '</li>';
+        $config['last_link'] = '&raquo;';
+        $config['last_tag_open'] = '<li>';
+        $config['last_tag_close'] = '</li>';
 
-		$config['prev_link'] 		= '‹';
-		$config['prev_tag_open'] 	= '<li>';
-		$config['prev_tag_close'] 	= '</li>';
+        $config['next_link'] = '›';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
 
-		$config['cur_tag_open'] 	= '<li class="active"><a>';
-		$config['cur_tag_close'] 	= '</a></li>';
+        $config['prev_link'] = '‹';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
 
-		$config['num_tag_open'] 	= '<li>';
-		$config['num_tag_close'] 	= '</li>';
+        $config['cur_tag_open'] = '<li class="active"><a>';
+        $config['cur_tag_close'] = '</a></li>';
 
-		$config['offset'] 			= $offset;
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
 
-		$config['reuse_query_string'] = TRUE;
+        $config['offset'] = $offset;
 
-		$this->pagination->initialize($config);
+        $config['reuse_query_string'] = true;
 
-		return $this->pagination->create_links();
-	}
+        $this->pagination->initialize($config);
 
-	/**
+        return $this->pagination->create_links();
+    }
+
+    /**
      * Generate string for specific field
-     * 
-     * @param mix 	$keywords
-     * 
+     *
+     * @param mix     $keywords
+     *
      * @return string
      *
      * @access protected
      */
-	protected function getSpecificWhere($keywords = array()){
-		$where = "";
+    protected function getSpecificWhere($keywords = array())
+    {
+        $where = "";
 
-		$i = 0;
-		foreach($keywords as $key=>$value){
-			
-			$filterValue = urldecode($value);
+        $i = 0;
+        foreach ($keywords as $key => $value) {
 
-			if (strpos($filterValue,'%') !== false) {
-				if($i == 0){
-					$where .= "{$key} like '{$filterValue}'";
-				}else{
-					$where .= " AND {$key} like '{$filterValue}'";
-				}
-			} else {
-				if($i == 0){
-					$where .= "{$key} like '%{$filterValue}%'";
-				}else{
-					$where .= " AND {$key} like '%{$filterValue}%'";
-				}
-			}
-			$i++;
-		}
+            $filterValue = urldecode($value);
 
-		return $where;
-	}
+            if (strpos($filterValue, '%') !== false) {
+                if ($i == 0) {
+                    $where .= "{$key} like '{$filterValue}'";
+                } else {
+                    $where .= " AND {$key} like '{$filterValue}'";
+                }
+            } else {
+                if ($i == 0) {
+                    $where .= "{$key} like '%{$filterValue}%'";
+                } else {
+                    $where .= " AND {$key} like '%{$filterValue}%'";
+                }
+            }
+            $i++;
+        }
 
-	/**
+        return $where;
+    }
+
+    /**
      * Generate string for all fields on the table
-     * 
-     * @param string 	$keyword
-     * 
+     *
+     * @param string     $keyword
+     *
      * @return string
      *
      * @access protected
      */
-	protected function getWhere($keyword = null){
-		if($keyword){
-			$string = "(";
-			$i=0;
-			foreach(get_object_vars($this->Model) as $key => $value){
-				if($i==0){
-					$string .= "{$key} like '%{$keyword}%' ";
-				}else{
-					$string .= " OR {$key} like '%{$keyword}%' ";
-				}
-				$i++;
-			}
-			$string .=")";
-			return $string;
-		}
-		return "";
-	}
+    protected function getWhere($keyword = null)
+    {
+        if ($keyword) {
+            $string = "(";
+            $i = 0;
+            foreach (get_object_vars($this->Model) as $key => $value) {
+                if ($i == 0) {
+                    $string .= "{$key} like '%{$keyword}%' ";
+                } else {
+                    $string .= " OR {$key} like '%{$keyword}%' ";
+                }
+                $i++;
+            }
+            $string .= ")";
+            return $string;
+        }
+        return "";
+    }
 
-	protected function getDefaultWhere(){
-		$query_string = isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-		parse_str($query_string, $on_address_bar);
+    protected function getDefaultWhere()
+    {
+        $query_string = isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+        parse_str($query_string, $on_address_bar);
 
-		parse_str($this->paramString, $array);
+        parse_str($this->paramString, $array);
 
-		$where = array();
-		foreach($array as $key => $val){
-			$where[$key] = isset($on_address_bar[$key])?$on_address_bar[$key]:"";
-		}
+        $where = array();
+        foreach ($array as $key => $val) {
+            $where[$key] = isset($on_address_bar[$key]) ? $on_address_bar[$key] : "";
+        }
 
-		return $where;
-	}
-	
-	/**
+        return $where;
+    }
+
+    /**
      * Generate thumb image
-     * 
-     * @param string 	$path
-     * @param integer 	$width
-     * @param integer 	$height
-     * 
+     *
+     * @param string     $path
+     * @param integer     $width
+     * @param integer     $height
+     *
      * @return void
      *
      * @access protected
      */
-	public function createThumb($path, $width = 400, $height = 400){
-		$config['source_image']		= $path;
-		$config['create_thumb'] 	= TRUE;
-		$config['maintain_ratio'] 	= TRUE;
-		$config['thumb_marker'] 	= '_thumb';
-		$config['width']			= $width;
-		$config['height']			= $height;
+    public function createThumb($path, $width = 400, $height = 400)
+    {
+        $config['source_image'] = $path;
+        $config['create_thumb'] = true;
+        $config['maintain_ratio'] = true;
+        $config['thumb_marker'] = '_thumb';
+        $config['width'] = $width;
+        $config['height'] = $height;
 
-		$this->image_lib->clear();
+        $this->image_lib->clear();
 
-		$this->image_lib->initialize($config);
-		
-		if(!$this->image_lib->resize()){
-			echo $this->image_lib->display_errors();
-		}
-	}
+        $this->image_lib->initialize($config);
 
-	/**
+        if (!$this->image_lib->resize()) {
+            echo $this->image_lib->display_errors();
+        }
+    }
+
+    /**
      * Show image that will be cropped
-     * 
-     * @param string 	$path
-     * @param string 	$redirectUrl
-     * @param boolean	$isThumb
-     * @param integer 	$scaleWidth
-     * @param integer 	$scaleHeight
-     * 
+     *
+     * @param string     $path
+     * @param string     $redirectUrl
+     * @param boolean    $isThumb
+     * @param integer     $scaleWidth
+     * @param integer     $scaleHeight
+     *
      * @return string
      *
      * @access public
      */
-	public function crop($path = NULL, $redirectUrl = NULL, $isThumb = FALSE, 
-			$scaleWidth = 1, $scaleHeight = 1){
-		
-		if($path){
-			$data['path'] 			= $path;
-			$data['is_thumb'] 		= $isThumb;
+    public function crop($path = null, $redirectUrl = null, $isThumb = false,
+        $scaleWidth = 1, $scaleHeight = 1) {
 
-			$data['scale_width'] 	= $scaleWidth;
-			$data['scale_height'] 	= $scaleHeight;
+        if ($path) {
+            $data['path'] = $path;
+            $data['is_thumb'] = $isThumb;
 
-			$data['redirect_url'] 	= $redirectUrl?$redirectUrl:site_url($this->pathController);
+            $data['scale_width'] = $scaleWidth;
+            $data['scale_height'] = $scaleHeight;
 
-			return $this->renderPartial("layouts/partial/crop", $data, TRUE);
-		}
-	}
+            $data['redirect_url'] = $redirectUrl ? $redirectUrl : site_url($this->pathController);
 
-	/**
+            return $this->renderPartial("layouts/partial/crop", $data, true);
+        }
+    }
+
+    /**
      * Crop the image
-     * 
+     *
      * @return void
      *
      * @access public
      */
-	public function submitCrop(){
+    public function submitCrop()
+    {
 
-		$is_skip = isset($_POST['is_skip'])?$_POST['is_skip']:false;
+        $is_skip = isset($_POST['is_skip']) ? $_POST['is_skip'] : false;
 
-		if($is_skip == "true"){
-			$imgPath = $_POST['img_path'];
-			$dirname = dirname($imgPath);
-			$basename = basename($imgPath);
-			list($raw, $ext) = explode(".", $basename);
+        if ($is_skip == "true") {
+            $imgPath = $_POST['img_path'];
+            $dirname = dirname($imgPath);
+            $basename = basename($imgPath);
+            list($raw, $ext) = explode(".", $basename);
 
-			$newfile = $dirname.'/'. $raw . "_thumb" . "." . $ext;
-			if (!copy($imgPath, $newfile)) {
+            $newfile = $dirname . '/' . $raw . "_thumb" . "." . $ext;
+            if (!copy($imgPath, $newfile)) {
 
-				$this->msg['failed']['message'] = "Failed to skip this section.";
-				echo json_encode($this->msg['failed']);
-				exit();
+                $this->msg['failed']['message'] = "Failed to skip this section.";
+                echo json_encode($this->msg['failed']);
+                exit();
 
-			} else {
-				$this->msg['success']['message'] = "Image has been successfully cropped";
-			}
+            } else {
+                $this->msg['success']['message'] = "Image has been successfully cropped";
+            }
 
-			echo json_encode($this->msg['success']);
-			exit();
-		}
-		
-		if(isset($_POST['img_path'])){
-			$imgPath = $_POST['img_path'];
-			
-			$x = $_POST['x'];
-			$y = $_POST['y'];
+            echo json_encode($this->msg['success']);
+            exit();
+        }
 
-			$xWidth = $_POST['x_width'];
-			$yHeight = $_POST['y_height'];
+        if (isset($_POST['img_path'])) {
+            $imgPath = $_POST['img_path'];
 
-			$imgWidth = $_POST['img_width'];
-			$imgHeight = $_POST['img_height'];
+            $x = $_POST['x'];
+            $y = $_POST['y'];
 
-			$scaleWidth = $_POST['scale_width'];
-			$scaleHeight = $_POST['scale_height'];
+            $xWidth = $_POST['x_width'];
+            $yHeight = $_POST['y_height'];
 
-			$isThumb = $_POST['is_thumb']==1?TRUE:FALSE;
+            $imgWidth = $_POST['img_width'];
+            $imgHeight = $_POST['img_height'];
 
-			list($realWidth, $realHeight) = getimagesize($imgPath);
-			
-			$this->load->library('image_lib');
+            $scaleWidth = $_POST['scale_width'];
+            $scaleHeight = $_POST['scale_height'];
 
-			//crop config
-			$config['source_image'] = $imgPath;
-			$config['x_axis'] = ($realWidth/$imgWidth) * $x;
-			$config['y_axis'] = ($realHeight/$imgHeight) * $y;
-			$config['width'] = ($realWidth/$imgWidth) * $xWidth;
-			$config['height'] = ($realHeight/$imgHeight) * $yHeight;
-			$config['maintain_ratio'] = FALSE;
-			
-			$this->image_lib->initialize($config); 
-			
-			if ( ! $this->image_lib->crop()){
-				$this->msg['failed']['message'] = $this->image_lib->display_errors();
-				echo json_encode($this->msg['failed']);
-				exit();
-			}else{
-				
-				if($isThumb){
-					$this->createThumb($imgPath);
-				}
+            $isThumb = $_POST['is_thumb'] == 1 ? true : false;
 
-				$this->msg['success']['message'] = "Image has been successfully cropped";
-			}
-			echo json_encode($this->msg['success']);
-			exit();
-		}
-	}
+            list($realWidth, $realHeight) = getimagesize($imgPath);
+
+            $this->load->library('image_lib');
+
+            //crop config
+            $config['source_image'] = $imgPath;
+            $config['x_axis'] = ($realWidth / $imgWidth) * $x;
+            $config['y_axis'] = ($realHeight / $imgHeight) * $y;
+            $config['width'] = ($realWidth / $imgWidth) * $xWidth;
+            $config['height'] = ($realHeight / $imgHeight) * $yHeight;
+            $config['maintain_ratio'] = false;
+
+            $this->image_lib->initialize($config);
+
+            if (!$this->image_lib->crop()) {
+                $this->msg['failed']['message'] = $this->image_lib->display_errors();
+                echo json_encode($this->msg['failed']);
+                exit();
+            } else {
+
+                if ($isThumb) {
+                    $this->createThumb($imgPath);
+                }
+
+                $this->msg['success']['message'] = "Image has been successfully cropped";
+            }
+            echo json_encode($this->msg['success']);
+            exit();
+        }
+    }
 }

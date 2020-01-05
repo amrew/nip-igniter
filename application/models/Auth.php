@@ -1,88 +1,98 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-class Auth extends Nip_Model {
+class Auth extends Nip_Model
+{
 
-	/** 
-	 * Model for Authentication
-	 */
-	public $model = "User";
+    /**
+     * Model for Authentication
+     */
+    public $model = "User";
 
-	protected $user;
+    protected $user;
 
-	public function __construct($options = array()){
-		parent::__construct($options);
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
 
-		$this->load->model("User");
-	}
+        $this->load->model("User");
+    }
 
-	public function check(){
-		if ($this->session->userdata('user_id')) {
-			return TRUE;
-		}
-		return FALSE;
-	}
+    public function check()
+    {
+        if ($this->session->userdata('user_id')) {
+            return true;
+        }
+        return false;
+    }
 
-	public function login($data = array()) {
-		
-		$result  = $this->{$this->model}->first($data);
-		$primary = $this->{$this->model}->getPrimary();
+    public function login($data = array())
+    {
 
-		if ($result) {
-			$this->session->set_userdata('user_id', $result->{$primary});
-			$this->session->set_userdata('role_id', $result->role_id);
-			
-			return TRUE;
-		}
+        $result = $this->{$this->model}->first($data);
+        $primary = $this->{$this->model}->getPrimary();
 
-		return FALSE;
-	}
+        if ($result) {
+            $this->session->set_userdata('user_id', $result->{$primary});
+            $this->session->set_userdata('role_id', $result->role_id);
 
-	public function logout() {
-		$this->session->unset_userdata('user_id');
-		$this->session->unset_userdata('role_id');
+            return true;
+        }
 
-		return TRUE;
-	}
+        return false;
+    }
 
-	public function user() {
-		if ($this->check()) {
+    public function logout()
+    {
+        $this->session->unset_userdata('user_id');
+        $this->session->unset_userdata('role_id');
 
-			if (empty($this->user)) {
+        return true;
+    }
 
-				$user_id = $this->session->userdata('user_id');
-				
-				$user 		= $this->{$this->model}->first($user_id);
-				$this->user = $user;
-				
-				return $user;
-			} else {
+    public function user()
+    {
+        if ($this->check()) {
 
-				return $this->user;
-			}
-		}
+            if (empty($this->user)) {
 
-		return NULL;
-	}
-	
-	public function primary() {
-		$user = $this->user();
+                $user_id = $this->session->userdata('user_id');
 
-		if ($user) {
-			$primary = $user->getPrimary();
-			
-			return $user->{$primary};
-		}
+                $user = $this->{$this->model}->first($user_id);
+                $this->user = $user;
 
-		return FALSE;
-	}
-	
-	public function role() {
-		$user = $this->user();
-		
-		if ($user) {
-			return $user->role_id;
-		}
+                return $user;
+            } else {
 
-		return FALSE;
-	}
+                return $this->user;
+            }
+        }
+
+        return null;
+    }
+
+    public function primary()
+    {
+        $user = $this->user();
+
+        if ($user) {
+            $primary = $user->getPrimary();
+
+            return $user->{$primary};
+        }
+
+        return false;
+    }
+
+    public function role()
+    {
+        $user = $this->user();
+
+        if ($user) {
+            return $user->role_id;
+        }
+
+        return false;
+    }
 }

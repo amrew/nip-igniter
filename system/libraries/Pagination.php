@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2019, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -44,7 +44,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Pagination
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/pagination.html
+ * @link		https://codeigniter.com/user_guide/libraries/pagination.html
  */
 class CI_Pagination {
 
@@ -339,6 +339,10 @@ class CI_Pagination {
 			}
 		}
 
+		// _parse_attributes(), called by initialize(), needs to run at least once
+		// in order to enable "rel" attributes, and this triggers it.
+		isset($params['attributes']) OR $params['attributes'] = array();
+
 		$this->initialize($params);
 		log_message('info', 'Pagination Class Initialized');
 	}
@@ -353,8 +357,7 @@ class CI_Pagination {
 	 */
 	public function initialize(array $params = array())
 	{
-		isset($params['attributes']) OR $params['attributes'] = array();
-		if (is_array($params['attributes']))
+		if (isset($params['attributes']) && is_array($params['attributes']))
 		{
 			$this->_parse_attributes($params['attributes']);
 			unset($params['attributes']);
@@ -428,7 +431,7 @@ class CI_Pagination {
 		{
 			$get = $this->CI->input->get();
 
-			// Unset the controll, method, old-school routing options
+			// Unset the control, method, old-school routing options
 			unset($get['c'], $get['m'], $get[$this->query_string_segment]);
 		}
 		else
@@ -497,7 +500,7 @@ class CI_Pagination {
 		{
 			$this->cur_page = $this->CI->input->get($this->query_string_segment);
 		}
-		else
+		elseif (empty($this->cur_page))
 		{
 			// Default to the last segment number if one hasn't been defined.
 			if ($this->uri_segment === 0)
@@ -512,6 +515,10 @@ class CI_Pagination {
 			{
 				$this->cur_page = str_replace(array($this->prefix, $this->suffix), '', $this->cur_page);
 			}
+		}
+		else
+		{
+			$this->cur_page = (string) $this->cur_page;
 		}
 
 		// If something isn't quite right, back to the default base page.

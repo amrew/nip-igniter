@@ -1,27 +1,31 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-class Status extends Nip_Model {
-	protected $tableName = "status";
-	protected $primary = "id";
+class Status extends Nip_Model
+{
+    protected $tableName = "status";
+    protected $primary = "id";
 
-	protected $softDeletes = TRUE;
-	
-	public $id;
-	public $title;
-	public $created;
-	public $updated;
-	public $deleted;
-	
-	protected $validator = array(
-			'title' => 'required|max_length[255]',
-			);
-	
-	protected $label = array(
-			'title' => 'Title',
-			);
+    protected $softDeletes = true;
 
-	public function __construct($options = array()){
-		parent::__construct($options);
-	}
-	
+    public $id;
+    public $title;
+    public $created;
+    public $updated;
+    public $deleted;
+
+    protected $validator = array(
+        'title' => 'required|max_length[255]',
+    );
+
+    protected $label = array(
+        'title' => 'Title',
+    );
+
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+    }
+
 }
